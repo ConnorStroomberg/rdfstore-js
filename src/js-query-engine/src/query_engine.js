@@ -66,7 +66,7 @@ QueryEngine.QueryEngine.prototype.applyModifier = function(modifier, projectedBi
         for(var i=0; i<projectedBindings.length; i++) {
             var bindings = projectedBindings[i];
             var key = "";
-         
+
             // if no projection variables hash is passed, all the bound
             // variable in the current bindings will be used.
             for(var p in (bindings)) {
@@ -90,14 +90,14 @@ QueryEngine.QueryEngine.prototype.applyModifier = function(modifier, projectedBi
                     key = key + p + obj;
                 }
             }
-         
+
             if(map[key] == null) {
                 // this will preserve the order in projectedBindings
                 result.push(bindings);
                 map[key] = true;
             }
         }
-        return result; 
+        return result;
     } else {
         return projectedBindings;
     }
@@ -175,17 +175,17 @@ QueryEngine.QueryEngine.prototype.compareFilteredBindings = function(a, b, order
             filterResult = {value: false};
         } else if(b.value[i] == null) {
             filterResult = {value: true};
-        } else 
+        } else
 
         // blanks
         if(a.value[i].token === 'blank' && b.value[i].token === 'blank') {
             i++;
             continue;
-        } else if(a.value[i].token === 'blank') { 
-            filterResult = {value: false};            
+        } else if(a.value[i].token === 'blank') {
+            filterResult = {value: false};
         } else if(b.value[i].token === 'blank') {
-            filterResult = {value: true};        
-        } else 
+            filterResult = {value: true};
+        } else
 
         // uris
         if(a.value[i].token === 'uri' && b.value[i].token === 'uri') {
@@ -195,11 +195,11 @@ QueryEngine.QueryEngine.prototype.compareFilteredBindings = function(a, b, order
             } else {
                 filterResult = QueryFilters.runTotalGtFunction(a.value[i], b.value[i], []);
             }
-        } else if(a.value[i].token === 'uri') { 
-            filterResult = {value: false};            
+        } else if(a.value[i].token === 'uri') {
+            filterResult = {value: false};
         } else if(b.value[i].token === 'uri') {
-            filterResult = {value: true};        
-        } else 
+            filterResult = {value: true};
+        } else
 
         // simple literals
         if(a.value[i].token === 'literal' && b.value[i].token === 'literal' && a.value[i].type == null && b.value[i].type == null) {
@@ -209,11 +209,11 @@ QueryEngine.QueryEngine.prototype.compareFilteredBindings = function(a, b, order
             } else {
                 filterResult = QueryFilters.runTotalGtFunction(a.value[i], b.value[i], []);
             }
-        } else if(a.value[i].token === 'literal' && a.value[i].type == null) { 
-            filterResult = {value: false};            
+        } else if(a.value[i].token === 'literal' && a.value[i].type == null) {
+            filterResult = {value: false};
         } else if(b.value[i].token === 'literal' && b.value[i].type == null) {
-            filterResult = {value: true};        
-        } else 
+            filterResult = {value: true};
+        } else
 
         // literals
         if(QueryFilters.runEqualityFunction(a.value[i], b.value[i], [], this, env).value == true) {
@@ -221,7 +221,7 @@ QueryEngine.QueryEngine.prototype.compareFilteredBindings = function(a, b, order
             continue;
         } else {
             filterResult = QueryFilters.runTotalGtFunction(a.value[i], b.value[i], []);
-        }     
+        }
 
 
         // choose value for comparison based on the direction
@@ -237,7 +237,7 @@ QueryEngine.QueryEngine.prototype.compareFilteredBindings = function(a, b, order
             } else {
                 return 1;
             }
-        }       
+        }
     }
 };
 
@@ -282,9 +282,9 @@ QueryEngine.QueryEngine.prototype.aggregateBindings = function(projection, bindi
     for(var i=0; i<projection.length; i++) {
         var aggregatedValue = QueryFilters.runAggregator(projection[i], denormBindings, this, dataset, env);
         if(projection[i].alias) {
-            aggregatedBindings[projection[i].alias.value] = aggregatedValue; 
+            aggregatedBindings[projection[i].alias.value] = aggregatedValue;
         } else {
-            aggregatedBindings[projection[i].value.value] = aggregatedValue; 
+            aggregatedBindings[projection[i].value.value] = aggregatedValue;
         }
     }
     return(aggregatedBindings);
@@ -319,7 +319,7 @@ QueryEngine.QueryEngine.prototype.projectBindings = function(projection, results
             if(shouldAdd === true) {
                 projectedResults.push(currentProjected);
             }
-            
+
         }
 
         return projectedResults;
@@ -351,7 +351,7 @@ QueryEngine.QueryEngine.prototype.termCost = function(term, env) {
     } else {
           return(null);
     }
-    
+
 };
 
 QueryEngine.QueryEngine.prototype.normalizeTerm = function(term, env, shouldIndex) {
@@ -406,13 +406,13 @@ QueryEngine.QueryEngine.prototype.normalizeDatasets = function(datasets, outerEn
         if(dataset.value === that.lexicon.defaultGraphUri) {
             dataset.oid = that.lexicon.defaultGraphOid;
         } else {
-            var oid = that.normalizeTerm(dataset, outerEnv, false);      
+            var oid = that.normalizeTerm(dataset, outerEnv, false);
             if(oid != null) {
                 dataset.oid = oid;
             } else {
                 return(null);
             }
-        }  
+        }
     }
 
     return true
@@ -459,9 +459,9 @@ QueryEngine.QueryEngine.prototype.normalizeQuad = function(quad, queryEnv, shoul
         return null
     }
 
-    return({subject:subject, 
-            predicate:predicate, 
-            object:object, 
+    return({subject:subject,
+            predicate:predicate,
+            object:object,
             graph:graph});
 };
 
@@ -519,7 +519,7 @@ QueryEngine.QueryEngine.prototype.copyDenormalizedBindings = function(bindingsLi
                 var inOut = out[oid];
                 if(inOut!= null) {
                     denorm[variables[j]] = inOut;
-                } else {                    
+                } else {
                     var val = this.lexicon.retrieve(oid);
                     out[oid] = val;
                     denorm[variables[j]] = val;
@@ -615,7 +615,7 @@ QueryEngine.QueryEngine.prototype.executeQuery = function(syntaxTree, callback, 
                   callback(true, result['bindings']);
               } else {
                   var result = that.denormalizeBindingsList(result, queryEnv);
-                  if(result != null) {                        
+                  if(result != null) {
                       callback(true, result);
                   } else {
                       callback(false, result);
@@ -629,7 +629,7 @@ QueryEngine.QueryEngine.prototype.executeQuery = function(syntaxTree, callback, 
         aqt.projection = [{"token": "variable", "kind": "*"}];
         this.executeSelect(aqt, queryEnv, defaultDataset, namedDataset, function(success, result){
             if(success) {
-                if(success) {              
+                if(success) {
                     if(result.length>0) {
                         callback(true, true);
                     } else {
@@ -647,11 +647,11 @@ QueryEngine.QueryEngine.prototype.executeQuery = function(syntaxTree, callback, 
         that = this;
         this.executeSelect(aqt, queryEnv, defaultDataset, namedDataset, function(success, result){
             if(success) {
-                if(success) {              
+                if(success) {
                     var result = that.denormalizeBindingsList(result, queryEnv);
-                    if(result != null) { 
+                    if(result != null) {
                         var graph = new RDFJSInterface.Graph();
-                            
+
                         // CONSTRUCT WHERE {} case
                         if(aqt.template == null) {
                             aqt.template = {triplesContext: aqt.pattern};
@@ -666,7 +666,7 @@ QueryEngine.QueryEngine.prototype.executeQuery = function(syntaxTree, callback, 
                             for(var j=0; j<aqt.template.triplesContext.length; j++) {
                                 // fresh IDs for blank nodes in the construct template
                                 var components = ['subject', 'predicate', 'object'];
-                                var tripleTemplate = aqt.template.triplesContext[j];                                    
+                                var tripleTemplate = aqt.template.triplesContext[j];
                                 for(var p=0; p<components.length; p++) {
                                     var component = components[p];
                                     if(tripleTemplate[component].token === 'blank') {
@@ -720,7 +720,7 @@ QueryEngine.QueryEngine.prototype.executeSelect = function(unit, env, defaultDat
         if(defaultDataset != null || namedDataset != null) {
             dataset.implicit = defaultDataset || [];
             dataset.named   = namedDataset || [];
-        } 
+        }
 
         if(dataset.implicit != null && dataset.implicit.length === 0 && dataset.named !=null && dataset.named.length === 0) {
             // We add the default graph to the default merged graph
@@ -746,10 +746,10 @@ QueryEngine.QueryEngine.prototype.executeSelect = function(unit, env, defaultDat
                 if(unit.group && unit.group != "") {
                     if(that.checkGroupSemantics(unit.group,projection)) {
                         var groupedBindings = that.groupSolution(result, unit.group, dataset, env);
-                             
+
                         var aggregatedBindings = [];
                         var foundError = false;
-                            
+
                         for(var i=0; i<groupedBindings.length; i++) {
                             var resultingBindings = that.aggregateBindings(projection, groupedBindings[i], dataset, env);
                             aggregatedBindings.push(resultingBindings);
@@ -764,10 +764,10 @@ QueryEngine.QueryEngine.prototype.executeSelect = function(unit, env, defaultDat
                     var modifiedBindings = that.applyModifier(modifier, projectedBindings);
                     var limitedBindings  = that.applyLimitOffset(offset, limit, modifiedBindings);
                     var filteredBindings = that.removeDefaultGraphBindings(limitedBindings, dataset);
-                    
+
                     callback(true, filteredBindings);
                 }
-                
+
             } else { // fail selectUnit
                 callback(false, result);
             }
@@ -796,7 +796,7 @@ QueryEngine.QueryEngine.prototype.groupSolution = function(bindings, group, data
             /**
              * In this loop, we iterate through all the group clauses and tranform the current bindings
              * according to the group by clauses.
-             * If it is the first iteration we also save in a different array the order for the 
+             * If it is the first iteration we also save in a different array the order for the
              * grouped variables that will be used later to build the final groups
              */
             for(var j=0; j<group.length; j++) {
@@ -841,17 +841,17 @@ QueryEngine.QueryEngine.prototype.groupSolution = function(bindings, group, data
                         if(initialized == false) {
                             order.push(orderVariable);
                         }
-                        
+
                     } else {
                         mustAddBindings = false;
                     }
-                         
+
                 }
-                
+
             }
             if(initialized == false) {
                 initialized = true;
-            } 
+            }
             if(mustAddBindings === true) {
                 filteredBindings.push(currentBindings);
             }
@@ -876,19 +876,19 @@ QueryEngine.QueryEngine.prototype.groupSolution = function(bindings, group, data
             }
 
             if(dups[key] == null) {
-                //currentTransformedBinding["__group__"] = groupCounter; 
+                //currentTransformedBinding["__group__"] = groupCounter;
                 groupMap[key] = groupCounter;
                 dups[key] = [currentTransformedBinding];
                 //groupCounter++
             } else {
-                //currentTransformedBinding["__group__"] = dups[key][0]["__group__"]; 
+                //currentTransformedBinding["__group__"] = dups[key][0]["__group__"];
                 dups[key].push(currentTransformedBinding);
             }
         }
 
         // The final result is an array of arrays with all the groups
         var groups = [];
-            
+
         for(var k in dups) {
             groups.push(dups[k]);
         }
@@ -905,11 +905,11 @@ QueryEngine.QueryEngine.prototype.executeSelectUnit = function(projection, datas
     if(pattern.kind === "BGP") {
         return this.executeAndBGP(projection, dataset, pattern, env);
     } else if(pattern.kind === "UNION") {
-        return this.executeUNION(projection, dataset, pattern.value, env);            
+        return this.executeUNION(projection, dataset, pattern.value, env);
     } else if(pattern.kind === "JOIN") {
-        return this.executeJOIN(projection, dataset, pattern, env);            
+        return this.executeJOIN(projection, dataset, pattern, env);
     } else if(pattern.kind === "LEFT_JOIN") {
-        return this.executeLEFT_JOIN(projection, dataset, pattern, env);            
+        return this.executeLEFT_JOIN(projection, dataset, pattern, env);
     } else if(pattern.kind === "FILTER") {
         // Some components may have the filter inside the unit
         var results = this.executeSelectUnit(projection, dataset, pattern.value, env);
@@ -1109,7 +1109,7 @@ QueryEngine.QueryEngine.prototype.executeLEFT_JOIN = function(projection, datase
     if(set1==null) {
         return null;
     }
-     
+
     //console.log("SET QUERY 2");
     //console.log(setQuery2);
     set2 = that.executeSelectUnit(projection, dataset, setQuery2, env);
@@ -1129,7 +1129,7 @@ QueryEngine.QueryEngine.prototype.executeLEFT_JOIN = function(projection, datase
     //console.log("---")
     //console.log(bindings)
     //console.log("\r\n")
-    
+
     if(set1.length>1 && set2.length>1) {
             var vars = [];
             var vars1 = {};
@@ -1147,7 +1147,7 @@ QueryEngine.QueryEngine.prototype.executeLEFT_JOIN = function(projection, datase
                 if(bindings[i]["__nullify__"] === true) {
                     for(var j=0; j<vars.length; j++) {
                         bindings[i]["bindings"][vars[j]] = null;
-                    }                            
+                    }
                     var idx = [];
                     var idxColl = [];
                     for(var p in bindings[i]["bindings"]) {
@@ -1204,8 +1204,8 @@ QueryEngine.QueryEngine.prototype.executeJOIN = function(projection, dataset, pa
     if(set2 == null) {
         return null;
     }
-    
-    
+
+
     var result = null;
     if(set1.length ===0 || set2.length===0) {
 	result = [];
@@ -1221,10 +1221,10 @@ QueryEngine.QueryEngine.prototype.executeJOIN = function(projection, dataset, pa
 	}
 
 	if(commonVars.length == 0) {
-	    result = QueryPlan.joinBindings(set1,set2);	    
-	} else if(this.abstractQueryTree.treeWithUnion(setQuery1) || 
+	    result = QueryPlan.joinBindings(set1,set2);
+	} else if(this.abstractQueryTree.treeWithUnion(setQuery1) ||
 		  this.abstractQueryTree.treeWithUnion(setQuery2)) {
-	    result = QueryPlan.joinBindings(set1,set2);	    	    
+	    result = QueryPlan.joinBindings(set1,set2);
 	} else {
 	    result = QueryPlan.joinBindings2(commonVars, set1, set2);
 	}
@@ -1332,7 +1332,7 @@ QueryEngine.QueryEngine.prototype.batchLoad = function(quads, callback) {
 
     for(var i=0; i<quads.length; i++) {
         quad = quads[i];
-	
+
         // subject
         if(quad.subject['uri'] || quad.subject.token === 'uri') {
             oid = this.lexicon.registerUri(quad.subject.uri || quad.subject.value);
@@ -1347,7 +1347,7 @@ QueryEngine.QueryEngine.prototype.batchLoad = function(quads, callback) {
 		quad.subject = this.lexicon.parseLiteral(quad.subject.literal);
 		delete quad.subject['literal'];
 	    }
-            subject = oid;                    
+            subject = oid;
         } else {
             maybeBlankOid = blanks[quad.subject.blank || quad.subject.value];
             if(maybeBlankOid == null) {
@@ -1376,7 +1376,7 @@ QueryEngine.QueryEngine.prototype.batchLoad = function(quads, callback) {
 		quad.predicate = this.lexicon.parseLiteral(quad.predicate.literal);
 		delete quad.predicate['literal'];
 	    }
-            predicate = oid;                    
+            predicate = oid;
         } else {
             maybeBlankOid = blanks[quad.predicate.blank || quad.predicate.value];
             if(maybeBlankOid == null) {
@@ -1404,7 +1404,7 @@ QueryEngine.QueryEngine.prototype.batchLoad = function(quads, callback) {
 		if(quad.object.type != null) {
 		    quad.object.value = '"'+quad.object.value+'"^^<'+quad.object.type+'>';
 		} else if(quad.object.lang != null) {
-		    quad.object.value = '"'+quad.object.value+'"@'+quad.object.lang;		    
+		    quad.object.value = '"'+quad.object.value+'"@'+quad.object.lang;
 		} else {
 		    quad.object.value = '"'+quad.object.value+'"';
 		}
@@ -1414,7 +1414,7 @@ QueryEngine.QueryEngine.prototype.batchLoad = function(quads, callback) {
 		quad.object = this.lexicon.parseLiteral(quad.object.literal);
 		delete quad.object['literal'];
 	    }
-            object = oid;                    
+            object = oid;
         } else {
             maybeBlankOid = blanks[quad.object.blank || quad.object.value];
             if(maybeBlankOid == null) {
@@ -1446,7 +1446,7 @@ QueryEngine.QueryEngine.prototype.batchLoad = function(quads, callback) {
 		quad.predicate = this.lexicon.parseLiteral(quad.predicate.literal);
 		delete quad.predicate['literal'];
 	    }
-            graph = oid;                    
+            graph = oid;
         } else {
             maybeBlankOid = blanks[quad.graph.blank || quad.graph.value];
             if(maybeBlankOid == null) {
@@ -1502,7 +1502,7 @@ QueryEngine.QueryEngine.prototype.batchLoad = function(quads, callback) {
     } else {
         exitFn();
     }
-        
+
     if(success) {
         return counter;
     } else {
@@ -1557,8 +1557,8 @@ QueryEngine.QueryEngine.prototype._executeModifyQuery = function(aqt, queryEnv, 
             aqt.dataset = {};
             aqt.projection = [{"token": "variable", "kind": "*"}];
 
-            that.executeSelect(aqt, queryEnv, defaultGraph, namedGraph, function(success, result) {                
-                if(success) {                    
+            that.executeSelect(aqt, queryEnv, defaultGraph, namedGraph, function(success, result) {
+                if(success) {
                     var result = that.denormalizeBindingsList(result, queryEnv);
                     if(result!=null) {
                         bindings = result;
@@ -1595,7 +1595,9 @@ QueryEngine.QueryEngine.prototype._executeModifyQuery = function(aqt, queryEnv, 
                             }
                         }
 
-                        quads.push(quad);
+                        if(quad.subject && quad.predicate && quad.object) {
+                          quads.push(quad);
+                        }
                     }
                 }
 
@@ -1746,7 +1748,7 @@ QueryEngine.QueryEngine.prototype._executeClearGraph = function(destinyGraph, qu
 
 QueryEngine.QueryEngine.prototype.checkGroupSemantics = function(groupVars, projectionVars) {
     if(groupVars === 'singleGroup') {
-        return true;        
+        return true;
     }
 
     var projection = {};
@@ -1766,7 +1768,7 @@ QueryEngine.QueryEngine.prototype.checkGroupSemantics = function(groupVars, proj
             if(projection[projectionVar.value.value] == null) {
                 return false;
             }
-        } else if(projectionVar.kind === 'aliased' && 
+        } else if(projectionVar.kind === 'aliased' &&
                   projectionVar.expression &&
                   projectionVar.expression.primaryexpression === 'var') {
             if(projection[projectionVar.expression.value.value] == null) {

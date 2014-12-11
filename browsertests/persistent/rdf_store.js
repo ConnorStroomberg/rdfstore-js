@@ -5,7 +5,7 @@
      console = {};
      console.log = function(e){};
   }
-  
+
   window.process = {};
   process.nextTick = function(f) {
     setTimeout(f,0);
@@ -29,7 +29,7 @@ Utils.recur = function(c){
     } else {
         Utils.stackCounter++;
         c();
-    } 
+    }
 };
 
 Utils.clone = function(o) {
@@ -129,7 +129,7 @@ Utils.partition = function(c, n) {
     for(var i=0; i<rem; i++) {
         currentGroup.push(null);
     }
-    
+
     var groups = [];
     for(var i=0; i<c.length; i++) {
         currentGroup.push(c[i]);
@@ -153,7 +153,7 @@ Utils.keys = function(obj) {
 Utils.iso8601 = function(date) {
     function pad(n){
         return n<10 ? '0'+n : n;
-    }    
+    }
     return date.getUTCFullYear()+'-'
         + pad(date.getUTCMonth()+1)+'-'
         + pad(date.getUTCDate())+'T'
@@ -264,7 +264,7 @@ Utils.parseISO8601Components = function (str) {
         timezone *= ((d[14] == '-') ? -1 : +1);
     } else if(d[14]==null && d[11]) {
         timezone = Number(d[12])*60;
-    }    
+    }
 
     return {'year': isNaN(year) ? null : year,
             'month': isNaN(month) ? null : month,
@@ -281,10 +281,10 @@ Utils.compareDateComponents = function(stra,strb) {
     var b = Utils.parseISO8601Components(strb);
 
     if((a.timezone == null && b.timezone == null) ||
-       (a.timezone != null && b.timezone != null)) {        
+       (a.timezone != null && b.timezone != null)) {
         var da = Utils.parseISO8601(stra);
         var db = Utils.parseISO8601(strb);
-        
+
         if(da.getTime() == db.getTime()) {
             return 0;
         } else if(da.getTime() < db.getTime()){
@@ -352,7 +352,7 @@ Utils.lexicalFormLiteral = function(term, env) {
         if(lang == null && type == null) {
             indexedValue = '"' + value + '"';
         } else if(type == null) {
-            indexedValue = '"' + value + '"' + "@" + lang;        
+            indexedValue = '"' + value + '"' + "@" + lang;
         } else {
 	    // normalization
 	    if(type.indexOf('hexBinary') != -1) {
@@ -377,7 +377,7 @@ Utils.lexicalFormBaseUri = function(term, env) {
         var prefix = term.prefix;
         var suffix = term.suffix;
         var resolvedPrefix = env.namespaces[prefix];
-        if(resolvedPrefix != null) {            
+        if(resolvedPrefix != null) {
             uri = resolvedPrefix+suffix;
         } else {
             uri = prefix+":"+suffix;
@@ -441,8 +441,8 @@ Utils.hashTerm = function(term) {
       } else if(term.token === 'literal') {
           var l = "l"+term.value;
           l = l + (term.type || "");
-          l = l + (term.lang || "");        
-   
+          l = l + (term.lang || "");
+
           return l;
       }
     } catch(e) {
@@ -458,7 +458,7 @@ Utils.hashTerm = function(term) {
     }
 };
 
-// end of ./src/js-trees/src/utils.js 
+// end of ./src/js-trees/src/utils.js
 // exports
 var PriorityQueue = {};
 
@@ -563,7 +563,7 @@ PriorityQueue.PriorityQueue = function(options) {
     return self;
 };
 
-// end of ./src/js-trees/src/priority_queue.js 
+// end of ./src/js-trees/src/priority_queue.js
 // exports
 var WebLocalStorageBTree = {};
 
@@ -599,7 +599,7 @@ WebLocalStorageBTree.Tree = function(order, name, persistent, cacheMaxSize) {
         }
 
         if(storage == null) {
-            storage = (function(){ 
+            storage = (function(){
                 var content = {};
                 return { setItem: function(pointer, object) {
                             content[pointer] = object;
@@ -879,7 +879,7 @@ WebLocalStorageBTree.Tree.prototype._insertNonFull = function(node,key,data) {
         idx++;
 
         var child = this._diskRead(node.children[idx]);
-        
+
         if(child.numberActives === 2*this.order -1) {
             this._splitChild(node,idx,child);
             if(this.comparator(key, node.keys[idx].key)===1) {
@@ -1513,7 +1513,7 @@ WebLocalStorageBTree.LocalStorageManager.prototype.clear = function() {
     var localStorageLength = this.storage.length;
     var keysToDelete = [];
 
-    for(var i=0; i<localStorageLength; i++) {        
+    for(var i=0; i<localStorageLength; i++) {
         // number of elments changes, always get the first key
         var key = this.storage.key(i);
         if(key.indexOf(this.name) == 0 || key.indexOf("__"+this.name)==0) {
@@ -1575,12 +1575,12 @@ WebLocalStorageBTree.LocalStorageManager.prototype._diskWrite = function(node) {
 
     var origChildren = node.children;
     var childPointers = [];
- 
+
     if(node.isLeaf === false) {
         //for(var i=0; i<(node.numberActives+1); i++) {
         for(var i=0; i<(origChildren.length); i++) {
             if(origChildren[i]==null) {
-                childPointers.push(null);                
+                childPointers.push(null);
             } else if(typeof(origChildren[i]) === 'object') {
                 //this._diskWrite(origChildren[i]);
                 childPointers.push(origChildren[i].pointer);
@@ -1630,7 +1630,7 @@ WebLocalStorageBTree.LocalStorageManager.prototype._encode = function(node) {
     var numKeys = 0;
     var keys = "";
     for(var i=0; i<node.keys.length; i++) {
-        if(node.keys[i] != null) {          
+        if(node.keys[i] != null) {
             if(typeof(node.keys[i].key) === 'number') {
                 keys = keys+":"+node.keys[i].key;
             } else {
@@ -1639,7 +1639,7 @@ WebLocalStorageBTree.LocalStorageManager.prototype._encode = function(node) {
             }
 
             if(node.keys[i].data==null) {
-                keys = keys+":n:";                
+                keys = keys+":n:";
             } else if(typeof(node.keys[i].data)=='string') {
                 keys = keys+":s:"+(node.keys[i].data);
             } else if(typeof(node.keys[i].data)=='number') {
@@ -1658,7 +1658,7 @@ WebLocalStorageBTree.LocalStorageManager.prototype._encode = function(node) {
     if(node.isLeaf === false) {
 
         var children = "";
-        var numChildren = 0;       
+        var numChildren = 0;
 
         for(var i=0; i<node.children.length; i++) {
             if(node.children[i] != null) {
@@ -1667,7 +1667,7 @@ WebLocalStorageBTree.LocalStorageManager.prototype._encode = function(node) {
             }
         }
 
-        encoded = encoded+":"+numChildren+children;        
+        encoded = encoded+":"+numChildren+children;
     }
     //console.log("<< "+encoded);
     return encoded;
@@ -1677,7 +1677,7 @@ WebLocalStorageBTree.LocalStorageManager.prototype._decode = function(encodedNod
     //console.log(">> "+encodedNode);
     var node =  new WebLocalStorageBTree.Node();
     var parts = encodedNode.split(":");
-    
+
     //encoded = ""+node.numberActives;
     node.numberActives = parseInt(parts[0]);
     //encoded = encoded+":"+node.pointer;
@@ -1698,8 +1698,8 @@ WebLocalStorageBTree.LocalStorageManager.prototype._decode = function(encodedNod
         key = parts[counter];
         if(key[0]=="_") {
             var kparts = key.split("_");
-            key = {'subject': (parseInt(kparts[1])||null), 
-                   'predicate': (parseInt(kparts[2])||null), 
+            key = {'subject': (parseInt(kparts[1])||null),
+                   'predicate': (parseInt(kparts[2])||null),
                    'object': (parseInt(kparts[3])||null),
                    'graph': (parseInt(kparts[4]||null)) };
 
@@ -1725,7 +1725,7 @@ WebLocalStorageBTree.LocalStorageManager.prototype._decode = function(encodedNod
         counter = counter+3;
     }
 
-    if(node.isLeaf === false) {        
+    if(node.isLeaf === false) {
         var numChildren = parseInt(parts[counter]);
         counter++;
         for(var i=0; i<numChildren; i++) {
@@ -1740,7 +1740,7 @@ WebLocalStorageBTree.LocalStorageManager.prototype._decode = function(encodedNod
 };
 
 
-// end of ./src/js-trees/src/web_local_storage_b_tree.js 
+// end of ./src/js-trees/src/web_local_storage_b_tree.js
 // exports
 var QuadIndexCommon = {};
 
@@ -1814,7 +1814,7 @@ QuadIndexCommon.Pattern = function (components) {
     this.key = new QuadIndexCommon.NodeKey(this.keyComponents, this.order);
 };
 
-// end of ./src/js-rdf-persistence/src/quad_index_common.js 
+// end of ./src/js-rdf-persistence/src/quad_index_common.js
 // exports
 var QuadIndex = {};
 
@@ -1938,7 +1938,7 @@ QuadIndex.Tree.prototype._rangeTraverse = function(tree,node, pattern) {
     return acum;
 };
 
-// end of ./src/js-rdf-persistence/src/quad_index.js 
+// end of ./src/js-rdf-persistence/src/quad_index.js
 // exports
 var QuadBackend = {};
 
@@ -2063,7 +2063,7 @@ QuadBackend.QuadBackend.prototype['delete'] = function (quad, callback) {
     return true;
 };
 
-// end of ./src/js-rdf-persistence/src/quad_backend.js 
+// end of ./src/js-rdf-persistence/src/quad_backend.js
 // exports
 var WebLocalStorageLexicon = {};
 
@@ -2121,7 +2121,7 @@ WebLocalStorageLexicon.Lexicon = function(callback,name){
     } else {
         this.knownGraphs = JSON.parse(this.storage.getItem(this.pointer("knownGraphs")));
     }
-    
+
     if(callback != null) {
         callback(this);
     }
@@ -2164,7 +2164,7 @@ WebLocalStorageLexicon.Lexicon.prototype.clear = function() {
     var lexiconPrefix = this.name+"_l_";
     var keysToDelete = [];
 
-    for(var i=0; i<localStorageLength; i++) {        
+    for(var i=0; i<localStorageLength; i++) {
         // number of elments changes, always get the first key
         var key = this.storage.key(i);
         if(key.indexOf(lexiconPrefix) == 0) {
@@ -2279,7 +2279,7 @@ WebLocalStorageLexicon.Lexicon.prototype.registerBlank = function(label) {
     var oidStr = ""+oid;
     this.storage.setItem(this.pointer("OIDToBlank",oidStr),true);
     this.OIDToBlank[oidStr] = true;
-    
+
     return(oidStr);
 };
 
@@ -2382,7 +2382,7 @@ WebLocalStorageLexicon.Lexicon.prototype.retrieve = function(oid) {
     var fromStorage;
     try {
         if(oid === this.defaultGraphOid) {
-            return({ token: "uri", 
+            return({ token: "uri",
                      value:this.defaultGraphUri,
                      prefix: null,
                      suffix: null,
@@ -2439,7 +2439,7 @@ WebLocalStorageLexicon.Lexicon.prototype.retrieve = function(oid) {
         console.log("error in lexicon retrieving OID:");
         console.log(oid);
         if(e.message) {
-            console.log(e.message); 
+            console.log(e.message);
         }
         if(e.stack) {
             console.log(e.stack);
@@ -2511,7 +2511,7 @@ WebLocalStorageLexicon.Lexicon.prototype.unregisterTerm = function (kind, oid) {
     }
 };
 
-// end of ./src/js-rdf-persistence/src/web_local_storage_lexicon.js 
+// end of ./src/js-rdf-persistence/src/web_local_storage_lexicon.js
 // exports
 var NetworkTransport = {};
 
@@ -2555,7 +2555,7 @@ NetworkTransport.load = function (uri, accept, callback, redirect) {
     });
 };
 
-// end of ./src/js-communication/src/ajax_transport.js 
+// end of ./src/js-communication/src/ajax_transport.js
 
 /**
  * Javascript implementation of JSON-LD.
@@ -2593,7 +2593,7 @@ if(typeof(window) !== 'undefined')
    if(!Object.keys)
    {
       Object.keys = function(o)
-      {  
+      {
          if(o !== Object(o))
          {
             throw new TypeError('Object.keys called on non-object');
@@ -2615,15 +2615,15 @@ if(typeof(window) !== 'undefined')
      Array.prototype.filter = function(fun /*, thisp */)
      {
        "use strict";
-    
+
        if (this == null)
          throw new TypeError();
-    
+
        var t = Object(this);
        var len = t.length >>> 0;
        if (typeof fun != "function")
          throw new TypeError();
-    
+
        var res = [];
        var thisp = arguments[1];
        for (var i = 0; i < len; i++)
@@ -2635,7 +2635,7 @@ if(typeof(window) !== 'undefined')
              res.push(val);
          }
        }
-    
+
        return res;
      };
    }
@@ -2720,15 +2720,15 @@ var _setProperty = function(s, p, o)
 /**
  * Clones an object, array, or string/number. If cloning an object, the keys
  * will be sorted.
- * 
+ *
  * @param value the value to clone.
- * 
+ *
  * @return the cloned value.
  */
 var _clone = function(value)
 {
    var rval;
-   
+
    if(value.constructor === Object)
    {
       rval = {};
@@ -2751,22 +2751,22 @@ var _clone = function(value)
    {
       rval = value;
    }
-   
+
    return rval;
 };
 
 /**
  * Gets the keywords from a context.
- * 
+ *
  * @param ctx the context.
- * 
+ *
  * @return the keywords.
  */
 var _getKeywords = function(ctx)
 {
    // TODO: reduce calls to this function by caching keywords in processor
    // state
-   
+
    var rval =
    {
       '@id': '@id',
@@ -2774,7 +2774,7 @@ var _getKeywords = function(ctx)
       '@literal': '@literal',
       '@type': '@type'
    };
-   
+
    if(ctx)
    {
       // gather keyword aliases from context
@@ -2786,23 +2786,23 @@ var _getKeywords = function(ctx)
             keywords[ctx[key]] = key;
          }
       }
-      
+
       // overwrite keywords
       for(var key in keywords)
       {
          rval[key] = keywords[key];
       }
    }
-   
+
    return rval;
 };
 
 /**
  * Gets the iri associated with a term.
- * 
+ *
  * @param ctx the context.
  * @param term the term.
- * 
+ *
  * @return the iri or NULL.
  */
 var _getTermIri = function(ctx, term)
@@ -2836,7 +2836,7 @@ var _getTermIri = function(ctx, term)
 var _compactIri = function(ctx, iri, usedCtx)
 {
    var rval = null;
-   
+
    // check the context for a term that could shorten the IRI
    // (give preference to terms over prefixes)
    for(var key in ctx)
@@ -2856,13 +2856,13 @@ var _compactIri = function(ctx, iri, usedCtx)
          }
       }
    }
-   
+
    // term not found, if term is @type, use keyword
    if(rval === null && iri === '@type')
    {
       rval = _getKeywords(ctx)['@type'];
    }
-   
+
    // term not found, check the context for a prefix
    if(rval === null)
    {
@@ -2876,7 +2876,7 @@ var _compactIri = function(ctx, iri, usedCtx)
             if(ctxIri !== null)
             {
                var idx = iri.indexOf(ctxIri);
-               
+
                // compact to a prefix
                if(idx === 0 && iri.length > ctxIri.length)
                {
@@ -2915,10 +2915,10 @@ var _compactIri = function(ctx, iri, usedCtx)
 var _expandTerm = function(ctx, term, usedCtx)
 {
    var rval = term;
-   
+
    // get JSON-LD keywords
    var keywords = _getKeywords(ctx);
-   
+
    // 1. If the property has a colon, it is a prefix or an absolute IRI:
    var idx = term.indexOf(':');
    if(idx !== -1)
@@ -2959,15 +2959,15 @@ var _expandTerm = function(ctx, term, usedCtx)
          }
       }
    }
-   
+
    return rval;
 };
 
 /**
  * Sorts the keys in a context.
- * 
+ *
  * @param ctx the context to sort.
- * 
+ *
  * @return the sorted context.
  */
 var _sortContextKeys = function(ctx)
@@ -2986,9 +2986,9 @@ var _sortContextKeys = function(ctx)
 /**
  * Gets whether or not a value is a reference to a subject (or a subject with
  * no properties).
- * 
+ *
  * @param value the value to check.
- * 
+ *
  * @return true if the value is a reference to a subject, false if not.
  */
 var _isReference = function(value)
@@ -3005,15 +3005,15 @@ var _isReference = function(value)
 
 /**
  * Gets whether or not a value is a subject with properties.
- * 
+ *
  * @param value the value to check.
- * 
+ *
  * @return true if the value is a subject with properties, false if not.
  */
 var _isSubject = function(value)
 {
    var rval = false;
-   
+
    // Note: A value is a subject if all of these hold true:
    // 1. It is an Object.
    // 2. It is not a literal.
@@ -3023,7 +3023,7 @@ var _isSubject = function(value)
       var keyCount = Object.keys(value).length;
       rval = (keyCount > 1 || !('@id' in value));
    }
-   
+
    return rval;
 };
 
@@ -3035,7 +3035,7 @@ var _isSubject = function(value)
  * Normalizes a JSON-LD object.
  *
  * @param input the JSON-LD object to normalize.
- * 
+ *
  * @return the normalized JSON-LD object.
  */
 jsonld.normalize = function(input)
@@ -3047,7 +3047,7 @@ jsonld.normalize = function(input)
  * Removes the context from a JSON-LD object, expanding it to full-form.
  *
  * @param input the JSON-LD object to remove the context from.
- * 
+ *
  * @return the context-neutral JSON-LD object.
  */
 jsonld.expand = function(input)
@@ -3061,13 +3061,13 @@ jsonld.expand = function(input)
  *
  * @param ctx the new context to use.
  * @param input the input JSON-LD object.
- * 
+ *
  * @return the output JSON-LD object.
  */
 jsonld.compact = function(ctx, input)
 {
    var rval = null;
-   
+
    // TODO: should context simplification be optional? (ie: remove context
    // entries that are not used in the output)
 
@@ -3075,7 +3075,7 @@ jsonld.compact = function(ctx, input)
    {
       // fully expand input
       input = jsonld.expand(input);
-      
+
       var tmp;
       if(input.constructor === Array)
       {
@@ -3086,35 +3086,35 @@ jsonld.compact = function(ctx, input)
       {
          tmp = [input];
       }
-      
+
       // merge context if it is an array
       if(ctx.constructor === Array)
       {
          ctx = jsonld.mergeContexts({}, ctx);
       }
-      
+
       for(var i in tmp)
       {
          // setup output context
          var ctxOut = {};
-         
+
          // compact
          var out = new Processor().compact(_clone(ctx), null, tmp[i], ctxOut);
-         
+
          // add context if used
          if(Object.keys(ctxOut).length > 0)
          {
             // sort context keys
             ctxOut = _sortContextKeys(ctxOut);
-            
+
             // sort keys
             var keys = Object.keys(out);
             keys.sort();
-            
+
             // put @context first
             keys.unshift('@context');
             out['@context'] = ctxOut;
-            
+
             // order keys in output
             var ordered = {};
             for(var k in keys)
@@ -3124,7 +3124,7 @@ jsonld.compact = function(ctx, input)
             }
             out = ordered;
          }
-         
+
          if(rval === null)
          {
             rval = out;
@@ -3154,10 +3154,10 @@ jsonld.mergeContexts = function(ctx1, ctx2)
    {
       ctx1 = jsonld.mergeContexts({}, ctx1);
    }
-   
+
    // copy context to merged output
    var merged = _clone(ctx1);
-   
+
    if(ctx2.constructor === Array)
    {
       // merge array of contexts in order
@@ -3186,7 +3186,7 @@ jsonld.mergeContexts = function(ctx1, ctx2)
             }
          }
       }
-   
+
       // merge contexts
       for(var key in ctx2)
       {
@@ -3226,11 +3226,11 @@ jsonld.compactIri = function(ctx, iri)
 
 /**
  * Frames JSON-LD input.
- * 
+ *
  * @param input the JSON-LD input.
  * @param frame the frame to use.
  * @param options framing options to use.
- * 
+ *
  * @return the framed output.
  */
 jsonld.frame = function(input, frame, options)
@@ -3245,21 +3245,21 @@ jsonld.frame = function(input, frame, options)
  * method will stop generating triples and return. If the callback is null,
  * then an array with triple objects containing "s", "p", "o" properties will
  * be returned.
- * 
+ *
  * The object or "o" property will be a JSON-LD formatted object.
- * 
+ *
  * @param input the JSON-LD input.
  * @param callback the triple callback.
- * 
+ *
  * @return an array of triple objects if callback is null, null otherwise.
  */
 jsonld.toTriples = function(input, graph, callback)
 {
    var rval = null;
-   
+
    // normalize input
    var normalized = jsonld.normalize(input);
-   
+
    // setup default callback
    callback = callback || null;
    if(callback === null)
@@ -3267,13 +3267,13 @@ jsonld.toTriples = function(input, graph, callback)
       rval = [];
       callback = function(s, p, o)
       {
-         rval.push({'subject': Utils.lexicalFormTerm(s), 
-                    'predicate': Utils.lexicalFormTerm(p), 
-                    'object': Utils.lexicalFormTerm(o), 
+         rval.push({'subject': Utils.lexicalFormTerm(s),
+                    'predicate': Utils.lexicalFormTerm(p),
+                    'object': Utils.lexicalFormTerm(o),
                     'graph': graph});
       };
    }
-   
+
    // generate triples
    var quit = false;
    for(var i1 in normalized)
@@ -3300,7 +3300,7 @@ jsonld.toTriples = function(input, graph, callback)
                 var obji2 = obj[i2];
 		if(p === '@type' || p === 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type') {
 		    p = 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type';
-                    obji2 = {'token':'uri', 'value':obji2};		    
+                    obji2 = {'token':'uri', 'value':obji2};
                 } else if(typeof(obji2) === 'string') {
                     obji2 = {'token': 'literal', 'value':obji2};
                 } else if(obji2['@id'] != null) {
@@ -3332,7 +3332,7 @@ jsonld.toTriples = function(input, graph, callback)
          break;
       }
    }
-   
+
    return rval;
 };
 
@@ -3340,7 +3340,7 @@ jsonld.toTriples = function(input, graph, callback)
  * Resolves external @context URLs. Every @context URL in the given JSON-LD
  * object is resolved using the given URL-resolver function. Once all of
  * the @contexts have been resolved, the given result callback is invoked.
- * 
+ *
  * @param input the JSON-LD input object (or array).
  * @param resolver the resolver method that takes a URL and a callback that
  *           receives a JSON-LD serialized @context or null on error (with
@@ -3407,11 +3407,11 @@ jsonld.resolve = function(input, resolver, callback)
       }
    };
    findUrls(input, false);
-   
+
    // state for resolving URLs
    var count = Object.keys(urls).length;
    var errors = null;
-   
+
    if(count === 0)
    {
       callback(input, errors);
@@ -3424,7 +3424,7 @@ jsonld.resolve = function(input, resolver, callback)
          resolver(url, function(result, error)
          {
             --count;
-            
+
             if(result === null)
             {
                errors = errors || [];
@@ -3449,7 +3449,7 @@ jsonld.resolve = function(input, resolver, callback)
                   errors.push({ url: url, error: ex });
                }
             }
-            
+
             if(count === 0)
             {
                if(errors === null)
@@ -3486,10 +3486,10 @@ var Processor = function()
 Processor.prototype.compact = function(ctx, property, value, usedCtx)
 {
    var rval;
-   
+
    // get JSON-LD keywords
    var keywords = _getKeywords(ctx);
-   
+
    if(value === null)
    {
       // return null, but check coerce type to add to usedCtx
@@ -3539,7 +3539,7 @@ Processor.prototype.compact = function(ctx, property, value, usedCtx)
    {
       // get coerce type
       var coerce = this.getCoerceType(ctx, property, usedCtx);
-      
+
       // get type from value, to ensure coercion is valid
       var type = null;
       if(value.constructor === Object)
@@ -3679,9 +3679,9 @@ Processor.prototype.compact = function(ctx, property, value, usedCtx)
 Processor.prototype.expand = function(ctx, property, value)
 {
    var rval;
-   
+
    // TODO: add data format error detection?
-   
+
    // value is null, nothing to expand
    if(value === null)
    {
@@ -3709,7 +3709,7 @@ Processor.prototype.expand = function(ctx, property, value)
       {
          ctx = jsonld.mergeContexts(ctx, value['@context']);
       }
-      
+
       // recursively handle sub-properties that aren't a sub-context
       rval = {};
       for(var key in value)
@@ -3754,7 +3754,7 @@ Processor.prototype.expand = function(ctx, property, value)
             coerce = xsd['double'];
          }
       }
-      
+
       // special-case expand @id and @type (skips '@id' expansion)
       if(property === keywords['@id'] || property === keywords['@type'])
       {
@@ -3764,7 +3764,7 @@ Processor.prototype.expand = function(ctx, property, value)
       else if(coerce !== null)
       {
          rval = {};
-         
+
          // expand ID (IRI)
          if(coerce === '@id')
          {
@@ -3789,7 +3789,7 @@ Processor.prototype.expand = function(ctx, property, value)
          rval = '' + value;
       }
    }
-   
+
    return rval;
 };
 
@@ -3797,7 +3797,7 @@ Processor.prototype.expand = function(ctx, property, value)
  * Normalizes a JSON-LD object.
  *
  * @param input the JSON-LD object to normalize.
- * 
+ *
  * @return the normalized JSON-LD object.
  */
 Processor.prototype.normalize = function(input)
@@ -3805,7 +3805,7 @@ Processor.prototype.normalize = function(input)
    var rval = [];
 
    // TODO: validate context
-   
+
    if(input !== null)
    {
       // create name generator state
@@ -3814,13 +3814,13 @@ Processor.prototype.normalize = function(input)
          tmp: null,
          c14n: null
       };
-      
+
       // expand input
       var expanded = this.expand(defaultContext, null, input);
-      
+
       // assign names to unnamed bnodes
       this.nameBlankNodes(expanded);
-      
+
       // flatten
       var subjects = {};
       _flatten(null, null, expanded, subjects);
@@ -3867,7 +3867,7 @@ Processor.prototype.getCoerceType = function(ctx, property, usedCtx)
 
    // get expanded property
    var p = _expandTerm(ctx, property, null);
-   
+
    // built-in type coercion JSON-LD-isms
    if(p === '@id' || p === '@type')
    {
@@ -3888,7 +3888,7 @@ Processor.prototype.getCoerceType = function(ctx, property, usedCtx)
          }
       }
    }
-   
+
    return rval;
 };
 
@@ -3912,16 +3912,16 @@ var _isBlankNode = function(v)
 
 /**
  * Compares two values.
- * 
+ *
  * @param v1 the first value.
  * @param v2 the second value.
- * 
+ *
  * @return -1 if v1 < v2, 0 if v1 == v2, 1 if v1 > v2.
  */
 var _compare = function(v1, v2)
 {
    var rval = 0;
-   
+
    if(v1.constructor === Array && v2.constructor === Array)
    {
       for(var i = 0; i < v1.length && rval === 0; ++i)
@@ -3933,7 +3933,7 @@ var _compare = function(v1, v2)
    {
       rval = (v1 < v2 ? -1 : (v1 > v2 ? 1 : 0));
    }
-   
+
    return rval;
 };
 
@@ -3941,11 +3941,11 @@ var _compare = function(v1, v2)
  * Compares two keys in an object. If the key exists in one object
  * and not the other, the object with the key is less. If the key exists in
  * both objects, then the one with the lesser value is less.
- * 
+ *
  * @param o1 the first object.
  * @param o2 the second object.
  * @param key the key.
- * 
+ *
  * @return -1 if o1 < o2, 0 if o1 == o2, 1 if o1 > o2.
  */
 var _compareObjectKeys = function(o1, o2, key)
@@ -3971,16 +3971,16 @@ var _compareObjectKeys = function(o1, o2, key)
 
 /**
  * Compares two object values.
- * 
+ *
  * @param o1 the first object.
  * @param o2 the second object.
- * 
+ *
  * @return -1 if o1 < o2, 0 if o1 == o2, 1 if o1 > o2.
  */
 var _compareObjects = function(o1, o2)
 {
    var rval = 0;
-   
+
    if(o1.constructor === String)
    {
       if(o2.constructor !== String)
@@ -4016,22 +4016,22 @@ var _compareObjects = function(o1, o2)
          }
       }
    }
-   
+
    return rval;
 };
 
 /**
  * Compares the object values between two bnodes.
- * 
+ *
  * @param a the first bnode.
  * @param b the second bnode.
- * 
+ *
  * @return -1 if a < b, 0 if a == b, 1 if a > b.
  */
 var _compareBlankNodeObjects = function(a, b)
 {
    var rval = 0;
-   
+
    /*
    3. For each property, compare sorted object values.
    3.1. The bnode with fewer objects is first.
@@ -4046,7 +4046,7 @@ var _compareBlankNodeObjects = function(a, b)
    3.2.8. The bnode with the alphabetically-first @language is first.
    3.2.9. The bnode with the alphabetically-first @id is first.
    */
-   
+
    for(var p in a)
    {
       // skip IDs (IRIs)
@@ -4068,13 +4068,13 @@ var _compareBlankNodeObjects = function(a, b)
                objsA = [objsA];
                objsB = [objsB];
             }
-            
+
             // compare non-bnodes (remove bnodes from comparison)
             objsA = objsA.filter(function(e) {return !_isNamedBlankNode(e);});
             objsB = objsB.filter(function(e) {return !_isNamedBlankNode(e);});
             rval = _compare(objsA.length, objsB.length);
          }
-         
+
          // steps #3.2.2-3.2.9
          if(rval === 0)
          {
@@ -4085,23 +4085,23 @@ var _compareBlankNodeObjects = function(a, b)
                rval = _compareObjects(objsA[i], objsB[i]);
             }
          }
-         
+
          if(rval !== 0)
          {
             break;
          }
       }
    }
-   
+
    return rval;
 };
 
 /**
  * Creates a blank node name generator using the given prefix for the
- * blank nodes. 
- * 
+ * blank nodes.
+ *
  * @param prefix the prefix to use.
- * 
+ *
  * @return the blank node name generator.
  */
 var _createNameGenerator = function(prefix)
@@ -4128,7 +4128,7 @@ var _createNameGenerator = function(prefix)
 /**
  * Populates a map of all named subjects from the given input and an array
  * of all unnamed bnodes (includes embedded ones).
- * 
+ *
  * @param input the input (must be expanded, no context).
  * @param subjects the subjects map to populate.
  * @param bnodes the bnodes array to populate.
@@ -4166,7 +4166,7 @@ var _collectSubjects = function(input, subjects, bnodes)
       {
          bnodes.push(input);
       }
-      
+
       // recurse through subject properties
       for(var key in input)
       {
@@ -4188,7 +4188,7 @@ var _collectSubjects = function(input, subjects, bnodes)
 var _flatten = function(parent, parentProperty, value, subjects)
 {
    var flattened = null;
-   
+
    if(value === null)
    {
       // drop null values
@@ -4218,7 +4218,7 @@ var _flatten = function(parent, parentProperty, value, subjects)
                message: 'Embedded graph literals cannot be flattened.'
             };
          }
-         
+
          // top-level graph literal
          for(var idx in value['@id'])
          {
@@ -4247,7 +4247,7 @@ var _flatten = function(parent, parentProperty, value, subjects)
          for(var key in value)
          {
             var v = value[key];
-            
+
             // drop null values, skip @id (it is already set above)
             if(v !== null && key !== '@id')
             {
@@ -4262,7 +4262,7 @@ var _flatten = function(parent, parentProperty, value, subjects)
                {
                   subject[key] = [];
                }
-               
+
                _flatten(subject[key], key, v, subjects);
                if(subject[key].length === 1)
                {
@@ -4309,19 +4309,19 @@ var _flatten = function(parent, parentProperty, value, subjects)
 
 /**
  * Assigns unique names to blank nodes that are unnamed in the given input.
- * 
+ *
  * @param input the input to assign names to.
  */
 Processor.prototype.nameBlankNodes = function(input)
 {
    // create temporary blank node name generator
    var ng = this.ng.tmp = _createNameGenerator('tmp');
-   
+
    // collect subjects and unnamed bnodes
    var subjects = {};
    var bnodes = [];
    _collectSubjects(input, subjects, bnodes);
-   
+
    // uniquely name all unnamed bnodes
    for(var i in bnodes)
    {
@@ -4339,28 +4339,28 @@ Processor.prototype.nameBlankNodes = function(input)
 /**
  * Renames a blank node, changing its references, etc. The method assumes
  * that the given name is unique.
- * 
+ *
  * @param b the blank node to rename.
  * @param id the new name to use.
  */
 Processor.prototype.renameBlankNode = function(b, id)
 {
    var old = b['@id'];
-   
+
    // update bnode IRI
    b['@id'] = id;
-   
+
    // update subjects map
    var subjects = this.subjects;
    subjects[id] = subjects[old];
    delete subjects[old];
-   
+
    // update reference and property lists
    this.edges.refs[id] = this.edges.refs[old];
    this.edges.props[id] = this.edges.props[old];
    delete this.edges.refs[old];
    delete this.edges.props[old];
-   
+
    // update references to this bnode
    var refs = this.edges.refs[id].all;
    for(var i in refs)
@@ -4377,7 +4377,7 @@ Processor.prototype.renameBlankNode = function(b, id)
          if(props[i2].s === old)
          {
             props[i2].s = id;
-            
+
             // normalize property to array for single code-path
             var p = props[i2].p;
             var tmp = (ref[p].constructor === Object) ? [ref[p]] :
@@ -4393,8 +4393,8 @@ Processor.prototype.renameBlankNode = function(b, id)
          }
       }
    }
-   
-   // update references from this bnode 
+
+   // update references from this bnode
    var props = this.edges.props[id].all;
    for(var i in props)
    {
@@ -4412,7 +4412,7 @@ Processor.prototype.renameBlankNode = function(b, id)
 
 /**
  * Canonically names blank nodes in the given input.
- * 
+ *
  * @param input the flat input graph to assign names to.
  */
 Processor.prototype.canonicalizeBlankNodes = function(input)
@@ -4421,7 +4421,7 @@ Processor.prototype.canonicalizeBlankNodes = function(input)
    this.renamed = {};
    this.mappings = {};
    this.serializations = {};
-   
+
    // collect subjects and bnodes from flat input graph
    var edges = this.edges =
    {
@@ -4449,14 +4449,14 @@ Processor.prototype.canonicalizeBlankNodes = function(input)
          bnodes.push(input[i]);
       }
    }
-   
+
    // collect edges in the graph
    this.collectEdges();
-   
+
    // create canonical blank node name generator
    var c14n = this.ng.c14n = _createNameGenerator('c14n');
    var ngTmp = this.ng.tmp;
-   
+
    // rename all bnodes that happen to be in the c14n namespace
    // and initialize serializations
    for(var i in bnodes)
@@ -4476,7 +4476,7 @@ Processor.prototype.canonicalizeBlankNodes = function(input)
          'refs': null
       };
    }
-   
+
    // keep sorting and naming blank nodes until they are all named
    var resort = true;
    var self = this;
@@ -4490,7 +4490,7 @@ Processor.prototype.canonicalizeBlankNodes = function(input)
             return self.deepCompareBlankNodes(a, b);
          });
       }
-      
+
       // name all bnodes according to the first bnode's relation mappings
       var bnode = bnodes.shift();
       var iri = bnode['@id'];
@@ -4498,7 +4498,7 @@ Processor.prototype.canonicalizeBlankNodes = function(input)
       for(var d in dirs)
       {
          var dir = dirs[d];
-         
+
          // if no serialization has been computed, name only the first node
          if(this.serializations[iri][dir] === null)
          {
@@ -4509,14 +4509,14 @@ Processor.prototype.canonicalizeBlankNodes = function(input)
          {
             mapping = this.serializations[iri][dir].m;
          }
-         
+
          // sort keys by value to name them in order
          var keys = Object.keys(mapping);
          keys.sort(function(a, b)
          {
             return _compare(mapping[a], mapping[b]);
          });
-         
+
          // name bnodes in mapping
          var renamed = [];
          for(var i in keys)
@@ -4528,7 +4528,7 @@ Processor.prototype.canonicalizeBlankNodes = function(input)
                renamed.push(iriK);
             }
          }
-         
+
          // only keep non-canonically named bnodes
          var tmp = bnodes;
          bnodes = [];
@@ -4552,7 +4552,7 @@ Processor.prototype.canonicalizeBlankNodes = function(input)
          }
       }
    }
-   
+
    // sort property lists that now have canonically-named bnodes
    for(var key in edges.props)
    {
@@ -4588,7 +4588,7 @@ MappingBuilder = function()
 
 /**
  * Copies this MappingBuilder.
- * 
+ *
  * @return the MappingBuilder copy.
  */
 MappingBuilder.prototype.copy = function()
@@ -4608,9 +4608,9 @@ MappingBuilder.prototype.copy = function()
  * Maps the next name to the given bnode IRI if the bnode IRI isn't already in
  * the mapping. If the given bnode IRI is canonical, then it will be given
  * a shortened form of the same name.
- * 
+ *
  * @param iri the blank node IRI to map the next name to.
- * 
+ *
  * @return the mapped name.
  */
 MappingBuilder.prototype.mapNode = function(iri)
@@ -4631,15 +4631,15 @@ MappingBuilder.prototype.mapNode = function(iri)
 
 /**
  * Serializes the properties of the given bnode for its relation serialization.
- * 
+ *
  * @param b the blank node.
- * 
+ *
  * @return the serialized properties.
  */
 var _serializeProperties = function(b)
 {
    var rval = '';
-   
+
    var first = true;
    for(var p in b)
    {
@@ -4653,10 +4653,10 @@ var _serializeProperties = function(b)
          {
             rval += '|';
          }
-         
+
          // property
          rval += '<' + p + '>';
-         
+
          // object(s)
          var objs = (b[p].constructor === Array) ? b[p] : [b[p]];
          for(var oi in objs)
@@ -4680,7 +4680,7 @@ var _serializeProperties = function(b)
                else
                {
                   rval += '"' + o['@literal'] + '"';
-                  
+
                   // type literal
                   if('@type' in o)
                   {
@@ -4701,13 +4701,13 @@ var _serializeProperties = function(b)
          }
       }
    }
-   
+
    return rval;
 };
 
 /**
  * Recursively increments the relation serialization for a mapping.
- * 
+ *
  * @param subjects the subjects in the graph.
  * @param edges the edges in the graph.
  */
@@ -4725,7 +4725,7 @@ MappingBuilder.prototype.serialize = function(subjects, edges)
             this.keyStack.push(next);
             break;
          }
-         
+
          if(k in this.done)
          {
             // mark cycle
@@ -4735,7 +4735,7 @@ MappingBuilder.prototype.serialize = function(subjects, edges)
          {
             // mark key as serialized
             this.done[k] = true;
-            
+
             // serialize top-level key and its details
             var s = k;
             var adj = this.adj[k];
@@ -4743,10 +4743,10 @@ MappingBuilder.prototype.serialize = function(subjects, edges)
             if(iri in subjects)
             {
                var b = subjects[iri];
-               
+
                // serialize properties
                s += '[' + _serializeProperties(b) + ']';
-               
+
                // serialize references
                var first = true;
                s += '[';
@@ -4767,7 +4767,7 @@ MappingBuilder.prototype.serialize = function(subjects, edges)
                }
                s += ']';
             }
-            
+
             // serialize adjacent node keys
             s += adj.k.join('');
             this.s += s;
@@ -4780,30 +4780,30 @@ MappingBuilder.prototype.serialize = function(subjects, edges)
 
 /**
  * Marks a relation serialization as dirty if necessary.
- * 
+ *
  * @param iri the IRI of the bnode to check.
  * @param changed the old IRI of the bnode that changed.
  * @param dir the direction to check ('props' or 'refs').
- * 
+ *
  * @return true if marked dirty, false if not.
  */
 Processor.prototype.markSerializationDirty = function(iri, changed, dir)
 {
    var rval = false;
-   
+
    var s = this.serializations[iri];
    if(s[dir] !== null && changed in s[dir].m)
    {
       s[dir] = null;
       rval = true;
    }
-   
+
    return rval;
 };
 
 /**
  * Rotates the elements in an array one position.
- * 
+ *
  * @param a the array.
  */
 var _rotate = function(a)
@@ -4815,16 +4815,16 @@ var _rotate = function(a)
  * Compares two serializations for the same blank node. If the two
  * serializations aren't complete enough to determine if they are equal (or if
  * they are actually equal), 0 is returned.
- * 
+ *
  * @param s1 the first serialization.
  * @param s2 the second serialization.
- * 
+ *
  * @return -1 if s1 < s2, 0 if s1 == s2 (or indeterminate), 1 if s1 > v2.
  */
 var _compareSerializations = function(s1, s2)
 {
    var rval = 0;
-   
+
    if(s1.length == s2.length)
    {
       rval = _compare(s1, s2);
@@ -4837,13 +4837,13 @@ var _compareSerializations = function(s1, s2)
    {
       rval = _compare(s1, s2.substr(0, s1.length));
    }
-   
+
    return rval;
 };
 
 /**
  * Recursively serializes adjacent bnode combinations for a bnode.
- * 
+ *
  * @param s the serialization to update.
  * @param iri the IRI of the bnode being serialized.
  * @param siri the serialization name for the bnode IRI.
@@ -4860,10 +4860,10 @@ Processor.prototype.serializeCombos = function(
    {
       // copy mapped nodes
       mapped = _clone(mapped);
-      
+
       // map first bnode in list
       mapped[mb.mapNode(notMapped[0].s)] = notMapped[0].s;
-      
+
       // recurse into remaining possible combinations
       var original = mb.copy();
       notMapped = notMapped.slice(1);
@@ -4872,7 +4872,7 @@ Processor.prototype.serializeCombos = function(
       {
          var m = (r === 0) ? mb : original.copy();
          this.serializeCombos(s, iri, siri, m, dir, mapped, notMapped);
-         
+
          // rotate not-mapped for next combination
          _rotate(notMapped);
       }
@@ -4883,7 +4883,7 @@ Processor.prototype.serializeCombos = function(
       var keys = Object.keys(mapped).sort();
       mb.adj[siri] = { i: iri, k: keys, m: mapped };
       mb.serialize(this.subjects, this.edges);
-      
+
       // optimize away mappings that are already too large
       if(s[dir] === null || _compareSerializations(mb.s, s[dir].s) <= 0)
       {
@@ -4893,7 +4893,7 @@ Processor.prototype.serializeCombos = function(
             var k = keys[i];
             this.serializeBlankNode(s, mapped[k], mb, dir);
          }
-         
+
          // update least serialization if new one has been found
          mb.serialize(this.subjects, this.edges);
          if(s[dir] === null ||
@@ -4908,7 +4908,7 @@ Processor.prototype.serializeCombos = function(
 
 /**
  * Computes the relation serialization for the given blank node IRI.
- * 
+ *
  * @param s the serialization to update.
  * @param iri the current bnode IRI to be mapped.
  * @param mb the MappingBuilder to use.
@@ -4922,10 +4922,10 @@ Processor.prototype.serializeBlankNode = function(s, iri, mb, dir)
       // iri now processed
       mb.processed[iri] = true;
       var siri = mb.mapNode(iri);
-      
+
       // copy original mapping builder
       var original = mb.copy();
-      
+
       // split adjacent bnodes on mapped and not-mapped
       var adj = this.edges[dir][iri].bnodes;
       var mapped = {};
@@ -4941,7 +4941,7 @@ Processor.prototype.serializeBlankNode = function(s, iri, mb, dir)
             notMapped.push(adj[i]);
          }
       }
-      
+
       /*
       // TODO: sort notMapped using ShallowCompare
       var self = this;
@@ -4951,7 +4951,7 @@ Processor.prototype.serializeBlankNode = function(s, iri, mb, dir)
             self.subjects[a.s], self.subjects[b.s]);
          return rval;
       });
-      
+
       var same = false;
       var prev = null;
       for(var i in notMapped)
@@ -4980,9 +4980,9 @@ Processor.prototype.serializeBlankNode = function(s, iri, mb, dir)
          }
          prev = curr;
       }*/
-      
+
       // TODO: ensure this optimization does not alter canonical order
-      
+
       // if the current bnode already has a serialization, reuse it
       /*var hint = (iri in this.serializations) ?
          this.serializations[iri][dir] : null;
@@ -4999,29 +4999,29 @@ Processor.prototype.serializeBlankNode = function(s, iri, mb, dir)
          }
          notMapped = [];
       }*/
-      
+
       // loop over possible combinations
       var combos = Math.max(1, notMapped.length);
       for(var i = 0; i < combos; ++i)
       {
          var m = (i === 0) ? mb : original.copy();
-         this.serializeCombos(s, iri, siri, m, dir, mapped, notMapped);         
+         this.serializeCombos(s, iri, siri, m, dir, mapped, notMapped);
       }
    }
 };
 
 /**
  * Compares two blank nodes for equivalence.
- * 
+ *
  * @param a the first blank node.
  * @param b the second blank node.
- * 
+ *
  * @return -1 if a < b, 0 if a == b, 1 if a > b.
  */
 Processor.prototype.deepCompareBlankNodes = function(a, b)
 {
    var rval = 0;
-   
+
    // compare IRIs
    var iriA = a['@id'];
    var iriB = b['@id'];
@@ -5033,7 +5033,7 @@ Processor.prototype.deepCompareBlankNodes = function(a, b)
    {
       // do shallow compare first
       rval = this.shallowCompareBlankNodes(a, b);
-      
+
       // deep comparison is necessary
       if(rval === 0)
       {
@@ -5067,28 +5067,28 @@ Processor.prototype.deepCompareBlankNodes = function(a, b)
                }
                this.serializeBlankNode(sB, iriB, mb, dir);
             }
-            
+
             // compare serializations
             rval = _compare(sA[dir].s, sB[dir].s);
          }
       }
    }
-   
+
    return rval;
 };
 
 /**
  * Performs a shallow sort comparison on the given bnodes.
- * 
+ *
  * @param a the first bnode.
  * @param b the second bnode.
- * 
+ *
  * @return -1 if a < b, 0 if a == b, 1 if a > b.
  */
 Processor.prototype.shallowCompareBlankNodes = function(a, b)
 {
    var rval = 0;
-   
+
    /* ShallowSort Algorithm (when comparing two bnodes):
       1. Compare the number of properties.
       1.1. The bnode with fewer properties is first.
@@ -5104,22 +5104,22 @@ Processor.prototype.shallowCompareBlankNodes = function(a, b)
     */
    var pA = Object.keys(a);
    var pB = Object.keys(b);
-   
+
    // step #1
    rval = _compare(pA.length, pB.length);
-   
+
    // step #2
    if(rval === 0)
    {
       rval = _compare(pA.sort(), pB.sort());
    }
-   
+
    // step #3
    if(rval === 0)
    {
       rval = _compareBlankNodeObjects(a, b);
    }
-   
+
    // step #4
    if(rval === 0)
    {
@@ -5127,7 +5127,7 @@ Processor.prototype.shallowCompareBlankNodes = function(a, b)
       var edgesB = this.edges.refs[b['@id']].all;
       rval = _compare(edgesA.length, edgesB.length);
    }
-   
+
    // step #5
    if(rval === 0)
    {
@@ -5136,7 +5136,7 @@ Processor.prototype.shallowCompareBlankNodes = function(a, b)
          rval = this.compareEdges(edgesA[i], edgesB[i]);
       }
    }
-   
+
    return rval;
 };
 
@@ -5146,20 +5146,20 @@ Processor.prototype.shallowCompareBlankNodes = function(a, b)
  * node has been canonically named, then blank nodes will be compared after
  * properties (with a preference for canonically named over non-canonically
  * named), otherwise they won't be.
- * 
+ *
  * @param a the first edge.
  * @param b the second edge.
- * 
+ *
  * @return -1 if a < b, 0 if a == b, 1 if a > b.
  */
 Processor.prototype.compareEdges = function(a, b)
 {
    var rval = 0;
-   
+
    var bnodeA = _isBlankNodeIri(a.s);
    var bnodeB = _isBlankNodeIri(b.s);
    var c14n = this.ng.c14n;
-   
+
    // if not both bnodes, one that is a bnode is greater
    if(bnodeA != bnodeB)
    {
@@ -5175,7 +5175,7 @@ Processor.prototype.compareEdges = function(a, b)
       {
          rval = _compare(a.p, b.p);
       }
-      
+
       // do bnode IRI comparison if canonical naming has begun
       if(rval === 0 && c14n !== null)
       {
@@ -5191,7 +5191,7 @@ Processor.prototype.compareEdges = function(a, b)
          }
       }
    }
-   
+
    return rval;
 };
 
@@ -5206,7 +5206,7 @@ Processor.prototype.collectEdges = function()
 {
    var refs = this.edges.refs;
    var props = this.edges.props;
-   
+
    // collect all references and properties
    for(var iri in this.subjects)
    {
@@ -5225,10 +5225,10 @@ Processor.prototype.collectEdges = function()
                   o['@id'] in this.subjects)
                {
                   var objIri = o['@id'];
-                  
+
                   // map object to this subject
                   refs[objIri].all.push({ s: iri, p: key });
-                  
+
                   // map this subject to object
                   props[iri].all.push({ s: objIri, p: key });
                }
@@ -5236,7 +5236,7 @@ Processor.prototype.collectEdges = function()
          }
       }
    }
-   
+
    // create sorted categories
    var self = this;
    for(var iri in refs)
@@ -5258,16 +5258,16 @@ Processor.prototype.collectEdges = function()
 /**
  * Returns true if the given input is a subject and has one of the given types
  * in the given frame.
- * 
+ *
  * @param input the input.
  * @param frame the frame with types to look for.
- * 
+ *
  * @return true if the input has one of the given types.
  */
 var _isType = function(input, frame)
 {
    var rval = false;
-   
+
    // check if type(s) are specified in frame and input
    var type = '@type';
    if('@type' in frame &&
@@ -5290,22 +5290,22 @@ var _isType = function(input, frame)
          }
       }
    }
-   
+
    return rval;
 };
 
 /**
  * Returns true if the given input matches the given frame via duck-typing.
- * 
+ *
  * @param input the input.
  * @param frame the frame to check against.
- * 
+ *
  * @return true if the input matches the frame.
  */
 var _isDuckType = function(input, frame)
 {
    var rval = false;
-   
+
    // frame must not have a specific type
    var type = '@type';
    if(!(type in frame))
@@ -5335,13 +5335,13 @@ var _isDuckType = function(input, frame)
          }
       }
    }
-   
+
    return rval;
 };
 
 /**
  * Subframes a value.
- * 
+ *
  * @param subjects a map of subjects in the graph.
  * @param value the value to subframe.
  * @param frame the frame to use.
@@ -5350,7 +5350,7 @@ var _isDuckType = function(input, frame)
  * @param parent the parent object.
  * @param parentKey the parent key.
  * @param options the framing options.
- * 
+ *
  * @return the framed input.
  */
 var _subframe = function(
@@ -5359,7 +5359,7 @@ var _subframe = function(
    // get existing embed entry
    var iri = value['@id'];
    var embed = (iri in embeds) ? embeds[iri] : null;
-   
+
    // determine if value should be embedded or referenced,
    // embed is ON if:
    // 1. The frame OR default option specifies @embed as ON, AND
@@ -5369,7 +5369,7 @@ var _subframe = function(
       (('@embed' in frame && frame['@embed']) ||
       (!('@embed' in frame) && options.defaults.embedOn)) &&
       (embed === null || (embed.autoembed && !autoembed)));
-   
+
    if(!embedOn)
    {
       // not embedding, so only use subject IRI as reference
@@ -5404,7 +5404,7 @@ var _subframe = function(
          {
             embed.parent[embed.key] = {'@id': value['@id']};
          }
-         
+
          // recursively remove any dependent dangling embeds
          var removeDependents = function(iri)
          {
@@ -5422,12 +5422,12 @@ var _subframe = function(
          };
          removeDependents(iri);
       }
-      
+
       // update embed entry
       embed.autoembed = autoembed;
       embed.parent = parent;
       embed.key = parentKey;
-      
+
       // check explicit flag
       var explicitOn = (
          frame['@explicit'] === true || options.defaults.explicitOn);
@@ -5443,7 +5443,7 @@ var _subframe = function(
             }
          }
       }
-      
+
       // iterate over keys in value
       var keys = Object.keys(value);
       for(i in keys)
@@ -5464,7 +5464,7 @@ var _subframe = function(
                var f = (value[key].constructor === Array) ? [] : {};
                var _autoembed = true;
             }
-            
+
             // build input and do recursion
             var v = value[key];
             var input = (v.constructor === Array) ? v : [v];
@@ -5482,7 +5482,7 @@ var _subframe = function(
                subjects, input, f, embeds, _autoembed, value, key, options);
          }
       }
-      
+
       // iterate over frame keys to add any missing values
       for(key in frame)
       {
@@ -5490,7 +5490,7 @@ var _subframe = function(
          if(key.indexOf('@') !== 0 && (!(key in value) || value[key] === null))
          {
             var f = frame[key];
-            
+
             // add empty array to value
             if(f.constructor === Array)
             {
@@ -5504,7 +5504,7 @@ var _subframe = function(
                {
                   f = (f.length > 0) ? f[0] : {};
                }
-               
+
                // determine if omit default is on
                var omitOn = (
                   f['@omitDefault'] === true || options.defaults.omitDefaultOn);
@@ -5525,13 +5525,13 @@ var _subframe = function(
          }
       }
    }
-   
+
    return value;
 };
 
 /**
  * Recursively frames the given input according to the given frame.
- * 
+ *
  * @param subjects a map of subjects in the graph.
  * @param input the input to frame.
  * @param frame the frame to use.
@@ -5540,14 +5540,14 @@ var _subframe = function(
  * @param parent the parent object (for subframing), null for none.
  * @param parentKey the parent key (for subframing), null for none.
  * @param options the framing options.
- * 
+ *
  * @return the framed input.
  */
 var _frame = function(
    subjects, input, frame, embeds, autoembed, parent, parentKey, options)
 {
    var rval = null;
-   
+
    // prepare output, set limit, get array of frames
    var limit = -1;
    var frames;
@@ -5565,7 +5565,7 @@ var _frame = function(
       frames = [frame];
       limit = 1;
    }
-   
+
    // iterate over frames adding input matches to list
    var values = [];
    for(var i = 0; i < frames.length && limit !== 0; ++i)
@@ -5580,7 +5580,7 @@ var _frame = function(
             frame: frame
          };
       }
-      
+
       // create array of values for each frame
       values[i] = [];
       for(var n = 0; n < input.length && limit !== 0; ++n)
@@ -5594,7 +5594,7 @@ var _frame = function(
          }
       }
    }
-   
+
    // for each matching value, add it to the output
    for(var i1 in values)
    {
@@ -5602,7 +5602,7 @@ var _frame = function(
       {
          frame = frames[i1];
          var value = values[i1][i2];
-         
+
          // if value is a subject, do subframing
          if(_isSubject(value))
          {
@@ -5610,7 +5610,7 @@ var _frame = function(
                subjects, value, frame, embeds, autoembed,
                parent, parentKey, options);
          }
-         
+
          // add value to output
          if(rval === null)
          {
@@ -5620,7 +5620,7 @@ var _frame = function(
          {
             // determine if value is a reference to an embed
             var isRef = (_isReference(value) && value['@id'] in embeds);
-            
+
             // push any value that isn't a parentless reference
             if(!(parent === null && isRef))
             {
@@ -5629,32 +5629,32 @@ var _frame = function(
          }
       }
    }
-   
+
    return rval;
 };
 
 /**
  * Frames JSON-LD input.
- * 
+ *
  * @param input the JSON-LD input.
  * @param frame the frame to use.
  * @param options framing options to use.
- * 
+ *
  * @return the framed output.
  */
 Processor.prototype.frame = function(input, frame, options)
 {
    var rval;
-   
+
    // normalize input
    input = jsonld.normalize(input);
-   
+
    // save frame context
    var ctx = null;
    if('@context' in frame)
    {
       ctx = _clone(frame['@context']);
-      
+
       // remove context from frame
       frame = jsonld.expand(frame);
    }
@@ -5665,7 +5665,7 @@ Processor.prototype.frame = function(input, frame, options)
       {
          ctx = _clone(frame[0]['@context']);
       }
-      
+
       // expand all elements in the array
       var tmp = [];
       for(var i in frame)
@@ -5674,7 +5674,7 @@ Processor.prototype.frame = function(input, frame, options)
       }
       frame = tmp;
    }
-   
+
    // create framing options
    // TODO: merge in options from function parameter
    options =
@@ -5686,23 +5686,23 @@ Processor.prototype.frame = function(input, frame, options)
          omitDefaultOn: false
       }
    };
-   
+
    // build map of all subjects
    var subjects = {};
    for(var i in input)
    {
       subjects[input[i]['@id']] = input[i];
    }
-   
+
    // frame input
    rval = _frame(subjects, input, frame, {}, false, null, null, options);
-   
+
    // apply context
    if(ctx !== null && rval !== null)
    {
       rval = jsonld.compact(ctx, rval);
    }
-   
+
    return rval;
 };
 
@@ -5721,7 +5721,7 @@ JSONLDParser.parser.parse = function(data, graph) {
 };
 
 
-// end of ./src/js-communication/src/jsonld_parser.js 
+// end of ./src/js-communication/src/jsonld_parser.js
 // This code is taking from the N3 project from Ruben Verborgh licensed under the MIT license. See https://github.com/RubenVerborgh/node-n3/blob/master/LICENSE.md
 
 // **N3Lexer** tokenizes N3 documents.
@@ -6138,7 +6138,7 @@ RVInnerN3Parser.prototype = {
       if (this._baseURI === null || absoluteURI.test(token.value))
         this._predicate = {token: 'uri', value: token.value, prefix: null, suffix: null};
       else {
-        var resolved = 
+        var resolved =
         this._predicate = {token: 'uri', value: this._resolveURI(token.value), prefix: null, suffix: null};
       }
       break;
@@ -6357,7 +6357,7 @@ RVInnerN3Parser.prototype = {
       // The list was in the parent triple's object.
       else {
         // Restore the parent triple's predicate and object as well.
-        this._predicate = (typeof(parentTriple.predicate) === 'string' ? {'token': 'uri', 'value': parentTriple.predicate, 'prefix': null, 'suffix': null } : parentTriple.predicate); 
+        this._predicate = (typeof(parentTriple.predicate) === 'string' ? {'token': 'uri', 'value': parentTriple.predicate, 'prefix': null, 'suffix': null } : parentTriple.predicate);
         this._object = (typeof(parentTriple.object) === 'string' ? {'token': 'uri', 'value': parentTriple.object, 'prefix': null, 'suffix': null } : parentTriple.object);
 
         next = this._getTripleEndReader();
@@ -6860,7 +6860,7 @@ RVInnerN3Parser.prototype = {
       // The list was in the parent triple's object.
       else {
         // Restore the parent triple's predicate and object as well.
-        this._predicate = (typeof(parentTriple.predicate) === 'string' ? {'token': 'uri', 'value': parentTriple.predicate, 'prefix': null, 'suffix': null } : parentTriple.predicate); 
+        this._predicate = (typeof(parentTriple.predicate) === 'string' ? {'token': 'uri', 'value': parentTriple.predicate, 'prefix': null, 'suffix': null } : parentTriple.predicate);
         this._object = (typeof(parentTriple.object) === 'string' ? {'token': 'uri', 'value': parentTriple.object, 'prefix': null, 'suffix': null } : parentTriple.object);
         next = this._getNextReader();
         // Skip writing the list tail if this was an empty list.
@@ -7067,7 +7067,7 @@ RVN3Parser.parser.parse = function() {
      });
 };
 
-// end of ./src/js-communication/src/rvn3_parser.js 
+// end of ./src/js-communication/src/rvn3_parser.js
 // exports
 var RDFLoader = {};
 
@@ -7207,7 +7207,7 @@ RDFLoader.RDFLoader.prototype.tryToParse = function(parser, graph, input, option
 
 // var loader = require("./js-communication/src/rdf_loader").RDFLoader; loader = new loader.RDFLoader(); loader.load('http://dbpedialite.org/titles/Lisp_%28programming_language%29', function(success, results){console.log("hey"); console.log(success); console.log(results)})
 
-// end of ./src/js-communication/src/rdf_loader.js 
+// end of ./src/js-communication/src/rdf_loader.js
 // exports
 var AbstractQueryTree = {};
 
@@ -7231,15 +7231,15 @@ AbstractQueryTree.AbstractQueryTree.prototype.parseExecutableUnit = function(exe
     if(executableUnit.kind === 'select') {
         return this.parseSelect(executableUnit);
     } else if(executableUnit.kind === 'ask') {
-        return this.parseSelect(executableUnit);        
+        return this.parseSelect(executableUnit);
     } else if(executableUnit.kind === 'modify') {
         return this.parseSelect(executableUnit);
     } else if(executableUnit.kind === 'construct') {
-        return this.parseSelect(executableUnit);        
+        return this.parseSelect(executableUnit);
     } else if(executableUnit.kind === 'insertdata') {
-        return this.parseInsertData(executableUnit);        
+        return this.parseInsertData(executableUnit);
     } else if(executableUnit.kind === 'deletedata') {
-        return this.parseInsertData(executableUnit);        
+        return this.parseInsertData(executableUnit);
     } else if(executableUnit.kind === 'load') {
         return executableUnit;
     } else if(executableUnit.kind === 'clear') {
@@ -7283,7 +7283,7 @@ AbstractQueryTree.AbstractQueryTree.prototype.build = function(node, env) {
 	//console.log("pre1");
 	bgp = AbstractQueryTree.translatePathExpressionsInBGP(bgp, env);
 	//console.log("translation");
-	//console.log(sys.inspect(bgp,true,20));	
+	//console.log(sys.inspect(bgp,true,20));
 	return bgp;
     } else if (node.token === 'graphunionpattern') {
         var a = this.build(node.value[0],env);
@@ -7317,7 +7317,7 @@ AbstractQueryTree.translatePathExpressionsInBGP = function(bgp, env) {
 	    } else if(bgpTransformed.kind === 'ZERO_OR_MORE_PATH' || bgpTransformed.kind === 'ONE_OR_MORE_PATH'){
 		//console.log("BEFORE");
 		//console.log(bgpTransformed);
-		    
+
 
 		if(before.length > 0) {
 		    bottomJoin =  {kind: 'JOIN',
@@ -7327,7 +7327,7 @@ AbstractQueryTree.translatePathExpressionsInBGP = function(bgp, env) {
 		    bottomJoin = bgpTransformed;
 		}
 
-		
+
 		if(bgpTransformed.kind === 'ZERO_OR_MORE_PATH') {
 		    if(bgpTransformed.y.token === 'var' && bgpTransformed.y.value.indexOf("fresh:")===0 &&
 		       bgpTransformed.x.token === 'var' && bgpTransformed.x.value.indexOf("fresh:")===0) {
@@ -7437,10 +7437,10 @@ AbstractQueryTree.translatePathExpression  = function(pathExpression, env) {
 		predicate: pathExpression.predicate.value[i],
 		object: nextObject
 	    };
-	
+
 	    if(currentGraph != null)
 		chain.graph = Utils.clone(currentGraph);
-	    
+
 	    restTriples.push(chain);
 
 	    if(i!=pathExpression.predicate.value.length-1)
@@ -7638,7 +7638,7 @@ AbstractQueryTree.AbstractQueryTree.prototype._bindFilter = function(filterExpr,
         } else if(expressionType == 'additiveexpression') {
             filterExpr.summand = this._bindFilter(filterExpr.summand, bindings);
             for(var i=0; i<filterExpr.summands.length; i++) {
-                filterExpr.summands[i].expression = this._bindFilter(filterExpr.summands[i].expression, bindings);            
+                filterExpr.summands[i].expression = this._bindFilter(filterExpr.summands[i].expression, bindings);
             }
         } else if(expressionType == 'builtincall') {
             for(var i=0; i<filterExpr.args.length; i++) {
@@ -7647,15 +7647,15 @@ AbstractQueryTree.AbstractQueryTree.prototype._bindFilter = function(filterExpr,
         } else if(expressionType == 'multiplicativeexpression') {
             filterExpr.factor = this._bindFilter(filterExpr.factor, bindings);
             for(var i=0; i<filterExpr.factors.length; i++) {
-                filterExpr.factors[i].expression = this._bindFilter(filterExpr.factors[i].expression, bindings);            
+                filterExpr.factors[i].expression = this._bindFilter(filterExpr.factors[i].expression, bindings);
             }
         } else if(expressionType == 'unaryexpression') {
             filterExpr.expression = this._bindFilter(filterExpr.expression, bindings);
         } else if(expressionType == 'irireforfunction') {
             for(var i=0; i<filterExpr.factors.args; i++) {
-                filterExpr.args[i] = this._bindFilter(filterExpr.args[i], bindings);            
+                filterExpr.args[i] = this._bindFilter(filterExpr.args[i], bindings);
             }
-        } else if(expressionType == 'atomic') {        
+        } else if(expressionType == 'atomic') {
             if(filterExpr.primaryexpression == 'var') {
                 // lookup the var in the bindings
                 if(bindings[filterExpr.value.value] != null) {
@@ -7678,7 +7678,7 @@ AbstractQueryTree.AbstractQueryTree.prototype._bindFilter = function(filterExpr,
  * Replaces terms in an AQT
  */
 AbstractQueryTree.AbstractQueryTree.prototype.replace = function(aqt, from, to, ns) {
-    if(aqt.graph != null && aqt.graph.token && aqt.graph.token === from.token && 
+    if(aqt.graph != null && aqt.graph.token && aqt.graph.token === from.token &&
        aqt.graph.value == from.value) {
         aqt.graph = Utils.clone(to);
     }
@@ -7730,8 +7730,8 @@ AbstractQueryTree.AbstractQueryTree.prototype._replaceTripleContext = function(t
 	    } else if(comp.token === 'blank' && from.token === 'blank' && comp.value === from.value) {
 		triples[i][p] = to;
 	    } else {
-		if((comp.token === 'literal' || comp.token ==='uri') && 
-		   (from.token === 'literal' || from.token ==='uri') && 
+		if((comp.token === 'literal' || comp.token ==='uri') &&
+		   (from.token === 'literal' || from.token ==='uri') &&
 		   comp.token === from.token && Utils.lexicalFormTerm(comp,ns)[comp.token] === Utils.lexicalFormTerm(from,ns)[comp.token]) {
                     triples[i][p] = to;
 		}
@@ -7756,7 +7756,7 @@ AbstractQueryTree.AbstractQueryTree.prototype._replaceFilter = function(filterEx
         } else if(expressionType == 'additiveexpression') {
             filterExpr.summand = this._replaceFilter(filterExpr.summand, from, to, ns);
             for(var i=0; i<filterExpr.summands.length; i++) {
-                filterExpr.summands[i].expression = this._replaceFilter(filterExpr.summands[i].expression, from, to, ns);            
+                filterExpr.summands[i].expression = this._replaceFilter(filterExpr.summands[i].expression, from, to, ns);
             }
         } else if(expressionType == 'builtincall') {
             for(var i=0; i<filterExpr.args.length; i++) {
@@ -7773,15 +7773,15 @@ AbstractQueryTree.AbstractQueryTree.prototype._replaceFilter = function(filterEx
             for(var i=0; i<filterExpr.factors.args; i++) {
                 filterExpr.args[i] = this._replaceFilter(filterExpr.args[i], from, to, ns);
             }
-        } else if(expressionType == 'atomic') {        
+        } else if(expressionType == 'atomic') {
 	    var val = null;
             if(filterExpr.primaryexpression == from.token && filterExpr.value == from.value) {
-                    val = to.value;                
+                    val = to.value;
             } else if(filterExpr.primaryexpression == 'iri' && from.token == 'uri' && filterExpr.value == from.value) {
-                val = to.value;                
+                val = to.value;
 	    }
 
-	
+
 	    if(val != null) {
                 if(to.token === 'uri') {
                     filterExpr.primaryexpression = 'iri';
@@ -7817,7 +7817,7 @@ AbstractQueryTree.AbstractQueryTree.prototype.treeWithUnion = function(aqt) {
 		    return this.treeWithUnion(aqt.value[1]);
 	    }
 	} else {
-	    return true;	    
+	    return true;
 	}
     } else if(aqt.kind === 'GRAPH') {
 	return false;
@@ -7836,7 +7836,7 @@ AbstractQueryTree.AbstractQueryTree.prototype.treeWithUnion = function(aqt) {
     }
 };
 
-// end of ./src/js-sparql-parser/src/abstract_query_tree.js 
+// end of ./src/js-sparql-parser/src/abstract_query_tree.js
 // exports
 var SparqlParser = {};
 
@@ -7846,7 +7846,7 @@ SparqlParser.parser = (function(){
    *
    * http://pegjs.majda.cz/
    */
-  
+
   function quote(s) {
     /*
      * ECMA-262, 5th ed., 7.8.4: All characters may appear literally in a
@@ -7869,7 +7869,7 @@ SparqlParser.parser = (function(){
       .replace(/[\x00-\x07\x0B\x0E-\x1F\x80-\uFFFF]/g, escape)
       + '"';
   }
-  
+
   var result = {
     /*
      * Parses the input with a generated parser. If the parsing is successfull,
@@ -8023,7 +8023,7 @@ SparqlParser.parser = (function(){
         "PN_PREFIX": parse_PN_PREFIX,
         "PN_LOCAL": parse_PN_LOCAL
       };
-      
+
       if (startRule !== undefined) {
         if (parseFunctions[startRule] === undefined) {
           throw new Error("Invalid rule name: " + quote(startRule) + ".");
@@ -8031,28 +8031,28 @@ SparqlParser.parser = (function(){
       } else {
         startRule = "SPARQL";
       }
-      
+
       var pos = 0;
       var reportFailures = 0;
       var rightmostFailuresPos = 0;
       var rightmostFailuresExpected = [];
-      
+
       function padLeft(input, padding, length) {
         var result = input;
-        
+
         var padLength = length - input.length;
         for (var i = 0; i < padLength; i++) {
           result = padding + result;
         }
-        
+
         return result;
       }
-      
+
       function escape(ch) {
         var charCode = ch.charCodeAt(0);
         var escapeChar;
         var length;
-        
+
         if (charCode <= 0xFF) {
           escapeChar = 'x';
           length = 2;
@@ -8060,37 +8060,37 @@ SparqlParser.parser = (function(){
           escapeChar = 'u';
           length = 4;
         }
-        
+
         return '\\' + escapeChar + padLeft(charCode.toString(16).toUpperCase(), '0', length);
       }
-      
+
       function matchFailed(failure) {
         if (pos < rightmostFailuresPos) {
           return;
         }
-        
+
         if (pos > rightmostFailuresPos) {
           rightmostFailuresPos = pos;
           rightmostFailuresExpected = [];
         }
-        
+
         rightmostFailuresExpected.push(failure);
       }
-      
+
       function parse_SPARQL() {
         var result0;
-        
+
         result0 = parse_Query();
         if (result0 === null) {
           result0 = parse_Update();
         }
         return result0;
       }
-      
+
       function parse_Query() {
         var result0, result1;
         var pos0, pos1;
-        
+
         reportFailures++;
         pos0 = pos;
         pos1 = pos;
@@ -8133,11 +8133,11 @@ SparqlParser.parser = (function(){
         }
         return result0;
       }
-      
+
       function parse_Prologue() {
         var result0, result1, result2, result3;
         var pos0, pos1;
-        
+
         reportFailures++;
         pos0 = pos;
         pos1 = pos;
@@ -8187,11 +8187,11 @@ SparqlParser.parser = (function(){
         }
         return result0;
       }
-      
+
       function parse_BaseDecl() {
         var result0, result1, result2, result3;
         var pos0, pos1;
-        
+
         reportFailures++;
         pos0 = pos;
         pos1 = pos;
@@ -8252,11 +8252,11 @@ SparqlParser.parser = (function(){
         if (result0 !== null) {
           result0 = (function(offset, i) {
               registerDefaultPrefix(i);
-        
+
               var base = {};
               base.token = 'base';
               base.value = i;
-        
+
               return base;
         })(pos0, result0[3]);
         }
@@ -8269,11 +8269,11 @@ SparqlParser.parser = (function(){
         }
         return result0;
       }
-      
+
       function parse_PrefixDecl() {
         var result0, result1, result2, result3, result4, result5;
         var pos0, pos1;
-        
+
         reportFailures++;
         pos0 = pos;
         pos1 = pos;
@@ -8350,14 +8350,14 @@ SparqlParser.parser = (function(){
         }
         if (result0 !== null) {
           result0 = (function(offset, p, l) {
-        
+
               registerPrefix(p,l);
-        
+
               var prefix = {};
               prefix.token = 'prefix';
               prefix.prefix = p;
               prefix.local = l;
-        
+
               return prefix;
         })(pos0, result0[3], result0[5]);
         }
@@ -8370,11 +8370,11 @@ SparqlParser.parser = (function(){
         }
         return result0;
       }
-      
+
       function parse_SelectQuery() {
         var result0, result1, result2, result3, result4, result5, result6, result7, result8;
         var pos0, pos1;
-        
+
         reportFailures++;
         pos0 = pos;
         pos1 = pos;
@@ -8460,7 +8460,7 @@ SparqlParser.parser = (function(){
         }
         if (result0 !== null) {
           result0 = (function(offset, s, gs, w, sm) {
-        
+
               var dataset = {'named':[], 'implicit':[]};
               for(var i=0; i<gs.length; i++) {
                   var g = gs[i];
@@ -8470,15 +8470,15 @@ SparqlParser.parser = (function(){
                       dataset['named'].push(g.graph)
                   }
               }
-        
-        
+
+
               if(dataset['named'].length === 0 && dataset['implicit'].length === 0) {
                   dataset['implicit'].push({token:'uri',
-                                           prefix:null, 
-                                           suffix:null, 
+                                           prefix:null,
+                                           suffix:null,
                                            value:'https://github.com/antoniogarrote/rdfstore-js#default_graph'});
               }
-        
+
               var query = {};
               query.kind = 'select';
               query.token = 'executableunit'
@@ -8486,7 +8486,7 @@ SparqlParser.parser = (function(){
               query.projection = s.vars;
               query.modifier = s.modifier;
               query.pattern = w
-              
+
               if(sm!=null && sm.limit!=null) {
                   query.limit = sm.limit;
               }
@@ -8499,7 +8499,7 @@ SparqlParser.parser = (function(){
               if(sm!=null && sm.group!=null) {
                   query.group = sm.group;
               }
-        
+
               return query
         })(pos0, result0[0], result0[2], result0[4], result0[6]);
         }
@@ -8512,11 +8512,11 @@ SparqlParser.parser = (function(){
         }
         return result0;
       }
-      
+
       function parse_SubSelect() {
         var result0, result1, result2;
         var pos0;
-        
+
         reportFailures++;
         pos0 = pos;
         result0 = parse_SelectClause();
@@ -8544,11 +8544,11 @@ SparqlParser.parser = (function(){
         }
         return result0;
       }
-      
+
       function parse_SelectClause() {
         var result0, result1, result2, result3, result4, result5, result6, result7, result8, result9, result10, result11, result12, result13, result14, result15, result16, result17;
         var pos0, pos1, pos2;
-        
+
         reportFailures++;
         pos0 = pos;
         pos1 = pos;
@@ -9048,17 +9048,17 @@ SparqlParser.parser = (function(){
               if(proj.length === 3 && proj[1]==="*") {
                   return {vars: [{token: 'variable', kind:'*'}], modifier:arrayToString(mod)};
               }
-        
+
               for(var i=0; i< proj.length; i++) {
                   var aVar = proj[i];
-        
+
                   if(aVar.length === 3) {
                       vars.push({token: 'variable', kind:'var', value:aVar[1]});
                   } else {
                       vars.push({token: 'variable', kind:'aliased', expression: aVar[3], alias:aVar[7]})
                   }
               }
-        
+
               return {vars: vars, modifier:arrayToString(mod)};
         })(pos0, result0[3], result0[5]);
         }
@@ -9071,11 +9071,11 @@ SparqlParser.parser = (function(){
         }
         return result0;
       }
-      
+
       function parse_ConstructQuery() {
         var result0, result1, result2, result3, result4, result5, result6, result7, result8, result9;
         var pos0, pos1;
-        
+
         reportFailures++;
         pos0 = pos;
         pos1 = pos;
@@ -9200,22 +9200,22 @@ SparqlParser.parser = (function(){
                       dataset['named'].push(g.graph)
                   }
               }
-        
-        
+
+
               if(dataset['named'].length === 0 && dataset['implicit'].length === 0) {
                   dataset['implicit'].push({token:'uri',
-                                           prefix:null, 
-                                           suffix:null, 
+                                           prefix:null,
+                                           suffix:null,
                                            value:'https://github.com/antoniogarrote/rdfstore-js#default_graph'});
               }
-        
+
               var query = {};
               query.kind = 'construct';
               query.token = 'executableunit'
               query.dataset = dataset;
               query.template = t;
               query.pattern = w
-              
+
               if(sm!=null && sm.limit!=null) {
                   query.limit = sm.limit;
               }
@@ -9226,7 +9226,7 @@ SparqlParser.parser = (function(){
                   query.order = sm.order;
               }
               return query
-        
+
         })(pos0, result0[3], result0[5], result0[7], result0[9]);
         }
         if (result0 === null) {
@@ -9238,11 +9238,11 @@ SparqlParser.parser = (function(){
         }
         return result0;
       }
-      
+
       function parse_DescribeQuery() {
         var result0, result1, result2, result3, result4;
         var pos0;
-        
+
         reportFailures++;
         pos0 = pos;
         if (input.substr(pos, 8) === "DESCRIBE") {
@@ -9316,11 +9316,11 @@ SparqlParser.parser = (function(){
         }
         return result0;
       }
-      
+
       function parse_AskQuery() {
         var result0, result1, result2, result3, result4, result5;
         var pos0, pos1;
-        
+
         reportFailures++;
         pos0 = pos;
         pos1 = pos;
@@ -9411,21 +9411,21 @@ SparqlParser.parser = (function(){
                       dataset['named'].push(g.graph)
                   }
               }
-        
-        
+
+
               if(dataset['named'].length === 0 && dataset['implicit'].length === 0) {
                   dataset['implicit'].push({token:'uri',
                                             prefix:null,
                                             suffix:null,
                                             value:'https://github.com/antoniogarrote/rdfstore-js#default_graph'});
               }
-        
+
               var query = {};
               query.kind = 'ask';
               query.token = 'executableunit'
               query.dataset = dataset;
               query.pattern = w
-        
+
               return query
         })(pos0, result0[3], result0[5]);
         }
@@ -9438,11 +9438,11 @@ SparqlParser.parser = (function(){
         }
         return result0;
       }
-      
+
       function parse_DatasetClause() {
         var result0, result1, result2, result3, result4;
         var pos0, pos1;
-        
+
         reportFailures++;
         pos0 = pos;
         pos1 = pos;
@@ -9517,11 +9517,11 @@ SparqlParser.parser = (function(){
         }
         return result0;
       }
-      
+
       function parse_DefaultGraphClause() {
         var result0, result1;
         var pos0, pos1;
-        
+
         reportFailures++;
         pos0 = pos;
         pos1 = pos;
@@ -9557,11 +9557,11 @@ SparqlParser.parser = (function(){
         }
         return result0;
       }
-      
+
       function parse_NamedGraphClause() {
         var result0, result1, result2;
         var pos0, pos1;
-        
+
         reportFailures++;
         pos0 = pos;
         pos1 = pos;
@@ -9609,7 +9609,7 @@ SparqlParser.parser = (function(){
           pos = pos1;
         }
         if (result0 !== null) {
-          result0 = (function(offset, s) {      
+          result0 = (function(offset, s) {
               return {graph:s, kind:'named', token:'graphCluase'};
         })(pos0, result0[2]);
         }
@@ -9622,11 +9622,11 @@ SparqlParser.parser = (function(){
         }
         return result0;
       }
-      
+
       function parse_WhereClause() {
         var result0, result1, result2, result3, result4;
         var pos0, pos1;
-        
+
         reportFailures++;
         pos0 = pos;
         pos1 = pos;
@@ -9699,11 +9699,11 @@ SparqlParser.parser = (function(){
         }
         return result0;
       }
-      
+
       function parse_SolutionModifier() {
         var result0, result1, result2, result3;
         var pos0, pos1;
-        
+
         reportFailures++;
         pos0 = pos;
         pos1 = pos;
@@ -9742,18 +9742,18 @@ SparqlParser.parser = (function(){
               if(lo != null) {
                   if(lo.limit != null) {
                       acum.limit = lo.limit;
-                  } 
+                  }
                   if(lo.offset != null) {
                       acum.offset = lo.offset;
                   }
               }
-        
+
               if(gc != null) {
                   acum.group = gc;
               }
-        
+
               acum.order = oc;
-        
+
               return acum
         })(pos0, result0[0], result0[2], result0[3]);
         }
@@ -9766,11 +9766,11 @@ SparqlParser.parser = (function(){
         }
         return result0;
       }
-      
+
       function parse_GroupClause() {
         var result0, result1, result2, result3, result4, result5;
         var pos0, pos1;
-        
+
         reportFailures++;
         pos0 = pos;
         pos1 = pos;
@@ -9876,11 +9876,11 @@ SparqlParser.parser = (function(){
         }
         return result0;
       }
-      
+
       function parse_GroupCondition() {
         var result0, result1, result2, result3, result4, result5, result6, result7, result8, result9;
         var pos0, pos1, pos2;
-        
+
         reportFailures++;
         pos0 = pos;
         pos1 = pos;
@@ -10167,11 +10167,11 @@ SparqlParser.parser = (function(){
         }
         return result0;
       }
-      
+
       function parse_HavingClause() {
         var result0, result1, result2;
         var pos0;
-        
+
         reportFailures++;
         pos0 = pos;
         if (input.substr(pos, 6) === "HAVING") {
@@ -10210,11 +10210,11 @@ SparqlParser.parser = (function(){
         }
         return result0;
       }
-      
+
       function parse_OrderClause() {
         var result0, result1, result2, result3, result4, result5, result6;
         var pos0, pos1;
-        
+
         reportFailures++;
         pos0 = pos;
         pos1 = pos;
@@ -10331,11 +10331,11 @@ SparqlParser.parser = (function(){
         }
         return result0;
       }
-      
+
       function parse_OrderCondition() {
         var result0, result1, result2, result3, result4;
         var pos0, pos1;
-        
+
         reportFailures++;
         pos0 = pos;
         pos1 = pos;
@@ -10468,11 +10468,11 @@ SparqlParser.parser = (function(){
         }
         return result0;
       }
-      
+
       function parse_LimitOffsetClauses() {
         var result0, result1;
         var pos0, pos1;
-        
+
         reportFailures++;
         pos0 = pos;
         pos1 = pos;
@@ -10518,7 +10518,7 @@ SparqlParser.parser = (function(){
                       acum['offset'] = cl.offset;
                   }
               }
-        
+
               return acum;
         })(pos0, result0);
         }
@@ -10531,11 +10531,11 @@ SparqlParser.parser = (function(){
         }
         return result0;
       }
-      
+
       function parse_LimitClause() {
         var result0, result1, result2, result3, result4;
         var pos0, pos1;
-        
+
         reportFailures++;
         pos0 = pos;
         pos1 = pos;
@@ -10607,11 +10607,11 @@ SparqlParser.parser = (function(){
         }
         return result0;
       }
-      
+
       function parse_OffsetClause() {
         var result0, result1, result2, result3, result4;
         var pos0, pos1;
-        
+
         reportFailures++;
         pos0 = pos;
         pos1 = pos;
@@ -10683,11 +10683,11 @@ SparqlParser.parser = (function(){
         }
         return result0;
       }
-      
+
       function parse_BindingsClause() {
         var result0, result1, result2, result3, result4, result5, result6;
         var pos0, pos1;
-        
+
         reportFailures++;
         pos0 = pos;
         if (input.substr(pos, 8) === "BINDINGS") {
@@ -10856,10 +10856,10 @@ SparqlParser.parser = (function(){
         }
         return result0;
       }
-      
+
       function parse_BindingValue() {
         var result0;
-        
+
         reportFailures++;
         result0 = parse_IRIref();
         if (result0 === null) {
@@ -10888,11 +10888,11 @@ SparqlParser.parser = (function(){
         }
         return result0;
       }
-      
+
       function parse_Update() {
         var result0, result1, result2, result3, result4, result5, result6;
         var pos0, pos1, pos2;
-        
+
         reportFailures++;
         pos0 = pos;
         pos1 = pos;
@@ -10973,18 +10973,18 @@ SparqlParser.parser = (function(){
         }
         if (result0 !== null) {
           result0 = (function(offset, p, u, us) {
-        
+
               var query = {};
               query.token = 'query';
               query.kind = 'update'
               query.prologue = p;
-        
+
              var units = [u];
-        
+
              if(us.length != null && us[3] != null && us[3].units != null) {
                  units = units.concat(us[3].units);
              }
-        
+
              query.units = units;
              return query;
         })(pos0, result0[0], result0[2], result0[3]);
@@ -10998,10 +10998,10 @@ SparqlParser.parser = (function(){
         }
         return result0;
       }
-      
+
       function parse_Update1() {
         var result0;
-        
+
         reportFailures++;
         result0 = parse_Load();
         if (result0 === null) {
@@ -11031,11 +11031,11 @@ SparqlParser.parser = (function(){
         }
         return result0;
       }
-      
+
       function parse_Load() {
         var result0, result1, result2, result3, result4, result5, result6;
         var pos0, pos1, pos2;
-        
+
         reportFailures++;
         pos0 = pos;
         pos1 = pos;
@@ -11150,7 +11150,7 @@ SparqlParser.parser = (function(){
               query.token = 'executableunit'
               query.sourceGraph = sg;
               query.destinyGraph = dg[2];
-              
+
               return query;
         })(pos0, result0[2], result0[4]);
         }
@@ -11163,11 +11163,11 @@ SparqlParser.parser = (function(){
         }
         return result0;
       }
-      
+
       function parse_Clear() {
         var result0, result1, result2, result3, result4;
         var pos0, pos1;
-        
+
         reportFailures++;
         pos0 = pos;
         pos1 = pos;
@@ -11257,7 +11257,7 @@ SparqlParser.parser = (function(){
               query.kind = 'clear';
               query.token = 'executableunit'
               query.destinyGraph = ref;
-              
+
               return query;
         })(pos0, result0[4]);
         }
@@ -11270,11 +11270,11 @@ SparqlParser.parser = (function(){
         }
         return result0;
       }
-      
+
       function parse_Drop() {
         var result0, result1, result2, result3, result4;
         var pos0, pos1;
-        
+
         reportFailures++;
         pos0 = pos;
         pos1 = pos;
@@ -11364,7 +11364,7 @@ SparqlParser.parser = (function(){
               query.kind = 'drop';
               query.token = 'executableunit'
               query.destinyGraph = ref;
-              
+
               return query;
         })(pos0, result0[4]);
         }
@@ -11377,11 +11377,11 @@ SparqlParser.parser = (function(){
         }
         return result0;
       }
-      
+
       function parse_Create() {
         var result0, result1, result2, result3, result4;
         var pos0, pos1;
-        
+
         reportFailures++;
         pos0 = pos;
         pos1 = pos;
@@ -11471,7 +11471,7 @@ SparqlParser.parser = (function(){
               query.kind = 'create';
               query.token = 'executableunit'
               query.destinyGraph = ref;
-              
+
               return query;
         })(pos0, result0[4]);
         }
@@ -11484,11 +11484,11 @@ SparqlParser.parser = (function(){
         }
         return result0;
       }
-      
+
       function parse_InsertData() {
         var result0, result1, result2, result3, result4;
         var pos0, pos1;
-        
+
         reportFailures++;
         pos0 = pos;
         pos1 = pos;
@@ -11577,7 +11577,7 @@ SparqlParser.parser = (function(){
               query.kind = 'insertdata';
               query.token = 'executableunit'
               query.quads = qs;
-        
+
               return query;
         })(pos0, result0[4]);
         }
@@ -11590,11 +11590,11 @@ SparqlParser.parser = (function(){
         }
         return result0;
       }
-      
+
       function parse_DeleteData() {
         var result0, result1, result2, result3;
         var pos0, pos1;
-        
+
         reportFailures++;
         pos0 = pos;
         pos1 = pos;
@@ -11672,7 +11672,7 @@ SparqlParser.parser = (function(){
               query.kind = 'deletedata';
               query.token = 'executableunit'
               query.quads = qs;
-        
+
               return query;
         })(pos0, result0[3]);
         }
@@ -11685,11 +11685,11 @@ SparqlParser.parser = (function(){
         }
         return result0;
       }
-      
+
       function parse_DeleteWhere() {
         var result0, result1, result2, result3, result4;
         var pos0, pos1;
-        
+
         reportFailures++;
         pos0 = pos;
         pos1 = pos;
@@ -11779,31 +11779,31 @@ SparqlParser.parser = (function(){
               query.pattern = p;
               query['with'] = null;
               query['using'] = null;
-        
+
               var quads = [];
-        
-        
+
+
               var patternsCollection = p.patterns[0];
               if(patternsCollection.triplesContext == null && patternsCollection.patterns!=null) {
                   patternsCollection = patternsCollection.patterns[0].triplesContext;
               } else {
                   patternsCollection = patternsCollection.triplesContext;
               }
-        
+
               for(var i=0; i<patternsCollection.length; i++) {
                   var quad = {};
                   var contextQuad = patternsCollection[i];
-        
+
                   quad['subject'] = contextQuad['subject'];
                   quad['predicate'] = contextQuad['predicate'];
                   quad['object'] = contextQuad['object'];
                   quad['graph'] = contextQuad['graph'];
-        
+
                   quads.push(quad);
               }
-        
+
               query['delete'] = quads;
-        
+
               return query;
         })(pos0, result0[4]);
         }
@@ -11816,11 +11816,11 @@ SparqlParser.parser = (function(){
         }
         return result0;
       }
-      
+
       function parse_Modify() {
         var result0, result1, result2, result3, result4, result5, result6, result7, result8, result9, result10;
         var pos0, pos1, pos2;
-        
+
         reportFailures++;
         pos0 = pos;
         pos1 = pos;
@@ -12010,14 +12010,14 @@ SparqlParser.parser = (function(){
           result0 = (function(offset, wg, dic, uc, p) {
               var query = {};
               query.kind = 'modify';
-        
+
               if(wg != "") {
                   query['with'] = wg[2];
               } else {
                   query['with'] = null;
               }
-        
-        
+
+
               if(dic.length === 3 && dic[2] === '') {
                   query['delete'] = dic[0];
                   query.insert = null;
@@ -12028,13 +12028,13 @@ SparqlParser.parser = (function(){
                   query.insert = dic;
                   query['delete'] = null;
               }
-        
+
               if(uc != '') {
                   query['using'] = uc;
               }
-        
+
               query.pattern = p;
-        
+
               return query;
         })(pos0, result0[0], result0[2], result0[4], result0[8]);
         }
@@ -12047,11 +12047,11 @@ SparqlParser.parser = (function(){
         }
         return result0;
       }
-      
+
       function parse_DeleteClause() {
         var result0, result1;
         var pos0, pos1;
-        
+
         reportFailures++;
         pos0 = pos;
         pos1 = pos;
@@ -12101,11 +12101,11 @@ SparqlParser.parser = (function(){
         }
         return result0;
       }
-      
+
       function parse_InsertClause() {
         var result0, result1;
         var pos0, pos1;
-        
+
         reportFailures++;
         pos0 = pos;
         pos1 = pos;
@@ -12155,11 +12155,11 @@ SparqlParser.parser = (function(){
         }
         return result0;
       }
-      
+
       function parse_UsingClause() {
         var result0, result1, result2, result3, result4, result5;
         var pos0, pos1, pos2;
-        
+
         reportFailures++;
         pos0 = pos;
         pos1 = pos;
@@ -12281,11 +12281,11 @@ SparqlParser.parser = (function(){
         }
         return result0;
       }
-      
+
       function parse_GraphRef() {
         var result0, result1, result2;
         var pos0, pos1;
-        
+
         reportFailures++;
         pos0 = pos;
         pos1 = pos;
@@ -12346,11 +12346,11 @@ SparqlParser.parser = (function(){
         }
         return result0;
       }
-      
+
       function parse_GraphRefAll() {
         var result0;
         var pos0;
-        
+
         reportFailures++;
         pos0 = pos;
         result0 = parse_GraphRef();
@@ -12461,11 +12461,11 @@ SparqlParser.parser = (function(){
         }
         return result0;
       }
-      
+
       function parse_QuadPattern() {
         var result0, result1, result2, result3, result4, result5, result6, result7;
         var pos0, pos1;
-        
+
         reportFailures++;
         pos0 = pos;
         pos1 = pos;
@@ -12562,11 +12562,11 @@ SparqlParser.parser = (function(){
         }
         return result0;
       }
-      
+
       function parse_QuadData() {
         var result0, result1, result2, result3, result4, result5, result6, result7;
         var pos0, pos1;
-        
+
         reportFailures++;
         pos0 = pos;
         pos1 = pos;
@@ -12663,11 +12663,11 @@ SparqlParser.parser = (function(){
         }
         return result0;
       }
-      
+
       function parse_Quads() {
         var result0, result1, result2, result3, result4;
         var pos0, pos1, pos2;
-        
+
         reportFailures++;
         pos0 = pos;
         pos1 = pos;
@@ -12758,10 +12758,10 @@ SparqlParser.parser = (function(){
                     quads.push(triple)
                 }
               }
-        
+
               if(qs && qs.length>0 && qs[0].length > 0) {
                   quads = quads.concat(qs[0][0].quadsContext);
-        
+
                   if( qs[0][2] != null && qs[0][2].triplesContext != null) {
                     for(var i=0; i<qs[0][2].triplesContext.length; i++) {
                         var triple = qs[0][2].triplesContext[i]
@@ -12770,7 +12770,7 @@ SparqlParser.parser = (function(){
                     }
                   }
               }
-        
+
               return {token:'quads',
                       quadsContext: quads}
         })(pos0, result0[0], result0[1]);
@@ -12784,11 +12784,11 @@ SparqlParser.parser = (function(){
         }
         return result0;
       }
-      
+
       function parse_QuadsNotTriples() {
         var result0, result1, result2, result3, result4, result5, result6, result7, result8, result9, result10, result11;
         var pos0, pos1;
-        
+
         reportFailures++;
         pos0 = pos;
         pos1 = pos;
@@ -12933,7 +12933,7 @@ SparqlParser.parser = (function(){
                   triple.graph = g;
                   quads.push(triple)
               }
-        
+
               return {token:'quadsnottriples',
                       quadsContext: quads}
         })(pos0, result0[3], result0[7]);
@@ -12947,11 +12947,11 @@ SparqlParser.parser = (function(){
         }
         return result0;
       }
-      
+
       function parse_TriplesTemplate() {
         var result0, result1, result2, result3, result4;
         var pos0, pos1, pos2;
-        
+
         reportFailures++;
         pos0 = pos;
         pos1 = pos;
@@ -13024,7 +13024,7 @@ SparqlParser.parser = (function(){
                       }
                    }
               }
-        
+
              return {token:'triplestemplate',
                      triplesContext: triples}
         })(pos0, result0[0], result0[1]);
@@ -13038,11 +13038,11 @@ SparqlParser.parser = (function(){
         }
         return result0;
       }
-      
+
       function parse_GroupGraphPattern() {
         var result0, result1, result2, result3, result4;
         var pos0, pos1;
-        
+
         reportFailures++;
         pos0 = pos;
         pos1 = pos;
@@ -13186,11 +13186,11 @@ SparqlParser.parser = (function(){
         }
         return result0;
       }
-      
+
       function parse_GroupGraphPatternSub() {
         var result0, result1, result2, result3, result4, result5, result6, result7;
         var pos0, pos1, pos2;
-        
+
         reportFailures++;
         pos0 = pos;
         pos1 = pos;
@@ -13332,7 +13332,7 @@ SparqlParser.parser = (function(){
               if(tb != null && tb != []) {
                   subpatterns.push(tb);
               }
-        
+
               for(var i=0; i<tbs.length; i++) {
                   for(var j=0; j< tbs[i].length; j++) {
                       if(tbs[i][j].token != null) {
@@ -13340,12 +13340,12 @@ SparqlParser.parser = (function(){
                       }
                   }
               }
-        
+
               var compactedSubpatterns = [];
-        
+
               var currentBasicGraphPatterns = [];
               var currentFilters = [];
-        
+
               for(var i=0; i<subpatterns.length; i++) {
                   if(subpatterns[i].token!='triplespattern' && subpatterns[i].token != 'filter') {
                       if(currentBasicGraphPatterns.length != 0 || currentFilters.length != 0) {
@@ -13353,7 +13353,7 @@ SparqlParser.parser = (function(){
                           for(var j=0; j<currentBasicGraphPatterns.length; j++) {
                               triplesContext = triplesContext.concat(currentBasicGraphPatterns[j].triplesContext);
                           }
-                          if(triplesContext.length > 0) {  
+                          if(triplesContext.length > 0) {
                               compactedSubpatterns.push({token: 'basicgraphpattern',
                                                          triplesContext: triplesContext});
                           }
@@ -13368,7 +13368,7 @@ SparqlParser.parser = (function(){
                       }
                   }
               }
-        
+
               if(currentBasicGraphPatterns.length != 0 || currentFilters.length != 0) {
                   var triplesContext = [];
                   for(var j=0; j<currentBasicGraphPatterns.length; j++) {
@@ -13379,7 +13379,7 @@ SparqlParser.parser = (function(){
                                                triplesContext: triplesContext});
                   }
               }
-        
+
         //      if(compactedSubpatterns.length == 1) {
         //          compactedSubpatterns[0].filters = currentFilters;
         //          return compactedSubpatterns[0];
@@ -13399,11 +13399,11 @@ SparqlParser.parser = (function(){
         }
         return result0;
       }
-      
+
       function parse_TriplesBlock() {
         var result0, result1, result2, result3;
         var pos0, pos1, pos2;
-        
+
         reportFailures++;
         pos0 = pos;
         pos1 = pos;
@@ -13465,7 +13465,7 @@ SparqlParser.parser = (function(){
                       }
                    }
               }
-        
+
              return {token:'triplespattern',
                      triplesContext: triples}
         })(pos0, result0[0], result0[1]);
@@ -13479,10 +13479,10 @@ SparqlParser.parser = (function(){
         }
         return result0;
       }
-      
+
       function parse_GraphPatternNotTriples() {
         var result0;
-        
+
         reportFailures++;
         result0 = parse_GroupOrUnionGraphPattern();
         if (result0 === null) {
@@ -13506,11 +13506,11 @@ SparqlParser.parser = (function(){
         }
         return result0;
       }
-      
+
       function parse_OptionalGraphPattern() {
         var result0, result1, result2, result3;
         var pos0, pos1;
-        
+
         reportFailures++;
         pos0 = pos;
         pos1 = pos;
@@ -13583,11 +13583,11 @@ SparqlParser.parser = (function(){
         }
         return result0;
       }
-      
+
       function parse_GraphGraphPattern() {
         var result0, result1, result2, result3, result4, result5;
         var pos0, pos1;
-        
+
         reportFailures++;
         pos0 = pos;
         pos1 = pos;
@@ -13672,7 +13672,7 @@ SparqlParser.parser = (function(){
                     triple.graph = g;
                 }
               }
-        
+
               gg.token = 'groupgraphpattern'
               return gg;
         })(pos0, result0[3], result0[5]);
@@ -13686,11 +13686,11 @@ SparqlParser.parser = (function(){
         }
         return result0;
       }
-      
+
       function parse_ServiceGraphPattern() {
         var result0, result1, result2;
         var pos0, pos1;
-        
+
         reportFailures++;
         pos0 = pos;
         pos1 = pos;
@@ -13737,11 +13737,11 @@ SparqlParser.parser = (function(){
         }
         return result0;
       }
-      
+
       function parse_MinusGraphPattern() {
         var result0, result1;
         var pos0, pos1;
-        
+
         reportFailures++;
         pos0 = pos;
         pos1 = pos;
@@ -13782,11 +13782,11 @@ SparqlParser.parser = (function(){
         }
         return result0;
       }
-      
+
       function parse_GroupOrUnionGraphPattern() {
         var result0, result1, result2, result3, result4, result5;
         var pos0, pos1, pos2;
-        
+
         reportFailures++;
         pos0 = pos;
         pos1 = pos;
@@ -13921,10 +13921,10 @@ SparqlParser.parser = (function(){
               if(b.length === 0) {
                   return a;
               } else {
-        
+
                   var lastToken = {token: 'graphunionpattern',
                                    value: [a]};
-        
+
                   for(var i=0; i<b.length; i++) {
                       if(i==b.length-1) {
                           lastToken.value.push(b[i][3]);
@@ -13932,13 +13932,13 @@ SparqlParser.parser = (function(){
                           lastToken.value.push(b[i][3]);
                           var newToken = {token: 'graphunionpattern',
                                           value: [lastToken]}
-        
+
                           lastToken = newToken;
                       }
                   }
-        
+
                   return lastToken;
-        
+
               }
         })(pos0, result0[0], result0[1]);
         }
@@ -13951,11 +13951,11 @@ SparqlParser.parser = (function(){
         }
         return result0;
       }
-      
+
       function parse_Filter() {
         var result0, result1, result2, result3;
         var pos0, pos1;
-        
+
         reportFailures++;
         pos0 = pos;
         pos1 = pos;
@@ -14028,10 +14028,10 @@ SparqlParser.parser = (function(){
         }
         return result0;
       }
-      
+
       function parse_Constraint() {
         var result0;
-        
+
         reportFailures++;
         result0 = parse_BrackettedExpression();
         if (result0 === null) {
@@ -14046,11 +14046,11 @@ SparqlParser.parser = (function(){
         }
         return result0;
       }
-      
+
       function parse_FunctionCall() {
         var result0, result1;
         var pos0, pos1;
-        
+
         reportFailures++;
         pos0 = pos;
         pos1 = pos;
@@ -14074,7 +14074,7 @@ SparqlParser.parser = (function(){
               fcall.expressionType = 'irireforfunction'
               fcall.iriref = i;
               fcall.args = args.value;
-        
+
               return fcall;
         })(pos0, result0[0], result0[1]);
         }
@@ -14087,11 +14087,11 @@ SparqlParser.parser = (function(){
         }
         return result0;
       }
-      
+
       function parse_ArgList() {
         var result0, result1, result2, result3, result4, result5;
         var pos0, pos1, pos2;
-        
+
         reportFailures++;
         pos0 = pos;
         result0 = parse_NIL();
@@ -14226,20 +14226,20 @@ SparqlParser.parser = (function(){
           if (result0 !== null) {
             result0 = (function(offset, d, e, es) {
                 var cleanEx = [];
-          
+
                 for(var i=0; i<es.length; i++) {
                     cleanEx.push(es[i][1]);
                 }
                 var args = {};
                 args.token = 'args';
                 args.value = [e].concat(cleanEx);
-          
+
                 if(d!=null && d.toUpperCase()==="DISTINCT") {
                     args.distinct = true;
                 } else {
                     args.distinct = false;
                 }
-          
+
                 return args;
           })(pos0, result0[1], result0[2], result0[3]);
           }
@@ -14253,11 +14253,11 @@ SparqlParser.parser = (function(){
         }
         return result0;
       }
-      
+
       function parse_ExpressionList() {
         var result0, result1, result2, result3, result4, result5, result6;
         var pos0, pos1, pos2;
-        
+
         reportFailures++;
         pos0 = pos;
         result0 = parse_NIL();
@@ -14410,14 +14410,14 @@ SparqlParser.parser = (function(){
           if (result0 !== null) {
             result0 = (function(offset, e, es) {
                 var cleanEx = [];
-          
+
                 for(var i=0; i<es.length; i++) {
                     cleanEx.push(es[i][3]);
                 }
                 var args = {};
                 args.token = 'args';
                 args.value = [e].concat(cleanEx);
-          
+
                 return args;
           })(pos0, result0[1], result0[2]);
           }
@@ -14431,11 +14431,11 @@ SparqlParser.parser = (function(){
         }
         return result0;
       }
-      
+
       function parse_ConstructTemplate() {
         var result0, result1, result2, result3, result4;
         var pos0, pos1;
-        
+
         reportFailures++;
         pos0 = pos;
         pos1 = pos;
@@ -14511,11 +14511,11 @@ SparqlParser.parser = (function(){
         }
         return result0;
       }
-      
+
       function parse_ConstructTriples() {
         var result0, result1, result2, result3, result4;
         var pos0, pos1, pos2;
-        
+
         reportFailures++;
         pos0 = pos;
         pos1 = pos;
@@ -14588,7 +14588,7 @@ SparqlParser.parser = (function(){
                       }
                    }
               }
-        
+
              return {token:'triplestemplate',
                      triplesContext: triples}
         })(pos0, result0[0], result0[1]);
@@ -14602,11 +14602,11 @@ SparqlParser.parser = (function(){
         }
         return result0;
       }
-      
+
       function parse_TriplesSameSubject() {
         var result0, result1, result2, result3;
         var pos0, pos1;
-        
+
         reportFailures++;
         pos0 = pos;
         pos1 = pos;
@@ -14665,12 +14665,12 @@ SparqlParser.parser = (function(){
                     }
                 }
               }
-        
+
               var token = {};
               token.token = "triplessamesubject";
               token.triplesContext = triplesContext;
               token.chainSubject = subject;
-        
+
               return token;
           })(pos0, result0[1], result0[3]);
         }
@@ -14719,13 +14719,13 @@ SparqlParser.parser = (function(){
             result0 = (function(offset, tn, pairs) {
                 var triplesContext = tn.triplesContext;
                 var subject = tn.chainSubject;
-          
+
                 if(pairs.pairs) {
                   for(var i=0; i< pairs.pairs.length; i++) {
                       var pair = pairs.pairs[i];
                       if(pair[1].length != null)
           	      pair[1] = pair[1][0]
-          
+
                       if(tn.token === "triplesnodecollection") {
                           for(var j=0; j<subject.length; j++) {
                               var subj = subject[j];
@@ -14743,12 +14743,12 @@ SparqlParser.parser = (function(){
                       }
                   }
                 }
-          
+
                 var token = {};
                 token.token = "triplessamesubject";
                 token.triplesContext = triplesContext;
                 token.chainSubject = subject;
-          
+
                 return token;
             })(pos0, result0[1], result0[3]);
           }
@@ -14762,11 +14762,11 @@ SparqlParser.parser = (function(){
         }
         return result0;
       }
-      
+
       function parse_PropertyListNotEmpty() {
         var result0, result1, result2, result3, result4, result5, result6, result7, result8, result9;
         var pos0, pos1, pos2, pos3;
-        
+
         reportFailures++;
         pos0 = pos;
         pos1 = pos;
@@ -14948,9 +14948,9 @@ SparqlParser.parser = (function(){
               var triplesContext = [];
               var pairs = [];
               var test = [];
-        
+
               for( var i=0; i<ol.length; i++) {
-        
+
                  if(ol[i].triplesContext != null) {
                      triplesContext = triplesContext.concat(ol[i].triplesContext);
                      if(ol[i].token==='triplesnodecollection' && ol[i].chainSubject.length != null) {
@@ -14958,19 +14958,19 @@ SparqlParser.parser = (function(){
                      } else {
                          pairs.push([v, ol[i].chainSubject]);
                      }
-        
+
                   } else {
                       pairs.push([v, ol[i]])
                   }
-        
+
               }
-        
-        
+
+
               for(var i=0; i<rest.length; i++) {
                   var tok = rest[i][3];
                   var newVerb  = tok[0];
                   var newObjsList = tok[2] || [];
-        
+
                   for(var j=0; j<newObjsList.length; j++) {
                    if(newObjsList[j].triplesContext != null) {
                       triplesContext = triplesContext.concat(newObjsList[j].triplesContext);
@@ -14980,12 +14980,12 @@ SparqlParser.parser = (function(){
                     }
                   }
               }
-        
+
               token.pairs = pairs;
               token.triplesContext = triplesContext;
-        
+
               return token;
-        
+
         })(pos0, result0[0], result0[2], result0[3]);
         }
         if (result0 === null) {
@@ -14997,10 +14997,10 @@ SparqlParser.parser = (function(){
         }
         return result0;
       }
-      
+
       function parse_PropertyList() {
         var result0;
-        
+
         reportFailures++;
         result0 = parse_PropertyListNotEmpty();
         result0 = result0 !== null ? result0 : "";
@@ -15010,11 +15010,11 @@ SparqlParser.parser = (function(){
         }
         return result0;
       }
-      
+
       function parse_ObjectList() {
         var result0, result1, result2, result3, result4, result5;
         var pos0, pos1, pos2;
-        
+
         reportFailures++;
         pos0 = pos;
         pos1 = pos;
@@ -15113,11 +15113,11 @@ SparqlParser.parser = (function(){
         }
         if (result0 !== null) {
           result0 = (function(offset, obj, objs) {
-        
+
                 var toReturn = [];
-        
+
                 toReturn.push(obj);
-        
+
                 for(var i=0; i<objs.length; i++) {
                     for(var j=0; j<objs[i].length; j++) {
                         if(typeof(objs[i][j])=="object" && objs[i][j].token != null) {
@@ -15125,7 +15125,7 @@ SparqlParser.parser = (function(){
                         }
                     }
                 }
-        
+
                 return toReturn;
             })(pos0, result0[0], result0[2]);
         }
@@ -15138,11 +15138,11 @@ SparqlParser.parser = (function(){
         }
         return result0;
       }
-      
+
       function parse_Verb() {
         var result0;
         var pos0;
-        
+
         reportFailures++;
         result0 = parse_VarOrIRIref();
         if (result0 === null) {
@@ -15171,11 +15171,11 @@ SparqlParser.parser = (function(){
         }
         return result0;
       }
-      
+
       function parse_TriplesSameSubjectPath() {
         var result0, result1, result2, result3;
         var pos0, pos1;
-        
+
         reportFailures++;
         pos0 = pos;
         pos1 = pos;
@@ -15234,12 +15234,12 @@ SparqlParser.parser = (function(){
                     }
                 }
               }
-        
+
               var token = {};
               token.token = "triplessamesubject";
               token.triplesContext = triplesContext;
               token.chainSubject = subject;
-        
+
               return token;
           })(pos0, result0[1], result0[3]);
         }
@@ -15288,13 +15288,13 @@ SparqlParser.parser = (function(){
             result0 = (function(offset, tn, pairs) {
                 var triplesContext = tn.triplesContext;
                 var subject = tn.chainSubject;
-          
+
                 if(pairs.pairs) {
                   for(var i=0; i< pairs.pairs.length; i++) {
                       var pair = pairs.pairs[i];
                       if(pair[1].length != null)
           	      pair[1] = pair[1][0]
-          
+
                       if(tn.token === "triplesnodecollection") {
                           for(var j=0; j<subject.length; j++) {
                               var subj = subject[j];
@@ -15312,14 +15312,14 @@ SparqlParser.parser = (function(){
                       }
                   }
                 }
-          
+
                 var token = {};
                 token.token = "triplessamesubject";
                 token.triplesContext = triplesContext;
                 token.chainSubject = subject;
-          
+
                 return token;
-          
+
               })(pos0, result0[1], result0[3]);
           }
           if (result0 === null) {
@@ -15332,11 +15332,11 @@ SparqlParser.parser = (function(){
         }
         return result0;
       }
-      
+
       function parse_PropertyListNotEmptyPath() {
         var result0, result1, result2, result3, result4, result5, result6, result7, result8;
         var pos0, pos1, pos2, pos3;
-        
+
         reportFailures++;
         pos0 = pos;
         pos1 = pos;
@@ -15505,9 +15505,9 @@ SparqlParser.parser = (function(){
               var triplesContext = [];
               var pairs = [];
               var test = [];
-        
+
               for( var i=0; i<ol.length; i++) {
-        
+
                  if(ol[i].triplesContext != null) {
                      triplesContext = triplesContext.concat(ol[i].triplesContext);
                      if(ol[i].token==='triplesnodecollection' && ol[i].chainSubject.length != null) {
@@ -15515,19 +15515,19 @@ SparqlParser.parser = (function(){
                      } else {
                          pairs.push([v, ol[i].chainSubject]);
                      }
-        
+
                   } else {
                       pairs.push([v, ol[i]])
                   }
-        
+
               }
-        
-        
+
+
               for(var i=0; i<rest.length; i++) {
                   var tok = rest[i][3];
                   var newVerb  = tok[0];
                   var newObjsList = tok[1] || [];
-        
+
                   for(var j=0; j<newObjsList.length; j++) {
                    if(newObjsList[j].triplesContext != null) {
                       triplesContext = triplesContext.concat(newObjsList[j].triplesContext);
@@ -15537,10 +15537,10 @@ SparqlParser.parser = (function(){
                     }
                   }
               }
-        
+
               token.pairs = pairs;
               token.triplesContext = triplesContext;
-        
+
               return token;
         })(pos0, result0[0], result0[2], result0[3]);
         }
@@ -15553,10 +15553,10 @@ SparqlParser.parser = (function(){
         }
         return result0;
       }
-      
+
       function parse_PropertyListPath() {
         var result0;
-        
+
         reportFailures++;
         result0 = parse_PropertyListNotEmpty();
         result0 = result0 !== null ? result0 : "";
@@ -15566,11 +15566,11 @@ SparqlParser.parser = (function(){
         }
         return result0;
       }
-      
+
       function parse_VerbPath() {
         var result0;
         var pos0;
-        
+
         reportFailures++;
         pos0 = pos;
         result0 = parse_PathAlternative();
@@ -15580,7 +15580,7 @@ SparqlParser.parser = (function(){
               path.token = 'path';
               path.kind = 'element';
               path.value = p;
-        
+
               return p;
           })(pos0, result0);
         }
@@ -15593,11 +15593,11 @@ SparqlParser.parser = (function(){
         }
         return result0;
       }
-      
+
       function parse_PathAlternative() {
         var result0, result1, result2, result3;
         var pos0, pos1, pos2;
-        
+
         reportFailures++;
         pos0 = pos;
         pos1 = pos;
@@ -15669,12 +15669,12 @@ SparqlParser.parser = (function(){
         	    var acum = [];
         	    for(var i=0; i<rest.length; i++)
         		acum.push(rest[1]);
-        
+
         	    var path = {};
         	    path.token = 'path';
         	    path.kind = 'alternative';
         	    path.value = acum;
-        
+
         	    return path;
         	}
             })(pos0, result0[0], result0[1]);
@@ -15688,11 +15688,11 @@ SparqlParser.parser = (function(){
         }
         return result0;
       }
-      
+
       function parse_PathSequence() {
         var result0, result1, result2, result3;
         var pos0, pos1, pos2;
-        
+
         reportFailures++;
         pos0 = pos;
         pos1 = pos;
@@ -15762,16 +15762,16 @@ SparqlParser.parser = (function(){
         	    return first;
         	} else {
         	    var acum = [first];
-        
-        	    for(var i=0; i<rest.length; i++) 
+
+        	    for(var i=0; i<rest.length; i++)
         		acum.push(rest[i][1]);
-        
+
         	    var path = {};
         	    path.token = 'path';
         	    path.kind = 'sequence';
-        	
+
         	    path.value = acum;
-        		
+
         	    return path;
         	}
             })(pos0, result0[0], result0[1]);
@@ -15785,11 +15785,11 @@ SparqlParser.parser = (function(){
         }
         return result0;
       }
-      
+
       function parse_PathElt() {
         var result0, result1;
         var pos0, pos1;
-        
+
         reportFailures++;
         pos0 = pos;
         pos1 = pos;
@@ -15833,11 +15833,11 @@ SparqlParser.parser = (function(){
         }
         return result0;
       }
-      
+
       function parse_PathEltOrInverse() {
         var result0, result1;
         var pos0, pos1;
-        
+
         reportFailures++;
         result0 = parse_PathElt();
         if (result0 === null) {
@@ -15870,7 +15870,7 @@ SparqlParser.parser = (function(){
           	path.token = 'path';
           	path.kind = 'inversePath';
           	path.value = elt;
-          
+
           	return path;
               })(pos0, result0[1]);
           }
@@ -15884,11 +15884,11 @@ SparqlParser.parser = (function(){
         }
         return result0;
       }
-      
+
       function parse_PathMod() {
         var result0, result1, result2, result3, result4;
         var pos0, pos1, pos2, pos3;
-        
+
         reportFailures++;
         if (input.charCodeAt(pos) === 42) {
           result0 = "*";
@@ -16066,11 +16066,11 @@ SparqlParser.parser = (function(){
         }
         return result0;
       }
-      
+
       function parse_PathPrimary() {
         var result0, result1, result2;
         var pos0, pos1;
-        
+
         reportFailures++;
         result0 = parse_IRIref();
         if (result0 === null) {
@@ -16170,11 +16170,11 @@ SparqlParser.parser = (function(){
         }
         return result0;
       }
-      
+
       function parse_PathNegatedPropertySet() {
         var result0, result1, result2, result3, result4;
         var pos0, pos1, pos2;
-        
+
         result0 = parse_PathOneInPropertySet();
         if (result0 === null) {
           pos0 = pos;
@@ -16277,11 +16277,11 @@ SparqlParser.parser = (function(){
         }
         return result0;
       }
-      
+
       function parse_PathOneInPropertySet() {
         var result0, result1;
         var pos0;
-        
+
         reportFailures++;
         result0 = parse_IRIref();
         if (result0 === null) {
@@ -16336,11 +16336,11 @@ SparqlParser.parser = (function(){
         }
         return result0;
       }
-      
+
       function parse_TriplesNode() {
         var result0;
         var pos0;
-        
+
         reportFailures++;
         pos0 = pos;
         result0 = parse_Collection();
@@ -16348,22 +16348,22 @@ SparqlParser.parser = (function(){
           result0 = (function(offset, c) {
               var triplesContext = [];
               var chainSubject = [];
-        
+
               var triple = null;
-        
+
               // catch NIL
               /*
               if(c.length == 1 && c[0].token && c[0].token === 'nil') {
                   GlobalBlankNodeCounter++;
-                  return  {token: "triplesnodecollection", 
+                  return  {token: "triplesnodecollection",
                            triplesContext:[{subject: {token:'blank', value:("_:"+GlobalBlankNodeCounter)},
                                             predicate:{token:'uri', prefix:null, suffix:null, value:'http://www.w3.org/1999/02/22-rdf-syntax-ns#rest'},
-                                            object:  {token:'blank', value:("_:"+(GlobalBlankNodeCounter+1))}}], 
+                                            object:  {token:'blank', value:("_:"+(GlobalBlankNodeCounter+1))}}],
                            chainSubject:{token:'blank', value:("_:"+GlobalBlankNodeCounter)}};
-        
+
               }
               */
-        
+
               // other cases
               for(var i=0; i<c.length; i++) {
                   GlobalBlankNodeCounter++;
@@ -16380,13 +16380,13 @@ SparqlParser.parser = (function(){
                   triple = {subject: {token:'blank', value:("_:"+GlobalBlankNodeCounter)},
                             predicate:{token:'uri', prefix:null, suffix:null, value:'http://www.w3.org/1999/02/22-rdf-syntax-ns#first'},
                             object:nextObject };
-        
+
                   if(i==0) {
                       chainSubject.push(triple.subject);
                   }
-        
+
                   triplesContext.push(triple);
-        
+
                   if(i===(c.length-1)) {
                       triple = {subject: {token:'blank', value:("_:"+GlobalBlankNodeCounter)},
                                 predicate:{token:'uri', prefix:null, suffix:null, value:'http://www.w3.org/1999/02/22-rdf-syntax-ns#rest'},
@@ -16396,10 +16396,10 @@ SparqlParser.parser = (function(){
                                 predicate:{token:'uri', prefix:null, suffix:null, value:'http://www.w3.org/1999/02/22-rdf-syntax-ns#rest'},
                                 object:  {token:'blank', value:("_:"+(GlobalBlankNodeCounter+1))} };
                   }
-        
+
                   triplesContext.push(triple);
               }
-        
+
               return {token:"triplesnodecollection", triplesContext:triplesContext, chainSubject:chainSubject};
         })(pos0, result0);
         }
@@ -16415,11 +16415,11 @@ SparqlParser.parser = (function(){
         }
         return result0;
       }
-      
+
       function parse_BlankNodePropertyList() {
         var result0, result1, result2, result3, result4, result5, result6, result7;
         var pos0, pos1;
-        
+
         reportFailures++;
         pos0 = pos;
         pos1 = pos;
@@ -16504,11 +16504,11 @@ SparqlParser.parser = (function(){
         }
         if (result0 !== null) {
           result0 = (function(offset, pl) {
-        
+
               GlobalBlankNodeCounter++;
               var subject = {token:'blank', value:'_:'+GlobalBlankNodeCounter};
               var newTriples =  [];
-        
+
               for(var i=0; i< pl.pairs.length; i++) {
                   var pair = pl.pairs[i];
                   var triple = {}
@@ -16519,7 +16519,7 @@ SparqlParser.parser = (function(){
                   triple.object = pair[1];
                   newTriples.push(triple);
               }
-        
+
               return {token: 'triplesnode',
                       kind: 'blanknodepropertylist',
                       triplesContext: pl.triplesContext.concat(newTriples),
@@ -16535,11 +16535,11 @@ SparqlParser.parser = (function(){
         }
         return result0;
       }
-      
+
       function parse_Collection() {
         var result0, result1, result2, result3, result4, result5, result6, result7;
         var pos0, pos1;
-        
+
         reportFailures++;
         pos0 = pos;
         pos1 = pos;
@@ -16645,11 +16645,11 @@ SparqlParser.parser = (function(){
         }
         return result0;
       }
-      
+
       function parse_GraphNode() {
         var result0, result1, result2, result3;
         var pos0, pos1;
-        
+
         reportFailures++;
         pos0 = pos;
         pos1 = pos;
@@ -16728,10 +16728,10 @@ SparqlParser.parser = (function(){
         }
         return result0;
       }
-      
+
       function parse_VarOrTerm() {
         var result0;
-        
+
         reportFailures++;
         result0 = parse_Var();
         if (result0 === null) {
@@ -16743,10 +16743,10 @@ SparqlParser.parser = (function(){
         }
         return result0;
       }
-      
+
       function parse_VarOrIRIref() {
         var result0;
-        
+
         reportFailures++;
         result0 = parse_Var();
         if (result0 === null) {
@@ -16758,11 +16758,11 @@ SparqlParser.parser = (function(){
         }
         return result0;
       }
-      
+
       function parse_Var() {
         var result0;
         var pos0;
-        
+
         reportFailures++;
         pos0 = pos;
         result0 = parse_VAR1();
@@ -16786,10 +16786,10 @@ SparqlParser.parser = (function(){
         }
         return result0;
       }
-      
+
       function parse_GraphTerm() {
         var result0;
-        
+
         reportFailures++;
         result0 = parse_IRIref();
         if (result0 === null) {
@@ -16813,11 +16813,11 @@ SparqlParser.parser = (function(){
         }
         return result0;
       }
-      
+
       function parse_ConditionalOrExpression() {
         var result0, result1, result2, result3, result4, result5;
         var pos0, pos1, pos2;
-        
+
         reportFailures++;
         pos0 = pos;
         pos1 = pos;
@@ -16930,18 +16930,18 @@ SparqlParser.parser = (function(){
               if(vs.length === 0) {
                   return v;
               }
-        
+
               var exp = {};
               exp.token = "expression";
               exp.expressionType = "conditionalor";
               var ops = [v];
-        
+
               for(var i=0; i<vs.length; i++) {
                   ops.push(vs[i][3]);
               }
-        
+
               exp.operands = ops;
-        
+
               return exp;
         })(pos0, result0[0], result0[1]);
         }
@@ -16954,11 +16954,11 @@ SparqlParser.parser = (function(){
         }
         return result0;
       }
-      
+
       function parse_ConditionalAndExpression() {
         var result0, result1, result2, result3, result4, result5;
         var pos0, pos1, pos2;
-        
+
         reportFailures++;
         pos0 = pos;
         pos1 = pos;
@@ -17075,13 +17075,13 @@ SparqlParser.parser = (function(){
               exp.token = "expression";
               exp.expressionType = "conditionaland";
               var ops = [v];
-        
+
               for(var i=0; i<vs.length; i++) {
                   ops.push(vs[i][3]);
               }
-        
+
               exp.operands = ops;
-        
+
               return exp;
         })(pos0, result0[0], result0[1]);
         }
@@ -17094,11 +17094,11 @@ SparqlParser.parser = (function(){
         }
         return result0;
       }
-      
+
       function parse_RelationalExpression() {
         var result0, result1, result2, result3, result4, result5, result6, result7, result8, result9, result10;
         var pos0, pos1, pos2;
-        
+
         reportFailures++;
         pos0 = pos;
         pos1 = pos;
@@ -18172,13 +18172,13 @@ SparqlParser.parser = (function(){
                   return op1;
               } else if(op2[0][1] === 'i' || op2[0][1] === 'I' || op2[0][1] === 'n' || op2[0][1] === 'N'){
                 var exp = {};
-        
+
                 if(op2[0][1] === 'i' || op2[0][1] === 'I') {
                   var operator = "=";
-                  exp.expressionType = "conditionalor"         
+                  exp.expressionType = "conditionalor"
                 } else {
                   var operator = "!=";
-                  exp.expressionType = "conditionaland"         
+                  exp.expressionType = "conditionaland"
                 }
                 var lop = op1;
                 var rops = []
@@ -18187,8 +18187,8 @@ SparqlParser.parser = (function(){
                     rops = op2[0][opi].value;
                     break;
                   }
-                }       
-        
+                }
+
                 exp.token = "expression";
                 exp.operands = [];
                 for(var i=0; i<rops.length; i++) {
@@ -18198,9 +18198,9 @@ SparqlParser.parser = (function(){
                   nextOperand.operator = operator;
                   nextOperand.op1 = lop;
                   nextOperand.op2 = rops[i];
-        
+
                   exp.operands.push(nextOperand);
-                }       
+                }
                 return exp;
               } else {
                 var exp = {};
@@ -18209,7 +18209,7 @@ SparqlParser.parser = (function(){
                 exp.op1 = op1;
                 exp.op2 = op2[0][3];
                 exp.token = "expression";
-        
+
                 return exp;
               }
           })(pos0, result0[0], result0[1]);
@@ -18223,11 +18223,11 @@ SparqlParser.parser = (function(){
         }
         return result0;
       }
-      
+
       function parse_AdditiveExpression() {
         var result0, result1, result2, result3, result4, result5, result6;
         var pos0, pos1, pos2, pos3;
-        
+
         reportFailures++;
         pos0 = pos;
         pos1 = pos;
@@ -18650,13 +18650,13 @@ SparqlParser.parser = (function(){
               if(ops.length === 0) {
                   return op1;
               }
-        
+
               var ex = {};
               ex.token = 'expression';
               ex.expressionType = 'additiveexpression';
               ex.summand = op1;
               ex.summands = [];
-        
+
               for(var i=0; i<ops.length; i++) {
                   var summand = ops[i];
                   var sum = {};
@@ -18679,12 +18679,12 @@ SparqlParser.parser = (function(){
                       subexp.expressionType = 'multiplicativeexpression';
                       subexp.operator = firstFactor;
                       subexp.factors = [{operator: operator, expression: secondFactor}];
-        
+
                       sum.expression = subexp;
                   }
                   ex.summands.push(sum);
               }
-        
+
               return ex;
         })(pos0, result0[0], result0[1]);
         }
@@ -18697,11 +18697,11 @@ SparqlParser.parser = (function(){
         }
         return result0;
       }
-      
+
       function parse_MultiplicativeExpression() {
         var result0, result1, result2, result3, result4, result5;
         var pos0, pos1, pos2;
-        
+
         reportFailures++;
         pos0 = pos;
         pos1 = pos;
@@ -18906,7 +18906,7 @@ SparqlParser.parser = (function(){
               if(exps.length === 0) {
                   return exp;
               }
-        
+
               var ex = {};
               ex.token = 'expression';
               ex.expressionType = 'multiplicativeexpression';
@@ -18919,7 +18919,7 @@ SparqlParser.parser = (function(){
                   fact.expression = factor[3];
                   ex.factors.push(fact);
               }
-        
+
               return ex;
         })(pos0, result0[0], result0[1]);
         }
@@ -18932,11 +18932,11 @@ SparqlParser.parser = (function(){
         }
         return result0;
       }
-      
+
       function parse_UnaryExpression() {
         var result0, result1, result2;
         var pos0, pos1;
-        
+
         reportFailures++;
         pos0 = pos;
         pos1 = pos;
@@ -18979,7 +18979,7 @@ SparqlParser.parser = (function(){
               ex.expressionType = 'unaryexpression';
               ex.unaryexpression = "!";
               ex.expression = e;
-        
+
               return ex;
           })(pos0, result0[2]);
         }
@@ -19028,7 +19028,7 @@ SparqlParser.parser = (function(){
                 ex.expressionType = 'unaryexpression';
                 ex.unaryexpression = "+";
                 ex.expression = v;
-          
+
                 return ex;
             })(pos0, result0[2]);
           }
@@ -19077,7 +19077,7 @@ SparqlParser.parser = (function(){
                   ex.expressionType = 'unaryexpression';
                   ex.unaryexpression = "-";
                   ex.expression = v;
-            
+
                   return ex;
               })(pos0, result0[2]);
             }
@@ -19095,11 +19095,11 @@ SparqlParser.parser = (function(){
         }
         return result0;
       }
-      
+
       function parse_PrimaryExpression() {
         var result0;
         var pos0;
-        
+
         reportFailures++;
         result0 = parse_BrackettedExpression();
         if (result0 === null) {
@@ -19116,7 +19116,7 @@ SparqlParser.parser = (function(){
                     ex.expressionType = 'atomic';
                     ex.primaryexpression = 'rdfliteral';
                     ex.value = v;
-              
+
                     return ex;
                 })(pos0, result0);
               }
@@ -19133,7 +19133,7 @@ SparqlParser.parser = (function(){
                       ex.expressionType = 'atomic';
                       ex.primaryexpression = 'numericliteral';
                       ex.value = v;
-                
+
                       return ex;
                   })(pos0, result0);
                 }
@@ -19150,7 +19150,7 @@ SparqlParser.parser = (function(){
                         ex.expressionType = 'atomic';
                         ex.primaryexpression = 'booleanliteral';
                         ex.value = v;
-                  
+
                         return ex;
                     })(pos0, result0);
                   }
@@ -19169,7 +19169,7 @@ SparqlParser.parser = (function(){
                             ex.expressionType = 'atomic';
                             ex.primaryexpression = 'var';
                             ex.value = v;
-                      
+
                             return ex;
                         })(pos0, result0);
                       }
@@ -19189,11 +19189,11 @@ SparqlParser.parser = (function(){
         }
         return result0;
       }
-      
+
       function parse_BrackettedExpression() {
         var result0, result1, result2, result3, result4;
         var pos0, pos1;
-        
+
         reportFailures++;
         pos0 = pos;
         pos1 = pos;
@@ -19268,11 +19268,11 @@ SparqlParser.parser = (function(){
         }
         return result0;
       }
-      
+
       function parse_BuiltInCall() {
         var result0, result1, result2, result3, result4, result5, result6, result7, result8, result9, result10, result11, result12, result13, result14;
         var pos0, pos1, pos2;
-        
+
         reportFailures++;
         pos0 = pos;
         pos1 = pos;
@@ -19376,7 +19376,7 @@ SparqlParser.parser = (function(){
               ex.expressionType = 'builtincall'
               ex.builtincall = 'str'
               ex.args = [e]
-        
+
               return ex;
           })(pos0, result0[4]);
         }
@@ -19486,7 +19486,7 @@ SparqlParser.parser = (function(){
                 ex.expressionType = 'builtincall'
                 ex.builtincall = 'lang'
                 ex.args = [e]
-          
+
                 return ex;
           })(pos0, result0[4]);
           }
@@ -19638,7 +19638,7 @@ SparqlParser.parser = (function(){
                   ex.expressionType = 'builtincall'
                   ex.builtincall = 'langmatches'
                   ex.args = [e1,e2]
-            
+
                   return ex;
             })(pos0, result0[4], result0[8]);
             }
@@ -19748,7 +19748,7 @@ SparqlParser.parser = (function(){
                     ex.expressionType = 'builtincall'
                     ex.builtincall = 'datatype'
                     ex.args = [e]
-              
+
                     return ex;
               })(pos0, result0[4]);
               }
@@ -19858,7 +19858,7 @@ SparqlParser.parser = (function(){
                       ex.expressionType = 'builtincall'
                       ex.builtincall = 'bound'
                       ex.args = [v]
-                
+
                       return ex;
                 })(pos0, result0[4]);
                 }
@@ -19968,7 +19968,7 @@ SparqlParser.parser = (function(){
                         ex.expressionType = 'builtincall';
                         ex.builtincall = 'iri'
                         ex.args = [e];
-                  
+
                         return ex;
                   })(pos0, result0[4]);
                   }
@@ -20078,7 +20078,7 @@ SparqlParser.parser = (function(){
                           ex.expressionType = 'builtincall';
                           ex.builtincall = 'uri'
                           ex.args = [e];
-                    
+
                           return ex;
                     })(pos0, result0[4]);
                     }
@@ -20202,7 +20202,7 @@ SparqlParser.parser = (function(){
                             } else {
                                 ex.args = null;
                             }
-                      
+
                             return ex;
                       })(pos0, result0[2]);
                       }
@@ -20262,8 +20262,8 @@ SparqlParser.parser = (function(){
                               ex.expressionType = 'builtincall';
                               ex.builtincall = 'coalesce';
                               ex.args = args;
-                        
-                              return ex;    
+
+                              return ex;
                         })(pos0, result0[2]);
                         }
                         if (result0 === null) {
@@ -20456,7 +20456,7 @@ SparqlParser.parser = (function(){
                               ex.expressionType = 'builtincall';
                               ex.builtincall = 'if';
                               ex.args = [test,trueCond,falseCond];
-                          
+
                               return ex;
                           })(pos0, result0[4], result0[8], result0[12]);
                           }
@@ -20566,7 +20566,7 @@ SparqlParser.parser = (function(){
                                 ex.expressionType = 'builtincall';
                                 ex.builtincall = 'isliteral';
                                 ex.args = [arg];
-                            
+
                                 return ex;
                             })(pos0, result0[4]);
                             }
@@ -20676,7 +20676,7 @@ SparqlParser.parser = (function(){
                                   ex.expressionType = 'builtincall';
                                   ex.builtincall = 'isblank';
                                   ex.args = [arg];
-                              
+
                                   return ex;
                               })(pos0, result0[4]);
                               }
@@ -20959,7 +20959,7 @@ SparqlParser.parser = (function(){
                                       ex.expressionType = 'builtincall';
                                       ex.builtincall = 'isuri';
                                       ex.args = [arg];
-                                  
+
                                       return ex;
                                   })(pos0, result0[4]);
                                   }
@@ -21179,7 +21179,7 @@ SparqlParser.parser = (function(){
                                         acum.push(alter[i][1]);
                                       acum.push(finalarg);
                                       ex.args = acum;
-                                    
+
                                       return ex;
                                     })(pos0, result0[1], result0[4], result0[6]);
                                     }
@@ -21215,11 +21215,11 @@ SparqlParser.parser = (function(){
         }
         return result0;
       }
-      
+
       function parse_RegexExpression() {
         var result0, result1, result2, result3, result4, result5, result6, result7, result8, result9, result10, result11, result12;
         var pos0, pos1, pos2;
-        
+
         reportFailures++;
         pos0 = pos;
         pos1 = pos;
@@ -21416,7 +21416,7 @@ SparqlParser.parser = (function(){
               regex.text = e1;
               regex.pattern = e2;
               regex.flags = eo[2];
-        
+
               return regex;
         })(pos0, result0[4], result0[8], result0[10]);
         }
@@ -21429,11 +21429,11 @@ SparqlParser.parser = (function(){
         }
         return result0;
       }
-      
+
       function parse_ExistsFunc() {
         var result0, result1, result2;
         var pos0, pos1;
-        
+
         reportFailures++;
         pos0 = pos;
         pos1 = pos;
@@ -21487,7 +21487,7 @@ SparqlParser.parser = (function(){
             ex.expressionType = 'builtincall';
             ex.builtincall = 'exists';
             ex.args = [ggp];
-        
+
             return ex;
         })(pos0, result0[2]);
         }
@@ -21500,11 +21500,11 @@ SparqlParser.parser = (function(){
         }
         return result0;
       }
-      
+
       function parse_NotExistsFunc() {
         var result0, result1, result2, result3, result4;
         var pos0, pos1;
-        
+
         reportFailures++;
         pos0 = pos;
         pos1 = pos;
@@ -21594,7 +21594,7 @@ SparqlParser.parser = (function(){
             ex.expressionType = 'builtincall';
             ex.builtincall = 'notexists';
             ex.args = [ggp];
-        
+
             return ex;
         })(pos0, result0[4]);
         }
@@ -21607,11 +21607,11 @@ SparqlParser.parser = (function(){
         }
         return result0;
       }
-      
+
       function parse_Aggregate() {
         var result0, result1, result2, result3, result4, result5, result6, result7, result8, result9, result10;
         var pos0, pos1;
-        
+
         reportFailures++;
         pos0 = pos;
         pos1 = pos;
@@ -21775,9 +21775,9 @@ SparqlParser.parser = (function(){
               exp.aggregateType = 'count';
               exp.distinct = (d != "" ? 'DISTINCT' : d);
               exp.expression = e;
-        
+
               return exp;
-        
+
           })(pos0, result0[4], result0[6]);
         }
         if (result0 === null) {
@@ -21935,9 +21935,9 @@ SparqlParser.parser = (function(){
                 exp.aggregateType = 'sum';
                 exp.distinct = (d != "" ? 'DISTINCT' : d);
                 exp.expression = e;
-          
+
                 return exp;
-          
+
             })(pos0, result0[4], result0[6]);
           }
           if (result0 === null) {
@@ -22095,9 +22095,9 @@ SparqlParser.parser = (function(){
                   exp.aggregateType = 'min';
                   exp.distinct = (d != "" ? 'DISTINCT' : d);
                   exp.expression = e;
-            
+
                   return exp;
-            
+
               })(pos0, result0[4], result0[6]);
             }
             if (result0 === null) {
@@ -22255,9 +22255,9 @@ SparqlParser.parser = (function(){
                     exp.aggregateType = 'max'
                     exp.distinct = (d != "" ? 'DISTINCT' : d);
                     exp.expression = e
-              
+
                     return exp
-              
+
                 })(pos0, result0[4], result0[6]);
               }
               if (result0 === null) {
@@ -22415,9 +22415,9 @@ SparqlParser.parser = (function(){
                       exp.aggregateType = 'avg'
                       exp.distinct = (d != "" ? 'DISTINCT' : d);
                       exp.expression = e
-                
+
                       return exp
-                
+
                   })(pos0, result0[4], result0[6]);
                 }
                 if (result0 === null) {
@@ -22433,11 +22433,11 @@ SparqlParser.parser = (function(){
         }
         return result0;
       }
-      
+
       function parse_IRIrefOrFunction() {
         var result0, result1;
         var pos0, pos1;
-        
+
         reportFailures++;
         pos0 = pos;
         pos1 = pos;
@@ -22462,7 +22462,7 @@ SparqlParser.parser = (function(){
               fcall.expressionType = 'irireforfunction';
               fcall.iriref = i;
               fcall.args = args.value;
-        
+
               return fcall;
         })(pos0, result0[0], result0[1]);
         }
@@ -22475,11 +22475,11 @@ SparqlParser.parser = (function(){
         }
         return result0;
       }
-      
+
       function parse_RDFLiteral() {
         var result0, result1, result2;
         var pos0, pos1, pos2;
-        
+
         reportFailures++;
         pos0 = pos;
         pos1 = pos;
@@ -22544,10 +22544,10 @@ SparqlParser.parser = (function(){
         }
         return result0;
       }
-      
+
       function parse_NumericLiteral() {
         var result0;
-        
+
         reportFailures++;
         result0 = parse_NumericLiteralUnsigned();
         if (result0 === null) {
@@ -22562,10 +22562,10 @@ SparqlParser.parser = (function(){
         }
         return result0;
       }
-      
+
       function parse_NumericLiteralUnsigned() {
         var result0;
-        
+
         reportFailures++;
         result0 = parse_DOUBLE();
         if (result0 === null) {
@@ -22580,10 +22580,10 @@ SparqlParser.parser = (function(){
         }
         return result0;
       }
-      
+
       function parse_NumericLiteralPositive() {
         var result0;
-        
+
         reportFailures++;
         result0 = parse_DOUBLE_POSITIVE();
         if (result0 === null) {
@@ -22598,10 +22598,10 @@ SparqlParser.parser = (function(){
         }
         return result0;
       }
-      
+
       function parse_NumericLiteralNegative() {
         var result0;
-        
+
         reportFailures++;
         result0 = parse_DOUBLE_NEGATIVE();
         if (result0 === null) {
@@ -22616,11 +22616,11 @@ SparqlParser.parser = (function(){
         }
         return result0;
       }
-      
+
       function parse_BooleanLiteral() {
         var result0;
         var pos0;
-        
+
         reportFailures++;
         pos0 = pos;
         if (input.substr(pos, 4) === "TRUE") {
@@ -22698,11 +22698,11 @@ SparqlParser.parser = (function(){
         }
         return result0;
       }
-      
+
       function parse_String() {
         var result0;
         var pos0;
-        
+
         reportFailures++;
         pos0 = pos;
         result0 = parse_STRING_LITERAL_LONG1();
@@ -22748,11 +22748,11 @@ SparqlParser.parser = (function(){
         }
         return result0;
       }
-      
+
       function parse_IRIref() {
         var result0;
         var pos0;
-        
+
         reportFailures++;
         pos0 = pos;
         result0 = parse_IRI_REF();
@@ -22778,11 +22778,11 @@ SparqlParser.parser = (function(){
         }
         return result0;
       }
-      
+
       function parse_PrefixedName() {
         var result0;
         var pos0;
-        
+
         reportFailures++;
         pos0 = pos;
         result0 = parse_PNAME_LN();
@@ -22808,11 +22808,11 @@ SparqlParser.parser = (function(){
         }
         return result0;
       }
-      
+
       function parse_BlankNode() {
         var result0;
         var pos0;
-        
+
         reportFailures++;
         pos0 = pos;
         result0 = parse_BLANK_NODE_LABEL();
@@ -22838,11 +22838,11 @@ SparqlParser.parser = (function(){
         }
         return result0;
       }
-      
+
       function parse_IRI_REF() {
         var result0, result1, result2;
         var pos0, pos1;
-        
+
         reportFailures++;
         pos0 = pos;
         pos1 = pos;
@@ -22914,11 +22914,11 @@ SparqlParser.parser = (function(){
         }
         return result0;
       }
-      
+
       function parse_PNAME_NS() {
         var result0, result1;
         var pos0, pos1;
-        
+
         reportFailures++;
         pos0 = pos;
         pos1 = pos;
@@ -22956,11 +22956,11 @@ SparqlParser.parser = (function(){
         }
         return result0;
       }
-      
+
       function parse_PNAME_LN() {
         var result0, result1;
         var pos0, pos1;
-        
+
         reportFailures++;
         pos0 = pos;
         pos1 = pos;
@@ -22989,11 +22989,11 @@ SparqlParser.parser = (function(){
         }
         return result0;
       }
-      
+
       function parse_BLANK_NODE_LABEL() {
         var result0, result1;
         var pos0, pos1;
-        
+
         reportFailures++;
         pos0 = pos;
         pos1 = pos;
@@ -23030,11 +23030,11 @@ SparqlParser.parser = (function(){
         }
         return result0;
       }
-      
+
       function parse_VAR1() {
         var result0, result1;
         var pos0, pos1;
-        
+
         reportFailures++;
         pos0 = pos;
         pos1 = pos;
@@ -23071,11 +23071,11 @@ SparqlParser.parser = (function(){
         }
         return result0;
       }
-      
+
       function parse_VAR2() {
         var result0, result1;
         var pos0, pos1;
-        
+
         reportFailures++;
         pos0 = pos;
         pos1 = pos;
@@ -23112,11 +23112,11 @@ SparqlParser.parser = (function(){
         }
         return result0;
       }
-      
+
       function parse_LANGTAG() {
         var result0, result1, result2, result3, result4, result5;
         var pos0, pos1, pos2;
-        
+
         reportFailures++;
         pos0 = pos;
         pos1 = pos;
@@ -23271,7 +23271,7 @@ SparqlParser.parser = (function(){
         }
         if (result0 !== null) {
           result0 = (function(offset, a, b) {
-        
+
               if(b.length===0) {
                   return ("@"+a.join('')).toLowerCase();
               } else {
@@ -23288,11 +23288,11 @@ SparqlParser.parser = (function(){
         }
         return result0;
       }
-      
+
       function parse_INTEGER() {
         var result0, result1;
         var pos0;
-        
+
         reportFailures++;
         pos0 = pos;
         if (/^[0-9]/.test(input.charAt(pos))) {
@@ -23340,11 +23340,11 @@ SparqlParser.parser = (function(){
         }
         return result0;
       }
-      
+
       function parse_DECIMAL() {
         var result0, result1, result2, result3;
         var pos0, pos1;
-        
+
         reportFailures++;
         pos0 = pos;
         pos1 = pos;
@@ -23423,7 +23423,7 @@ SparqlParser.parser = (function(){
         }
         if (result0 !== null) {
           result0 = (function(offset, a, b, c) {
-        
+
               var lit = {};
               lit.token = "literal";
               lit.lang = null;
@@ -23504,11 +23504,11 @@ SparqlParser.parser = (function(){
         }
         return result0;
       }
-      
+
       function parse_DOUBLE() {
         var result0, result1, result2, result3;
         var pos0, pos1;
-        
+
         reportFailures++;
         pos0 = pos;
         pos1 = pos;
@@ -23734,11 +23734,11 @@ SparqlParser.parser = (function(){
         }
         return result0;
       }
-      
+
       function parse_INTEGER_POSITIVE() {
         var result0, result1;
         var pos0, pos1;
-        
+
         reportFailures++;
         pos0 = pos;
         pos1 = pos;
@@ -23775,11 +23775,11 @@ SparqlParser.parser = (function(){
         }
         return result0;
       }
-      
+
       function parse_DECIMAL_POSITIVE() {
         var result0, result1;
         var pos0, pos1;
-        
+
         reportFailures++;
         pos0 = pos;
         pos1 = pos;
@@ -23816,11 +23816,11 @@ SparqlParser.parser = (function(){
         }
         return result0;
       }
-      
+
       function parse_DOUBLE_POSITIVE() {
         var result0, result1;
         var pos0, pos1;
-        
+
         reportFailures++;
         pos0 = pos;
         pos1 = pos;
@@ -23857,11 +23857,11 @@ SparqlParser.parser = (function(){
         }
         return result0;
       }
-      
+
       function parse_INTEGER_NEGATIVE() {
         var result0, result1;
         var pos0, pos1;
-        
+
         reportFailures++;
         pos0 = pos;
         pos1 = pos;
@@ -23898,11 +23898,11 @@ SparqlParser.parser = (function(){
         }
         return result0;
       }
-      
+
       function parse_DECIMAL_NEGATIVE() {
         var result0, result1;
         var pos0, pos1;
-        
+
         reportFailures++;
         pos0 = pos;
         pos1 = pos;
@@ -23939,11 +23939,11 @@ SparqlParser.parser = (function(){
         }
         return result0;
       }
-      
+
       function parse_DOUBLE_NEGATIVE() {
         var result0, result1;
         var pos0, pos1;
-        
+
         reportFailures++;
         pos0 = pos;
         pos1 = pos;
@@ -23980,11 +23980,11 @@ SparqlParser.parser = (function(){
         }
         return result0;
       }
-      
+
       function parse_EXPONENT() {
         var result0, result1, result2, result3;
         var pos0, pos1;
-        
+
         reportFailures++;
         pos0 = pos;
         pos1 = pos;
@@ -24061,11 +24061,11 @@ SparqlParser.parser = (function(){
         }
         return result0;
       }
-      
+
       function parse_STRING_LITERAL1() {
         var result0, result1, result2;
         var pos0, pos1;
-        
+
         reportFailures++;
         pos0 = pos;
         pos1 = pos;
@@ -24143,11 +24143,11 @@ SparqlParser.parser = (function(){
         }
         return result0;
       }
-      
+
       function parse_STRING_LITERAL2() {
         var result0, result1, result2;
         var pos0, pos1;
-        
+
         reportFailures++;
         pos0 = pos;
         pos1 = pos;
@@ -24225,11 +24225,11 @@ SparqlParser.parser = (function(){
         }
         return result0;
       }
-      
+
       function parse_STRING_LITERAL_LONG1() {
         var result0, result1, result2;
         var pos0, pos1;
-        
+
         reportFailures++;
         pos0 = pos;
         pos1 = pos;
@@ -24307,11 +24307,11 @@ SparqlParser.parser = (function(){
         }
         return result0;
       }
-      
+
       function parse_STRING_LITERAL_LONG2() {
         var result0, result1, result2;
         var pos0, pos1;
-        
+
         reportFailures++;
         pos0 = pos;
         pos1 = pos;
@@ -24389,11 +24389,11 @@ SparqlParser.parser = (function(){
         }
         return result0;
       }
-      
+
       function parse_ECHAR() {
         var result0, result1;
         var pos0;
-        
+
         reportFailures++;
         pos0 = pos;
         if (input.charCodeAt(pos) === 92) {
@@ -24431,11 +24431,11 @@ SparqlParser.parser = (function(){
         }
         return result0;
       }
-      
+
       function parse_NIL() {
         var result0, result1, result2;
         var pos0, pos1;
-        
+
         reportFailures++;
         pos0 = pos;
         pos1 = pos;
@@ -24481,9 +24481,9 @@ SparqlParser.parser = (function(){
         }
         if (result0 !== null) {
           result0 = (function(offset) {
-        
-              return  {token: "triplesnodecollection", 
-                       triplesContext:[], 
+
+              return  {token: "triplesnodecollection",
+                       triplesContext:[],
                        chainSubject:[{token:'uri', value:"http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"}]};
         })(pos0);
         }
@@ -24496,10 +24496,10 @@ SparqlParser.parser = (function(){
         }
         return result0;
       }
-      
+
       function parse_WS() {
         var result0;
-        
+
         reportFailures++;
         if (/^[ ]/.test(input.charAt(pos))) {
           result0 = input.charAt(pos);
@@ -24552,11 +24552,11 @@ SparqlParser.parser = (function(){
         }
         return result0;
       }
-      
+
       function parse_COMMENT() {
         var result0, result1, result2;
         var pos0;
-        
+
         reportFailures++;
         pos0 = pos;
         if (input.charCodeAt(pos) === 35) {
@@ -24607,11 +24607,11 @@ SparqlParser.parser = (function(){
         }
         return result0;
       }
-      
+
       function parse_ANON() {
         var result0, result1, result2;
         var pos0;
-        
+
         reportFailures++;
         pos0 = pos;
         if (input.charCodeAt(pos) === 91) {
@@ -24660,10 +24660,10 @@ SparqlParser.parser = (function(){
         }
         return result0;
       }
-      
+
       function parse_PN_CHARS_BASE() {
         var result0;
-        
+
         reportFailures++;
         if (/^[A-Z]/.test(input.charAt(pos))) {
           result0 = input.charAt(pos);
@@ -24823,10 +24823,10 @@ SparqlParser.parser = (function(){
         }
         return result0;
       }
-      
+
       function parse_PN_CHARS_U() {
         var result0;
-        
+
         reportFailures++;
         result0 = parse_PN_CHARS_BASE();
         if (result0 === null) {
@@ -24846,11 +24846,11 @@ SparqlParser.parser = (function(){
         }
         return result0;
       }
-      
+
       function parse_VARNAME() {
         var result0, result1, result2;
         var pos0, pos1;
-        
+
         reportFailures++;
         pos0 = pos;
         pos1 = pos;
@@ -24983,10 +24983,10 @@ SparqlParser.parser = (function(){
         }
         return result0;
       }
-      
+
       function parse_PN_CHARS() {
         var result0;
-        
+
         reportFailures++;
         result0 = parse_PN_CHARS_U();
         if (result0 === null) {
@@ -25050,11 +25050,11 @@ SparqlParser.parser = (function(){
         }
         return result0;
       }
-      
+
       function parse_PN_PREFIX() {
         var result0, result1, result2;
         var pos0, pos1;
-        
+
         reportFailures++;
         pos0 = pos;
         pos1 = pos;
@@ -25114,11 +25114,11 @@ SparqlParser.parser = (function(){
         }
         return result0;
       }
-      
+
       function parse_PN_LOCAL() {
         var result0, result1, result2;
         var pos0, pos1;
-        
+
         reportFailures++;
         pos0 = pos;
         pos1 = pos;
@@ -25152,7 +25152,7 @@ SparqlParser.parser = (function(){
           pos = pos1;
         }
         if (result0 !== null) {
-          result0 = (function(offset, base, rest) { 
+          result0 = (function(offset, base, rest) {
                                                                return base + rest.join('');
                                                              })(pos0, result0[0], result0[1]);
         }
@@ -25165,11 +25165,11 @@ SparqlParser.parser = (function(){
         }
         return result0;
       }
-      
-      
+
+
       function cleanupExpected(expected) {
         expected.sort();
-        
+
         var lastExpected = null;
         var cleanExpected = [];
         for (var i = 0; i < expected.length; i++) {
@@ -25180,7 +25180,7 @@ SparqlParser.parser = (function(){
         }
         return cleanExpected;
       }
-      
+
       function computeErrorPosition() {
         /*
          * The first idea was to use |String.split| to break the input up to the
@@ -25188,11 +25188,11 @@ SparqlParser.parser = (function(){
          * there. However IE's |split| implementation is so broken that it was
          * enough to prevent it.
          */
-        
+
         var line = 1;
         var column = 1;
         var seenCR = false;
-        
+
         for (var i = 0; i < Math.max(pos, rightmostFailuresPos); i++) {
           var ch = input.charAt(i);
           if (ch === "\n") {
@@ -25208,11 +25208,11 @@ SparqlParser.parser = (function(){
             seenCR = false;
           }
         }
-        
+
         return { line: line, column: column };
       }
-      
-      
+
+
           var flattenString = function(arrs) {
               var acum ="";
               for(var i=0; i< arrs.length; i++) {
@@ -25222,35 +25222,35 @@ SparqlParser.parser = (function(){
                   acum = acum + arrs[i].join('');
                 }
               }
-      
+
               return acum;
           }
-      
-      
+
+
           var GlobalBlankNodeCounter = 0;
-      
+
           var prefixes = {};
-      
+
           var registerPrefix = function(prefix, uri) {
               prefixes[prefix] = uri;
           }
-      
+
           var registerDefaultPrefix = function(uri) {
               prefixes[null] = uri;
           }
-      
+
           var arrayToString = function(array) {
               var tmp = "";
               for(var i=0; i<array.length; i++) {
-                  tmp = tmp + array[i];            
+                  tmp = tmp + array[i];
               }
-      
+
               return tmp.toUpperCase();
           }
-      
-      
+
+
       var result = parseFunctions[startRule]();
-      
+
       /*
        * The parser is now in one of the following three states:
        *
@@ -25279,7 +25279,7 @@ SparqlParser.parser = (function(){
         var offset = Math.max(pos, rightmostFailuresPos);
         var found = offset < input.length ? input.charAt(offset) : null;
         var errorPosition = computeErrorPosition();
-        
+
         throw new this.SyntaxError(
           cleanupExpected(rightmostFailuresExpected),
           found,
@@ -25288,20 +25288,20 @@ SparqlParser.parser = (function(){
           errorPosition.column
         );
       }
-      
+
       return result;
     },
-    
+
     /* Returns the parser source code. */
     toSource: function() { return this._source; }
   };
-  
+
   /* Thrown when a parser encounters a syntax error. */
-  
+
   result.SyntaxError = function(expected, found, offset, line, column) {
     function buildMessage(expected, found) {
       var expectedHumanized, foundHumanized;
-      
+
       switch (expected.length) {
         case 0:
           expectedHumanized = "end of input";
@@ -25314,12 +25314,12 @@ SparqlParser.parser = (function(){
             + " or "
             + expected[expected.length - 1];
       }
-      
+
       foundHumanized = found ? quote(found) : "end of input";
-      
+
       return "Expected " + expectedHumanized + " but " + foundHumanized + " found.";
     }
-    
+
     this.name = "SyntaxError";
     this.expected = expected;
     this.found = found;
@@ -25328,12 +25328,12 @@ SparqlParser.parser = (function(){
     this.line = line;
     this.column = column;
   };
-  
+
   result.SyntaxError.prototype = Error.prototype;
-  
+
   return result;
 })();
-// end of ./src/js-sparql-parser/src/sparql_parser.js 
+// end of ./src/js-sparql-parser/src/sparql_parser.js
 // exports
 var RDFJSInterface = {};
 
@@ -25373,7 +25373,7 @@ RDFJSInterface.UrisMap = function() {
 RDFJSInterface.UrisMap.prototype.values = function() {
     var collected = {};
     for(var p in this) {
-        if(!Utils.include(this.interfaceProperties,p) && 
+        if(!Utils.include(this.interfaceProperties,p) &&
            typeof(this[p])!=='function' &&
            p!=='defaultNs' &&
            p!=='interfaceProperties') {
@@ -25468,7 +25468,7 @@ RDFJSInterface.Profile = function() {
     this.terms = new RDFJSInterface.UrisMap();
 };
 
-RDFJSInterface.Profile.prototype.importProfile = function(profile, override) {    
+RDFJSInterface.Profile.prototype.importProfile = function(profile, override) {
     this.prefixes.addAll(profile.prefixes, override);
     this.terms.addAll(profile.terms, override);
 };
@@ -25624,11 +25624,11 @@ RDFJSInterface.RDFEnvironment.prototype.createTermMap = function(empty) {
     } else {
       var cloned = this.terms.values();
       var termMap = new RDFJSInterface.UrisMap();
-   
+
       for(var p in cloned) {
           termMap[p] = cloned[p];
       }
-   
+
       return termMap;
     }
 };
@@ -25639,13 +25639,13 @@ RDFJSInterface.RDFEnvironment.prototype.createPrefixMap = function(empty) {
     } else {
       var cloned = this.prefixes.values();
       var prefixMap = new RDFJSInterface.UrisMap();
-   
+
       for(var p in cloned) {
           prefixMap[p] = cloned[p];
       }
-   
+
       return prefixMap;
-    }    
+    }
 };
 
 // Common RDFNode interface
@@ -25666,7 +25666,7 @@ RDFJSInterface.RDFNode.prototype.equals = function(otherNode) {
                 return false;
             }
         }
-      
+
         return true;
     }
 };
@@ -25724,9 +25724,9 @@ RDFJSInterface.Literal.prototype.toNT = function() {
 };
 
 RDFJSInterface.Literal.prototype.valueOf = function() {
-    return QueryFilters.effectiveTypeValue({token: 'literal', 
-                                            type: (this.type || this.datatype), 
-                                            value: this.nominalValue, 
+    return QueryFilters.effectiveTypeValue({token: 'literal',
+                                            type: (this.type || this.datatype),
+                                            value: this.nominalValue,
                                             language: this.language});
 };
 
@@ -25785,7 +25785,7 @@ RDFJSInterface.Graph.prototype.add = function(triple) {
     for(var i=0; i<this.actions.length; i++) {
         triple = this.actions[i](triple);
     }
-    
+
     var id = triple.subject.toString()+triple.predicate.toString()+triple.object.toString();
     if(!this.duplicates[id]) {
         this.duplicates[id] = true;
@@ -25882,7 +25882,7 @@ RDFJSInterface.Graph.prototype.merge = function(g) {
     var newGraph = new RDFJSInterface.Graph();
     for(var i=0; i<this.triples.length; i++)
         newGraph.add(this.triples[i]);
-    
+
     return newGraph;
 };
 
@@ -25990,7 +25990,7 @@ RDFJSInterface.buildNamedNode = function(value, bindings, engine, env) {
 
 RDFJSInterface.rdf = new RDFJSInterface.RDFEnvironment();
 
-// end of ./src/js-query-engine/src/rdf_js_interface.js 
+// end of ./src/js-query-engine/src/rdf_js_interface.js
 // exports
 var QueryFilters = {};
 
@@ -26062,7 +26062,7 @@ QueryFilters.boundVars = function(filterExpr) {
             return acum.concat(QueryFilters.boundVars(filterExpr.expression2));
         } else if(expressionType == 'unaryexpression') {
             return QueryFilters.boundVars(filterExpr.expression);
-        } else if(expressionType == 'atomic') {           
+        } else if(expressionType == 'atomic') {
             if(filterExpr.primaryexpression == 'var') {
                 return [filterExpr.value];
             } else {
@@ -26077,7 +26077,7 @@ QueryFilters.boundVars = function(filterExpr) {
     }
 };
 
-QueryFilters.run = function(filterExpr, bindings, nullifyFilters, dataset, env, queryEngine) {    
+QueryFilters.run = function(filterExpr, bindings, nullifyFilters, dataset, env, queryEngine) {
     var denormBindings = queryEngine.copyDenormalizedBindings(bindings, env.outCache);
     var filteredBindings = [];
     for(var i=0; i<bindings.length; i++) {
@@ -26138,7 +26138,7 @@ QueryFilters.runAggregator = function(aggregator, bindingsGroup, queryEngine, da
                 var max = null;
                 for(var i=0; i< bindingsGroup.length; i++) {
                     var bindings = bindingsGroup[i];
-                    var ebv = QueryFilters.runFilter(aggregator.expression.expression, bindings, queryEngine, dataset, env);                    
+                    var ebv = QueryFilters.runFilter(aggregator.expression.expression, bindings, queryEngine, dataset, env);
                     if(!QueryFilters.isEbvError(ebv)) {
                         if(max === null) {
                             max = ebv;
@@ -26159,7 +26159,7 @@ QueryFilters.runAggregator = function(aggregator, bindingsGroup, queryEngine, da
                 var min = null;
                 for(var i=0; i< bindingsGroup.length; i++) {
                     var bindings = bindingsGroup[i];
-                    var ebv = QueryFilters.runFilter(aggregator.expression.expression, bindings, queryEngine, dataset, env);                    
+                    var ebv = QueryFilters.runFilter(aggregator.expression.expression, bindings, queryEngine, dataset, env);
                     if(!QueryFilters.isEbvError(ebv)) {
                         if(min === null) {
                             min = ebv;
@@ -26188,14 +26188,14 @@ QueryFilters.runAggregator = function(aggregator, bindingsGroup, queryEngine, da
                                 distinct[key] = true;
                                 count++;
                             }
-                        } 
+                        }
                     } else {
                         count = bindingsGroup.length;
-                    }                   
+                    }
                 } else {
                   for(var i=0; i< bindingsGroup.length; i++) {
                       var bindings = bindingsGroup[i];
-                      var ebv = QueryFilters.runFilter(aggregator.expression.expression, bindings, queryEngine, dataset, env);                    
+                      var ebv = QueryFilters.runFilter(aggregator.expression.expression, bindings, queryEngine, dataset, env);
                       if(!QueryFilters.isEbvError(ebv)) {
                           if(aggregator.expression.distinct != null && aggregator.expression.distinct != '') {
                               var key = Utils.hashTerm(ebv);
@@ -26217,7 +26217,7 @@ QueryFilters.runAggregator = function(aggregator, bindingsGroup, queryEngine, da
                 var count = 0;
                 for(var i=0; i< bindingsGroup.length; i++) {
                     var bindings = bindingsGroup[i];
-                    var ebv = QueryFilters.runFilter(aggregator.expression.expression, bindings, queryEngine, dataset, env);                    
+                    var ebv = QueryFilters.runFilter(aggregator.expression.expression, bindings, queryEngine, dataset, env);
                     if(!QueryFilters.isEbvError(ebv)) {
                         if(aggregator.expression.distinct != null && aggregator.expression.distinct != '') {
                             var key = Utils.hashTerm(ebv);
@@ -26245,7 +26245,7 @@ QueryFilters.runAggregator = function(aggregator, bindingsGroup, queryEngine, da
                 var aggregated = {token: 'literal', type:"http://www.w3.org/2001/XMLSchema#integer", value:'0'};
                 for(var i=0; i< bindingsGroup.length; i++) {
                     var bindings = bindingsGroup[i];
-                    var ebv = QueryFilters.runFilter(aggregator.expression.expression, bindings, queryEngine, dataset, env);                    
+                    var ebv = QueryFilters.runFilter(aggregator.expression.expression, bindings, queryEngine, dataset, env);
                     if(!QueryFilters.isEbvError(ebv)) {
                         if(aggregator.expression.distinct != null && aggregator.expression.distinct != '') {
                             var key = Utils.hashTerm(ebv);
@@ -26262,7 +26262,7 @@ QueryFilters.runAggregator = function(aggregator, bindingsGroup, queryEngine, da
                         }
                     }
                 }
-                
+
                 aggregated.value =''+aggregated.value;
                 return aggregated;
             } else {
@@ -26300,7 +26300,7 @@ QueryFilters.runFilter = function(filterExpr, bindings, queryEngine, dataset, en
             return QueryFilters.runRegex(filterExpr.text, filterExpr.pattern, filterExpr.flags, bindings, queryEngine, dataset, env)
         } else if(expressionType == 'custom') {
             return QueryFilters.runBuiltInCall(filterExpr.name, filterExpr.args, bindings, queryEngine, dataset, env);
-        } else if(expressionType == 'atomic') {        
+        } else if(expressionType == 'atomic') {
             if(filterExpr.primaryexpression == 'var') {
                 // lookup the var in the bindings
                 var val = bindings[filterExpr.value.value];
@@ -26347,8 +26347,8 @@ QueryFilters.isRDFTerm = function(val) {
 
  xsd:boolean   RDF term term1 = RDF term term2
 
-Returns TRUE if term1 and term2 are the same RDF term as defined in Resource Description Framework (RDF): 
-Concepts and Abstract Syntax [CONCEPTS]; produces a type error if the arguments are both literal but are not 
+Returns TRUE if term1 and term2 are the same RDF term as defined in Resource Description Framework (RDF):
+Concepts and Abstract Syntax [CONCEPTS]; produces a type error if the arguments are both literal but are not
 the same RDF term *; returns FALSE otherwise. term1 and term2 are the same if any of the following is true:
 
     term1 and term2 are equivalent IRIs as defined in 6.4 RDF URI References of [CONCEPTS].
@@ -26374,9 +26374,9 @@ QueryFilters.RDFTermEquality = function(v1, v2, queryEngine, env) {
             }
 
 //            if(v1.value != v2.value) {
-//                return QueryFilters.ebvError();                                
+//                return QueryFilters.ebvError();
 //            } else if(v1.type && v2.type && v1.type!=v2.type) {
-//                return QueryFilters.ebvError();                
+//                return QueryFilters.ebvError();
 //            } else if(QueryFilters.isSimpleLiteral(v1) && v2.type!=null){
 //                return QueryFilters.ebvError();
 //            } else if(QueryFilters.isSimpleLiteral(v2) && v1.type!=null){
@@ -26753,10 +26753,10 @@ QueryFilters.effectiveTypeValue = function(val){
             //} else {
                 return tmp;
             //}
-        } else if (val.type == "http://www.w3.org/2001/XMLSchema#date" || 
+        } else if (val.type == "http://www.w3.org/2001/XMLSchema#date" ||
                    val.type == "http://www.w3.org/2001/XMLSchema#dateTime" ) {
             try {
-                var d = Utils.parseISO8601(val.value);            
+                var d = Utils.parseISO8601(val.value);
                 return(d);
             } catch(e) {
                 return null;
@@ -26867,9 +26867,9 @@ QueryFilters.runEqualityFunction = function(op1, op2, bindings, queryEngine, dat
         } else {
             return QueryFilters.ebvBoolean(eop1 == eop2);
         }
-    } else if((QueryFilters.isSimpleLiteral(op1) || QueryFilters.isXsdType("string", op1)) && 
+    } else if((QueryFilters.isSimpleLiteral(op1) || QueryFilters.isXsdType("string", op1)) &&
               (QueryFilters.isSimpleLiteral(op2) || QueryFilters.isXsdType("string", op2))) {
-        return QueryFilters.ebvBoolean(QueryFilters.effectiveTypeValue(op1) == QueryFilters.effectiveTypeValue(op2));       
+        return QueryFilters.ebvBoolean(QueryFilters.effectiveTypeValue(op1) == QueryFilters.effectiveTypeValue(op2));
     } else if(QueryFilters.isXsdType("boolean", op1) && QueryFilters.isXsdType("boolean", op2)) {
         return QueryFilters.ebvBoolean(QueryFilters.effectiveTypeValue(op1) == QueryFilters.effectiveTypeValue(op2));
     } else if((QueryFilters.isXsdType("dateTime", op1)||QueryFilters.isXsdType("date", op1)) && (QueryFilters.isXsdType("dateTime", op2)||QueryFilters.isXsdType("date", op2))) {
@@ -26905,12 +26905,12 @@ QueryFilters.runGtFunction = function(op1, op2, bindings) {
     if(QueryFilters.isNumeric(op1) && QueryFilters.isNumeric(op2)) {
         return QueryFilters.ebvBoolean(QueryFilters.effectiveTypeValue(op1) > QueryFilters.effectiveTypeValue(op2));
     } else if(QueryFilters.isSimpleLiteral(op1) && QueryFilters.isSimpleLiteral(op2)) {
-        return QueryFilters.ebvBoolean(QueryFilters.effectiveTypeValue(op1) > QueryFilters.effectiveTypeValue(op2));       
+        return QueryFilters.ebvBoolean(QueryFilters.effectiveTypeValue(op1) > QueryFilters.effectiveTypeValue(op2));
     } else if(QueryFilters.isXsdType("string", op1) && QueryFilters.isXsdType("string", op2)) {
-        return QueryFilters.ebvBoolean(QueryFilters.effectiveTypeValue(op1) > QueryFilters.effectiveTypeValue(op2));       
+        return QueryFilters.ebvBoolean(QueryFilters.effectiveTypeValue(op1) > QueryFilters.effectiveTypeValue(op2));
     } else if(QueryFilters.isXsdType("boolean", op1) && QueryFilters.isXsdType("boolean", op2)) {
         return QueryFilters.ebvBoolean(QueryFilters.effectiveTypeValue(op1) > QueryFilters.effectiveTypeValue(op2));
-    } else if((QueryFilters.isXsdType("dateTime", op1) || QueryFilters.isXsdType("date", op1)) && 
+    } else if((QueryFilters.isXsdType("dateTime", op1) || QueryFilters.isXsdType("date", op1)) &&
               (QueryFilters.isXsdType("dateTime", op2) || QueryFilters.isXsdType("date", op2))) {
         if(QueryFilters.isXsdType("dateTime", op1) && QueryFilters.isXsdType("date", op2)) {
             return QueryFilters.ebvFalse();
@@ -26956,7 +26956,7 @@ QueryFilters.runTotalGtFunction = function(op1,op2) {
     } else if(op1.token && op1.token === 'literal' && op2.token && op2.token === 'literal') {
         // one of the literals must have type/lang and the othe may not have them
         return QueryFilters.ebvBoolean(""+op1.value+op1.type+op1.lang > ""+op2.value+op2.type+op2.lang);
-    } else if(op1.token && op1.token === 'blank' && op2.token && op2.token === 'blank') {    
+    } else if(op1.token && op1.token === 'blank' && op2.token && op2.token === 'blank') {
         return QueryFilters.ebvBoolean(op1.value > op2.value);
     } else if(op1.value && op2.value) {
         return QueryFilters.ebvBoolean(op1.value > op2.value);
@@ -26974,12 +26974,12 @@ QueryFilters.runLtFunction = function(op1, op2, bindings) {
     if(QueryFilters.isNumeric(op1) && QueryFilters.isNumeric(op2)) {
         return QueryFilters.ebvBoolean(QueryFilters.effectiveTypeValue(op1) < QueryFilters.effectiveTypeValue(op2));
     } else if(QueryFilters.isSimpleLiteral(op1) && QueryFilters.isSimpleLiteral(op2)) {
-        return QueryFilters.ebvBoolean(QueryFilters.effectiveTypeValue(op1) < QueryFilters.effectiveTypeValue(op2));       
+        return QueryFilters.ebvBoolean(QueryFilters.effectiveTypeValue(op1) < QueryFilters.effectiveTypeValue(op2));
     } else if(QueryFilters.isXsdType("string", op1) && QueryFilters.isXsdType("string", op2)) {
-        return QueryFilters.ebvBoolean(QueryFilters.effectiveTypeValue(op1) < QueryFilters.effectiveTypeValue(op2));       
+        return QueryFilters.ebvBoolean(QueryFilters.effectiveTypeValue(op1) < QueryFilters.effectiveTypeValue(op2));
     } else if(QueryFilters.isXsdType("boolean", op1) && QueryFilters.isXsdType("boolean", op2)) {
         return QueryFilters.ebvBoolean(QueryFilters.effectiveTypeValue(op1) < QueryFilters.effectiveTypeValue(op2));
-    } else if((QueryFilters.isXsdType("dateTime", op1) || QueryFilters.isXsdType("date", op1)) && 
+    } else if((QueryFilters.isXsdType("dateTime", op1) || QueryFilters.isXsdType("date", op1)) &&
               (QueryFilters.isXsdType("dateTime", op2) || QueryFilters.isXsdType("date", op2))) {
         if(QueryFilters.isXsdType("dateTime", op1) && QueryFilters.isXsdType("date", op2)) {
             return QueryFilters.ebvFalse();
@@ -27012,12 +27012,12 @@ QueryFilters.runGtEqFunction = function(op1, op2, bindings) {
     if(QueryFilters.isNumeric(op1) && QueryFilters.isNumeric(op2)) {
         return QueryFilters.ebvBoolean(QueryFilters.effectiveTypeValue(op1) >= QueryFilters.effectiveTypeValue(op2));
     } else if(QueryFilters.isSimpleLiteral(op1) && QueryFilters.isSimpleLiteral(op2)) {
-        return QueryFilters.ebvBoolean(QueryFilters.effectiveTypeValue(op1) >= QueryFilters.effectiveTypeValue(op2));       
+        return QueryFilters.ebvBoolean(QueryFilters.effectiveTypeValue(op1) >= QueryFilters.effectiveTypeValue(op2));
     } else if(QueryFilters.isXsdType("string", op1) && QueryFilters.isXsdType("string", op2)) {
-        return QueryFilters.ebvBoolean(QueryFilters.effectiveTypeValue(op1) >= QueryFilters.effectiveTypeValue(op2));       
+        return QueryFilters.ebvBoolean(QueryFilters.effectiveTypeValue(op1) >= QueryFilters.effectiveTypeValue(op2));
     } else if(QueryFilters.isXsdType("boolean", op1) && QueryFilters.isXsdType("boolean", op2)) {
         return QueryFilters.ebvBoolean(QueryFilters.effectiveTypeValue(op1) >= QueryFilters.effectiveTypeValue(op2));
-    } else if((QueryFilters.isXsdType("dateTime", op1) || QueryFilters.isXsdType("date", op1)) && 
+    } else if((QueryFilters.isXsdType("dateTime", op1) || QueryFilters.isXsdType("date", op1)) &&
               (QueryFilters.isXsdType("dateTime", op2) || QueryFilters.isXsdType("date", op2))) {
         if(QueryFilters.isXsdType("dateTime", op1) && QueryFilters.isXsdType("date", op2)) {
             return QueryFilters.ebvFalse();
@@ -27051,12 +27051,12 @@ QueryFilters.runLtEqFunction = function(op1, op2, bindings) {
     if(QueryFilters.isNumeric(op1) && QueryFilters.isNumeric(op2)) {
         return QueryFilters.ebvBoolean(QueryFilters.effectiveTypeValue(op1) <= QueryFilters.effectiveTypeValue(op2));
     } else if(QueryFilters.isSimpleLiteral(op1) && QueryFilters.isSimpleLiteral(op2)) {
-        return QueryFilters.ebvBoolean(QueryFilters.effectiveTypeValue(op1) <= QueryFilters.effectiveTypeValue(op2));       
+        return QueryFilters.ebvBoolean(QueryFilters.effectiveTypeValue(op1) <= QueryFilters.effectiveTypeValue(op2));
     } else if(QueryFilters.isXsdType("string", op1) && QueryFilters.isXsdType("string", op2)) {
-        return QueryFilters.ebvBoolean(QueryFilters.effectiveTypeValue(op1) <= QueryFilters.effectiveTypeValue(op2));       
+        return QueryFilters.ebvBoolean(QueryFilters.effectiveTypeValue(op1) <= QueryFilters.effectiveTypeValue(op2));
     } else if(QueryFilters.isXsdType("boolean", op1) && QueryFilters.isXsdType("boolean", op2)) {
         return QueryFilters.ebvBoolean(QueryFilters.effectiveTypeValue(op1) <= QueryFilters.effectiveTypeValue(op2));
-    } else if((QueryFilters.isXsdType("dateTime", op1) || QueryFilters.isXsdType("date", op1)) && 
+    } else if((QueryFilters.isXsdType("dateTime", op1) || QueryFilters.isXsdType("date", op1)) &&
               (QueryFilters.isXsdType("dateTime", op2) || QueryFilters.isXsdType("date", op2))) {
         if(QueryFilters.isXsdType("dateTime", op1) && QueryFilters.isXsdType("date", op2)) {
             return QueryFilters.ebvFalse();
@@ -27111,15 +27111,15 @@ QueryFilters.runSumFunction = function(suma, sumb) {
         return QueryFilters.ebvError();
     }
     var val = QueryFilters.effectiveTypeValue(suma) + QueryFilters.effectiveTypeValue(sumb);
-    
+
     if(QueryFilters.isDouble(suma) || QueryFilters.isDouble(sumb)) {
-        return {token: 'literal', type:"http://www.w3.org/2001/XMLSchema#double", value:val};        
+        return {token: 'literal', type:"http://www.w3.org/2001/XMLSchema#double", value:val};
     } else if(QueryFilters.isFloat(suma) || QueryFilters.isFloat(sumb)) {
-        return {token: 'literal', type:"http://www.w3.org/2001/XMLSchema#float", value:val};        
+        return {token: 'literal', type:"http://www.w3.org/2001/XMLSchema#float", value:val};
     } else if(QueryFilters.isDecimal(suma) || QueryFilters.isDecimal(sumb)) {
-        return {token: 'literal', type:"http://www.w3.org/2001/XMLSchema#decimal", value:val};        
+        return {token: 'literal', type:"http://www.w3.org/2001/XMLSchema#decimal", value:val};
     } else {
-        return {token: 'literal', type:"http://www.w3.org/2001/XMLSchema#integer", value:val};        
+        return {token: 'literal', type:"http://www.w3.org/2001/XMLSchema#integer", value:val};
     }
 };
 
@@ -27130,13 +27130,13 @@ QueryFilters.runSubFunction = function(suma, sumb) {
     var val = QueryFilters.effectiveTypeValue(suma) - QueryFilters.effectiveTypeValue(sumb);
 
     if(QueryFilters.isDouble(suma) || QueryFilters.isDouble(sumb)) {
-        return {token: 'literal', type:"http://www.w3.org/2001/XMLSchema#double", value:val};        
+        return {token: 'literal', type:"http://www.w3.org/2001/XMLSchema#double", value:val};
     } else if(QueryFilters.isFloat(suma) || QueryFilters.isFloat(sumb)) {
-        return {token: 'literal', type:"http://www.w3.org/2001/XMLSchema#float", value:val};        
+        return {token: 'literal', type:"http://www.w3.org/2001/XMLSchema#float", value:val};
     } else if(QueryFilters.isDecimal(suma) || QueryFilters.isDecimal(sumb)) {
-        return {token: 'literal', type:"http://www.w3.org/2001/XMLSchema#decimal", value:val};        
+        return {token: 'literal', type:"http://www.w3.org/2001/XMLSchema#decimal", value:val};
     } else {
-        return {token: 'literal', type:"http://www.w3.org/2001/XMLSchema#integer", value:val};        
+        return {token: 'literal', type:"http://www.w3.org/2001/XMLSchema#integer", value:val};
     }
 };
 
@@ -27176,13 +27176,13 @@ QueryFilters.runMulFunction = function(faca, facb) {
     var val = QueryFilters.effectiveTypeValue(faca) * QueryFilters.effectiveTypeValue(facb);
 
     if(QueryFilters.isDouble(faca) || QueryFilters.isDouble(facb)) {
-        return {token: 'literal', type:"http://www.w3.org/2001/XMLSchema#double", value:val};        
+        return {token: 'literal', type:"http://www.w3.org/2001/XMLSchema#double", value:val};
     } else if(QueryFilters.isFloat(faca) || QueryFilters.isFloat(facb)) {
-        return {token: 'literal', type:"http://www.w3.org/2001/XMLSchema#float", value:val};        
+        return {token: 'literal', type:"http://www.w3.org/2001/XMLSchema#float", value:val};
     } else if(QueryFilters.isDecimal(faca) || QueryFilters.isDecimal(facb)) {
-        return {token: 'literal', type:"http://www.w3.org/2001/XMLSchema#decimal", value:val};        
+        return {token: 'literal', type:"http://www.w3.org/2001/XMLSchema#decimal", value:val};
     } else {
-        return {token: 'literal', type:"http://www.w3.org/2001/XMLSchema#integer", value:val};        
+        return {token: 'literal', type:"http://www.w3.org/2001/XMLSchema#integer", value:val};
     }
 };
 
@@ -27193,13 +27193,13 @@ QueryFilters.runDivFunction = function(faca, facb) {
     var val = QueryFilters.effectiveTypeValue(faca) / QueryFilters.effectiveTypeValue(facb);
 
     if(QueryFilters.isDouble(faca) || QueryFilters.isDouble(facb)) {
-        return {token: 'literal', type:"http://www.w3.org/2001/XMLSchema#double", value:val};        
+        return {token: 'literal', type:"http://www.w3.org/2001/XMLSchema#double", value:val};
     } else if(QueryFilters.isFloat(faca) || QueryFilters.isFloat(facb)) {
-        return {token: 'literal', type:"http://www.w3.org/2001/XMLSchema#float", value:val};        
+        return {token: 'literal', type:"http://www.w3.org/2001/XMLSchema#float", value:val};
     } else if(QueryFilters.isDecimal(faca) || QueryFilters.isDecimal(facb)) {
-        return {token: 'literal', type:"http://www.w3.org/2001/XMLSchema#decimal", value:val};        
+        return {token: 'literal', type:"http://www.w3.org/2001/XMLSchema#decimal", value:val};
     } else {
-        return {token: 'literal', type:"http://www.w3.org/2001/XMLSchema#integer", value:val};        
+        return {token: 'literal', type:"http://www.w3.org/2001/XMLSchema#integer", value:val};
     }
 };
 
@@ -27211,15 +27211,15 @@ QueryFilters.runBuiltInCall = function(builtincall, args, bindings, queryEngine,
         var ast = queryEngine.abstractQueryTree.parseSelect({pattern:cloned}, bindings);
         ast = queryEngine.abstractQueryTree.bind(ast.pattern, bindings);
 
-        var result = queryEngine.executeSelectUnit([ {kind:'*'} ], 
+        var result = queryEngine.executeSelectUnit([ {kind:'*'} ],
                                                    dataset,
                                                    ast,
                                                    env);
 
         if(builtincall === 'exists') {
-            return QueryFilters.ebvBoolean(result.length!==0);            
+            return QueryFilters.ebvBoolean(result.length!==0);
         } else {
-            return QueryFilters.ebvBoolean(result.length===0);            
+            return QueryFilters.ebvBoolean(result.length===0);
         }
 
     }  else {
@@ -27279,19 +27279,19 @@ QueryFilters.runBuiltInCall = function(builtincall, args, bindings, queryEngine,
                 return QueryFilters.ebvTrue();
             } else {
                 return QueryFilters.ebvFalse();
-            }        
+            }
         } else if(builtincall === 'isblank') {
             if(ops[0].token === 'blank'){
                 return QueryFilters.ebvTrue();
             } else {
                 return QueryFilters.ebvFalse();
-            }        
+            }
         } else if(builtincall === 'isuri' || builtincall === 'isiri') {
             if(ops[0].token === 'uri'){
                 return QueryFilters.ebvTrue();
             } else {
                 return QueryFilters.ebvFalse();
-            }        
+            }
         } else if(builtincall === 'sameterm') {
             var op1 = ops[0];
             var op2 = ops[1];
@@ -27312,7 +27312,7 @@ QueryFilters.runBuiltInCall = function(builtincall, args, bindings, queryEngine,
                 }
             } else {
                 return QueryFilters.ebvError();
-            }        
+            }
         } else if(builtincall === 'bound') {
             var boundVar = ops[0].value;
             var acum = [];
@@ -27420,7 +27420,7 @@ QueryFilters.runRegex = function(text, pattern, flags, bindings, queryEngine, da
 
     var regex;
     if(flags == null) {
-        regex = new RegExp(pattern);                    
+        regex = new RegExp(pattern);
     } else {
         regex = new RegExp(pattern,flags.toLowerCase());
     }
@@ -27428,7 +27428,7 @@ QueryFilters.runRegex = function(text, pattern, flags, bindings, queryEngine, da
         return QueryFilters.ebvTrue();
     } else {
         return QueryFilters.ebvFalse();
-    }    
+    }
 };
 
 QueryFilters.normalizeLiteralDatatype = function(literal, queryEngine, env) {
@@ -27496,7 +27496,7 @@ QueryFilters.runIriRefOrFunction = function(iriref, args, bindings,queryEngine, 
                         from.value = 0;
                     }
                     return from;
-                } else if(from.type == 'http://www.w3.org/2001/XMLSchema#float' || 
+                } else if(from.type == 'http://www.w3.org/2001/XMLSchema#float' ||
                           from.type == 'http://www.w3.org/2001/XMLSchema#double') {
                     from.type = fun;
                     from.value = parseInt(from.value);
@@ -27505,11 +27505,11 @@ QueryFilters.runIriRefOrFunction = function(iriref, args, bindings,queryEngine, 
                     if(from.value.split(".").length > 2) {
                         return QueryFilters.ebvError();
                     } else if (from.value.split("-").length > 2) {
-                        return QueryFilters.ebvError();                            
+                        return QueryFilters.ebvError();
                     } else if (from.value.split("/").length > 2) {
-                        return QueryFilters.ebvError();                            
+                        return QueryFilters.ebvError();
                     } else if (from.value.split("+").length > 2) {
-                        return QueryFilters.ebvError();                            
+                        return QueryFilters.ebvError();
                     }
 
                     // @todo improve this with regular expressions for each lexical representation
@@ -27535,7 +27535,7 @@ QueryFilters.runIriRefOrFunction = function(iriref, args, bindings,queryEngine, 
                             return from;
                         }
                     } catch(e) {
-                        return QueryFilters.ebvError();                        
+                        return QueryFilters.ebvError();
                     }
                 } else {
                     return QueryFilters.ebvError();
@@ -27543,7 +27543,7 @@ QueryFilters.runIriRefOrFunction = function(iriref, args, bindings,queryEngine, 
             } else {
                 return QueryFilters.ebvError();
             }
-        } else if(fun == "http://www.w3.org/2001/XMLSchema#boolean") { 
+        } else if(fun == "http://www.w3.org/2001/XMLSchema#boolean") {
             var from = ops[0];
             if(from.token === "literal" && from.type == null) {
                 if(from.value === "true" || from.value === "1") {
@@ -27562,7 +27562,7 @@ QueryFilters.runIriRefOrFunction = function(iriref, args, bindings,queryEngine, 
             } else {
                 return QueryFilters.ebvError();
             }
-        } else if(fun == "http://www.w3.org/2001/XMLSchema#string") { 
+        } else if(fun == "http://www.w3.org/2001/XMLSchema#string") {
             var from = ops[0];
             if(from.token === 'literal') {
                 from = QueryFilters.normalizeLiteralDatatype(from, queryEngine, env);
@@ -27617,8 +27617,8 @@ QueryFilters.runIriRefOrFunction = function(iriref, args, bindings,queryEngine, 
                         lang: null};
             } else {
                 return QueryFilters.ebvError();
-            }            
-        } else if(fun == "http://www.w3.org/2001/XMLSchema#dateTime" || fun == "http://www.w3.org/2001/XMLSchema#date") { 
+            }
+        } else if(fun == "http://www.w3.org/2001/XMLSchema#dateTime" || fun == "http://www.w3.org/2001/XMLSchema#date") {
             from = ops[0];
             if(from.type == "http://www.w3.org/2001/XMLSchema#dateTime" || from.type == "http://www.w3.org/2001/XMLSchema#date") {
                 return from;
@@ -27633,11 +27633,11 @@ QueryFilters.runIriRefOrFunction = function(iriref, args, bindings,queryEngine, 
             } else {
                 return QueryFilters.ebvError();
             }
-        } else if(fun == "http://www.w3.org/2001/XMLSchema#float") { 
+        } else if(fun == "http://www.w3.org/2001/XMLSchema#float") {
             var from = ops[0];
             if(from.token === 'literal') {
                 from = QueryFilters.normalizeLiteralDatatype(from, queryEngine, env);
-                if(from.type == 'http://www.w3.org/2001/XMLSchema#decimal' || 
+                if(from.type == 'http://www.w3.org/2001/XMLSchema#decimal' ||
                    from.type == 'http://www.w3.org/2001/XMLSchema#int') {
                     from.type = fun;
                     from.value = parseFloat(from.value);
@@ -27651,7 +27651,7 @@ QueryFilters.runIriRefOrFunction = function(iriref, args, bindings,queryEngine, 
                         from.value = 0.0;
                     }
                     return from;
-                } else if(from.type == 'http://www.w3.org/2001/XMLSchema#float' || 
+                } else if(from.type == 'http://www.w3.org/2001/XMLSchema#float' ||
                           from.type == 'http://www.w3.org/2001/XMLSchema#double') {
                     from.type = fun;
                     from.value = parseFloat(from.value);
@@ -27666,18 +27666,18 @@ QueryFilters.runIriRefOrFunction = function(iriref, args, bindings,queryEngine, 
                             return from;
                         }
                     } catch(e) {
-                        return QueryFilters.ebvError();                        
+                        return QueryFilters.ebvError();
                     }
                 } else if(from.type == null) {
                     // checking some exceptions that are parsed as Floats by JS
                     if(from.value.split(".").length > 2) {
                         return QueryFilters.ebvError();
                     } else if (from.value.split("-").length > 2) {
-                        return QueryFilters.ebvError();                            
+                        return QueryFilters.ebvError();
                     } else if (from.value.split("/").length > 2) {
-                        return QueryFilters.ebvError();                            
+                        return QueryFilters.ebvError();
                     } else if (from.value.split("+").length > 2) {
-                        return QueryFilters.ebvError();                            
+                        return QueryFilters.ebvError();
                     }
 
                     try {
@@ -27689,7 +27689,7 @@ QueryFilters.runIriRefOrFunction = function(iriref, args, bindings,queryEngine, 
                             return from;
                         }
                     } catch(e) {
-                        return QueryFilters.ebvError();                        
+                        return QueryFilters.ebvError();
                     }
                 } else {
                     return QueryFilters.ebvError();
@@ -27704,7 +27704,7 @@ QueryFilters.runIriRefOrFunction = function(iriref, args, bindings,queryEngine, 
     }
 };
 
-// end of ./src/js-query-engine/src/query_filters.js 
+// end of ./src/js-query-engine/src/query_filters.js
 // exports
 var QueryPlanDPSize = {};
 
@@ -27787,7 +27787,7 @@ QueryPlanDPSize.executeAndBGPsGroups = function(bgps) {
             }
         }
 
-	
+
         var foundGroup = false;
 	var currentGroupId = null;
 	var toDelete = [];
@@ -27942,7 +27942,7 @@ QueryPlanDPSize.executeAndBGPsDPSize = function(allBgps, dataset, queryEngine, e
         var maxPlan = null;
 
         var cache = {};
-        
+
         sizes['1'] = [];
 
         // Building plans of size 1
@@ -28000,12 +28000,12 @@ QueryPlanDPSize.executeAndBGPsDPSize = function(allBgps, dataset, queryEngine, e
                                     if(bestPlans[currPlan.i] != null) {
                                         costUnion = bestPlans[currPlan.i].cost;
                                     }
-                                    
+
                                     var acum = sizes[s] || [];
                                     acum.push(currPlan.i);
                                     plans[currPlan.i] = currPlan;
                                     sizes[s] = acum;
-                                    
+
                                     if(costUnion > currPlan.cost) {
                                         if(maxSize === s) {
                                             maxPlan = currPlan;
@@ -28068,18 +28068,18 @@ QueryPlanDPSize.executeBGPDatasets = function(bgp, dataset, queryEngine, queryEn
         return acumBindings;
     } else if(bgp.graph.token === 'var') {
         // union through all named datasets
-        var graphVar = bgp.graph.value;        
+        var graphVar = bgp.graph.value;
         var acum = [];
 
         for(var i=0; i<dataset.named.length; i++) {
             if(duplicates[dataset.named[i].oid] == null) {
                 duplicates[dataset.named[i].oid] = true;
                 bgp.graph = dataset.named[i];//.oid
-                
+
                 var results = queryEngine.rangeQuery(bgp, queryEnv);
                 if(results != null) {
                     results = QueryPlanDPSize.buildBindingsFromRange(results, bgp);
-                    // add the graph bound variable to the result 
+                    // add the graph bound variable to the result
                     for(var j=0; j< results.length; j++) {
                         results[j][graphVar] = dataset.named[i].oid;
                     }
@@ -28089,7 +28089,7 @@ QueryPlanDPSize.executeBGPDatasets = function(bgp, dataset, queryEngine, queryEn
                 }
             }
         }
-        
+
         var acumBindings = QueryPlanDPSize.unionManyBindings(acum||[]);
         return acumBindings;
 
@@ -28165,7 +28165,7 @@ QueryPlanDPSize.areCompatibleBindings = function(bindingsa, bindingsb) {
 // 	    foundSome = true;
 // 	}
 //    }
-//     
+//
 //    return foundSome;
 //};
 
@@ -28276,7 +28276,7 @@ QueryPlanDPSize.augmentMissingBindings = function(bindinga, bindingb) {
   }
   }
 
-  return result;    
+  return result;
   };
 */
 
@@ -28337,7 +28337,7 @@ QueryPlanDPSize.unionManyBindings = function(bindingLists) {
     return acum;
 };
 
-// end of ./src/js-query-engine/src/query_plan_sync_dpsize.js 
+// end of ./src/js-query-engine/src/query_plan_sync_dpsize.js
 // exports
 var QueryEngine = {};
 
@@ -28397,7 +28397,7 @@ QueryEngine.QueryEngine.prototype.applyModifier = function(modifier, projectedBi
         for(var i=0; i<projectedBindings.length; i++) {
             var bindings = projectedBindings[i];
             var key = "";
-         
+
             // if no projection variables hash is passed, all the bound
             // variable in the current bindings will be used.
             for(var p in (bindings)) {
@@ -28421,14 +28421,14 @@ QueryEngine.QueryEngine.prototype.applyModifier = function(modifier, projectedBi
                     key = key + p + obj;
                 }
             }
-         
+
             if(map[key] == null) {
                 // this will preserve the order in projectedBindings
                 result.push(bindings);
                 map[key] = true;
             }
         }
-        return result; 
+        return result;
     } else {
         return projectedBindings;
     }
@@ -28506,17 +28506,17 @@ QueryEngine.QueryEngine.prototype.compareFilteredBindings = function(a, b, order
             filterResult = {value: false};
         } else if(b.value[i] == null) {
             filterResult = {value: true};
-        } else 
+        } else
 
         // blanks
         if(a.value[i].token === 'blank' && b.value[i].token === 'blank') {
             i++;
             continue;
-        } else if(a.value[i].token === 'blank') { 
-            filterResult = {value: false};            
+        } else if(a.value[i].token === 'blank') {
+            filterResult = {value: false};
         } else if(b.value[i].token === 'blank') {
-            filterResult = {value: true};        
-        } else 
+            filterResult = {value: true};
+        } else
 
         // uris
         if(a.value[i].token === 'uri' && b.value[i].token === 'uri') {
@@ -28526,11 +28526,11 @@ QueryEngine.QueryEngine.prototype.compareFilteredBindings = function(a, b, order
             } else {
                 filterResult = QueryFilters.runTotalGtFunction(a.value[i], b.value[i], []);
             }
-        } else if(a.value[i].token === 'uri') { 
-            filterResult = {value: false};            
+        } else if(a.value[i].token === 'uri') {
+            filterResult = {value: false};
         } else if(b.value[i].token === 'uri') {
-            filterResult = {value: true};        
-        } else 
+            filterResult = {value: true};
+        } else
 
         // simple literals
         if(a.value[i].token === 'literal' && b.value[i].token === 'literal' && a.value[i].type == null && b.value[i].type == null) {
@@ -28540,11 +28540,11 @@ QueryEngine.QueryEngine.prototype.compareFilteredBindings = function(a, b, order
             } else {
                 filterResult = QueryFilters.runTotalGtFunction(a.value[i], b.value[i], []);
             }
-        } else if(a.value[i].token === 'literal' && a.value[i].type == null) { 
-            filterResult = {value: false};            
+        } else if(a.value[i].token === 'literal' && a.value[i].type == null) {
+            filterResult = {value: false};
         } else if(b.value[i].token === 'literal' && b.value[i].type == null) {
-            filterResult = {value: true};        
-        } else 
+            filterResult = {value: true};
+        } else
 
         // literals
         if(QueryFilters.runEqualityFunction(a.value[i], b.value[i], [], this, env).value == true) {
@@ -28552,7 +28552,7 @@ QueryEngine.QueryEngine.prototype.compareFilteredBindings = function(a, b, order
             continue;
         } else {
             filterResult = QueryFilters.runTotalGtFunction(a.value[i], b.value[i], []);
-        }     
+        }
 
 
         // choose value for comparison based on the direction
@@ -28568,7 +28568,7 @@ QueryEngine.QueryEngine.prototype.compareFilteredBindings = function(a, b, order
             } else {
                 return 1;
             }
-        }       
+        }
     }
 };
 
@@ -28613,9 +28613,9 @@ QueryEngine.QueryEngine.prototype.aggregateBindings = function(projection, bindi
     for(var i=0; i<projection.length; i++) {
         var aggregatedValue = QueryFilters.runAggregator(projection[i], denormBindings, this, dataset, env);
         if(projection[i].alias) {
-            aggregatedBindings[projection[i].alias.value] = aggregatedValue; 
+            aggregatedBindings[projection[i].alias.value] = aggregatedValue;
         } else {
-            aggregatedBindings[projection[i].value.value] = aggregatedValue; 
+            aggregatedBindings[projection[i].value.value] = aggregatedValue;
         }
     }
     return(aggregatedBindings);
@@ -28650,7 +28650,7 @@ QueryEngine.QueryEngine.prototype.projectBindings = function(projection, results
             if(shouldAdd === true) {
                 projectedResults.push(currentProjected);
             }
-            
+
         }
 
         return projectedResults;
@@ -28682,7 +28682,7 @@ QueryEngine.QueryEngine.prototype.termCost = function(term, env) {
     } else {
           return(null);
     }
-    
+
 };
 
 QueryEngine.QueryEngine.prototype.normalizeTerm = function(term, env, shouldIndex) {
@@ -28737,13 +28737,13 @@ QueryEngine.QueryEngine.prototype.normalizeDatasets = function(datasets, outerEn
         if(dataset.value === that.lexicon.defaultGraphUri) {
             dataset.oid = that.lexicon.defaultGraphOid;
         } else {
-            var oid = that.normalizeTerm(dataset, outerEnv, false);      
+            var oid = that.normalizeTerm(dataset, outerEnv, false);
             if(oid != null) {
                 dataset.oid = oid;
             } else {
                 return(null);
             }
-        }  
+        }
     }
 
     return true
@@ -28790,9 +28790,9 @@ QueryEngine.QueryEngine.prototype.normalizeQuad = function(quad, queryEnv, shoul
         return null
     }
 
-    return({subject:subject, 
-            predicate:predicate, 
-            object:object, 
+    return({subject:subject,
+            predicate:predicate,
+            object:object,
             graph:graph});
 };
 
@@ -28850,7 +28850,7 @@ QueryEngine.QueryEngine.prototype.copyDenormalizedBindings = function(bindingsLi
                 var inOut = out[oid];
                 if(inOut!= null) {
                     denorm[variables[j]] = inOut;
-                } else {                    
+                } else {
                     var val = this.lexicon.retrieve(oid);
                     out[oid] = val;
                     denorm[variables[j]] = val;
@@ -28946,7 +28946,7 @@ QueryEngine.QueryEngine.prototype.executeQuery = function(syntaxTree, callback, 
                   callback(true, result['bindings']);
               } else {
                   var result = that.denormalizeBindingsList(result, queryEnv);
-                  if(result != null) {                        
+                  if(result != null) {
                       callback(true, result);
                   } else {
                       callback(false, result);
@@ -28960,7 +28960,7 @@ QueryEngine.QueryEngine.prototype.executeQuery = function(syntaxTree, callback, 
         aqt.projection = [{"token": "variable", "kind": "*"}];
         this.executeSelect(aqt, queryEnv, defaultDataset, namedDataset, function(success, result){
             if(success) {
-                if(success) {              
+                if(success) {
                     if(result.length>0) {
                         callback(true, true);
                     } else {
@@ -28978,11 +28978,11 @@ QueryEngine.QueryEngine.prototype.executeQuery = function(syntaxTree, callback, 
         that = this;
         this.executeSelect(aqt, queryEnv, defaultDataset, namedDataset, function(success, result){
             if(success) {
-                if(success) {              
+                if(success) {
                     var result = that.denormalizeBindingsList(result, queryEnv);
-                    if(result != null) { 
+                    if(result != null) {
                         var graph = new RDFJSInterface.Graph();
-                            
+
                         // CONSTRUCT WHERE {} case
                         if(aqt.template == null) {
                             aqt.template = {triplesContext: aqt.pattern};
@@ -28997,7 +28997,7 @@ QueryEngine.QueryEngine.prototype.executeQuery = function(syntaxTree, callback, 
                             for(var j=0; j<aqt.template.triplesContext.length; j++) {
                                 // fresh IDs for blank nodes in the construct template
                                 var components = ['subject', 'predicate', 'object'];
-                                var tripleTemplate = aqt.template.triplesContext[j];                                    
+                                var tripleTemplate = aqt.template.triplesContext[j];
                                 for(var p=0; p<components.length; p++) {
                                     var component = components[p];
                                     if(tripleTemplate[component].token === 'blank') {
@@ -29051,7 +29051,7 @@ QueryEngine.QueryEngine.prototype.executeSelect = function(unit, env, defaultDat
         if(defaultDataset != null || namedDataset != null) {
             dataset.implicit = defaultDataset || [];
             dataset.named   = namedDataset || [];
-        } 
+        }
 
         if(dataset.implicit != null && dataset.implicit.length === 0 && dataset.named !=null && dataset.named.length === 0) {
             // We add the default graph to the default merged graph
@@ -29077,10 +29077,10 @@ QueryEngine.QueryEngine.prototype.executeSelect = function(unit, env, defaultDat
                 if(unit.group && unit.group != "") {
                     if(that.checkGroupSemantics(unit.group,projection)) {
                         var groupedBindings = that.groupSolution(result, unit.group, dataset, env);
-                             
+
                         var aggregatedBindings = [];
                         var foundError = false;
-                            
+
                         for(var i=0; i<groupedBindings.length; i++) {
                             var resultingBindings = that.aggregateBindings(projection, groupedBindings[i], dataset, env);
                             aggregatedBindings.push(resultingBindings);
@@ -29095,10 +29095,10 @@ QueryEngine.QueryEngine.prototype.executeSelect = function(unit, env, defaultDat
                     var modifiedBindings = that.applyModifier(modifier, projectedBindings);
                     var limitedBindings  = that.applyLimitOffset(offset, limit, modifiedBindings);
                     var filteredBindings = that.removeDefaultGraphBindings(limitedBindings, dataset);
-                    
+
                     callback(true, filteredBindings);
                 }
-                
+
             } else { // fail selectUnit
                 callback(false, result);
             }
@@ -29127,7 +29127,7 @@ QueryEngine.QueryEngine.prototype.groupSolution = function(bindings, group, data
             /**
              * In this loop, we iterate through all the group clauses and tranform the current bindings
              * according to the group by clauses.
-             * If it is the first iteration we also save in a different array the order for the 
+             * If it is the first iteration we also save in a different array the order for the
              * grouped variables that will be used later to build the final groups
              */
             for(var j=0; j<group.length; j++) {
@@ -29172,17 +29172,17 @@ QueryEngine.QueryEngine.prototype.groupSolution = function(bindings, group, data
                         if(initialized == false) {
                             order.push(orderVariable);
                         }
-                        
+
                     } else {
                         mustAddBindings = false;
                     }
-                         
+
                 }
-                
+
             }
             if(initialized == false) {
                 initialized = true;
-            } 
+            }
             if(mustAddBindings === true) {
                 filteredBindings.push(currentBindings);
             }
@@ -29207,19 +29207,19 @@ QueryEngine.QueryEngine.prototype.groupSolution = function(bindings, group, data
             }
 
             if(dups[key] == null) {
-                //currentTransformedBinding["__group__"] = groupCounter; 
+                //currentTransformedBinding["__group__"] = groupCounter;
                 groupMap[key] = groupCounter;
                 dups[key] = [currentTransformedBinding];
                 //groupCounter++
             } else {
-                //currentTransformedBinding["__group__"] = dups[key][0]["__group__"]; 
+                //currentTransformedBinding["__group__"] = dups[key][0]["__group__"];
                 dups[key].push(currentTransformedBinding);
             }
         }
 
         // The final result is an array of arrays with all the groups
         var groups = [];
-            
+
         for(var k in dups) {
             groups.push(dups[k]);
         }
@@ -29236,11 +29236,11 @@ QueryEngine.QueryEngine.prototype.executeSelectUnit = function(projection, datas
     if(pattern.kind === "BGP") {
         return this.executeAndBGP(projection, dataset, pattern, env);
     } else if(pattern.kind === "UNION") {
-        return this.executeUNION(projection, dataset, pattern.value, env);            
+        return this.executeUNION(projection, dataset, pattern.value, env);
     } else if(pattern.kind === "JOIN") {
-        return this.executeJOIN(projection, dataset, pattern, env);            
+        return this.executeJOIN(projection, dataset, pattern, env);
     } else if(pattern.kind === "LEFT_JOIN") {
-        return this.executeLEFT_JOIN(projection, dataset, pattern, env);            
+        return this.executeLEFT_JOIN(projection, dataset, pattern, env);
     } else if(pattern.kind === "FILTER") {
         // Some components may have the filter inside the unit
         var results = this.executeSelectUnit(projection, dataset, pattern.value, env);
@@ -29440,7 +29440,7 @@ QueryEngine.QueryEngine.prototype.executeLEFT_JOIN = function(projection, datase
     if(set1==null) {
         return null;
     }
-     
+
     //console.log("SET QUERY 2");
     //console.log(setQuery2);
     set2 = that.executeSelectUnit(projection, dataset, setQuery2, env);
@@ -29460,7 +29460,7 @@ QueryEngine.QueryEngine.prototype.executeLEFT_JOIN = function(projection, datase
     //console.log("---")
     //console.log(bindings)
     //console.log("\r\n")
-    
+
     if(set1.length>1 && set2.length>1) {
             var vars = [];
             var vars1 = {};
@@ -29478,7 +29478,7 @@ QueryEngine.QueryEngine.prototype.executeLEFT_JOIN = function(projection, datase
                 if(bindings[i]["__nullify__"] === true) {
                     for(var j=0; j<vars.length; j++) {
                         bindings[i]["bindings"][vars[j]] = null;
-                    }                            
+                    }
                     var idx = [];
                     var idxColl = [];
                     for(var p in bindings[i]["bindings"]) {
@@ -29535,8 +29535,8 @@ QueryEngine.QueryEngine.prototype.executeJOIN = function(projection, dataset, pa
     if(set2 == null) {
         return null;
     }
-    
-    
+
+
     var result = null;
     if(set1.length ===0 || set2.length===0) {
 	result = [];
@@ -29552,10 +29552,10 @@ QueryEngine.QueryEngine.prototype.executeJOIN = function(projection, dataset, pa
 	}
 
 	if(commonVars.length == 0) {
-	    result = QueryPlan.joinBindings(set1,set2);	    
-	} else if(this.abstractQueryTree.treeWithUnion(setQuery1) || 
+	    result = QueryPlan.joinBindings(set1,set2);
+	} else if(this.abstractQueryTree.treeWithUnion(setQuery1) ||
 		  this.abstractQueryTree.treeWithUnion(setQuery2)) {
-	    result = QueryPlan.joinBindings(set1,set2);	    	    
+	    result = QueryPlan.joinBindings(set1,set2);
 	} else {
 	    result = QueryPlan.joinBindings2(commonVars, set1, set2);
 	}
@@ -29663,7 +29663,7 @@ QueryEngine.QueryEngine.prototype.batchLoad = function(quads, callback) {
 
     for(var i=0; i<quads.length; i++) {
         quad = quads[i];
-	
+
         // subject
         if(quad.subject['uri'] || quad.subject.token === 'uri') {
             oid = this.lexicon.registerUri(quad.subject.uri || quad.subject.value);
@@ -29678,7 +29678,7 @@ QueryEngine.QueryEngine.prototype.batchLoad = function(quads, callback) {
 		quad.subject = this.lexicon.parseLiteral(quad.subject.literal);
 		delete quad.subject['literal'];
 	    }
-            subject = oid;                    
+            subject = oid;
         } else {
             maybeBlankOid = blanks[quad.subject.blank || quad.subject.value];
             if(maybeBlankOid == null) {
@@ -29707,7 +29707,7 @@ QueryEngine.QueryEngine.prototype.batchLoad = function(quads, callback) {
 		quad.predicate = this.lexicon.parseLiteral(quad.predicate.literal);
 		delete quad.predicate['literal'];
 	    }
-            predicate = oid;                    
+            predicate = oid;
         } else {
             maybeBlankOid = blanks[quad.predicate.blank || quad.predicate.value];
             if(maybeBlankOid == null) {
@@ -29735,7 +29735,7 @@ QueryEngine.QueryEngine.prototype.batchLoad = function(quads, callback) {
 		if(quad.object.type != null) {
 		    quad.object.value = '"'+quad.object.value+'"^^<'+quad.object.type+'>';
 		} else if(quad.object.lang != null) {
-		    quad.object.value = '"'+quad.object.value+'"@'+quad.object.lang;		    
+		    quad.object.value = '"'+quad.object.value+'"@'+quad.object.lang;
 		} else {
 		    quad.object.value = '"'+quad.object.value+'"';
 		}
@@ -29745,7 +29745,7 @@ QueryEngine.QueryEngine.prototype.batchLoad = function(quads, callback) {
 		quad.object = this.lexicon.parseLiteral(quad.object.literal);
 		delete quad.object['literal'];
 	    }
-            object = oid;                    
+            object = oid;
         } else {
             maybeBlankOid = blanks[quad.object.blank || quad.object.value];
             if(maybeBlankOid == null) {
@@ -29777,7 +29777,7 @@ QueryEngine.QueryEngine.prototype.batchLoad = function(quads, callback) {
 		quad.predicate = this.lexicon.parseLiteral(quad.predicate.literal);
 		delete quad.predicate['literal'];
 	    }
-            graph = oid;                    
+            graph = oid;
         } else {
             maybeBlankOid = blanks[quad.graph.blank || quad.graph.value];
             if(maybeBlankOid == null) {
@@ -29833,7 +29833,7 @@ QueryEngine.QueryEngine.prototype.batchLoad = function(quads, callback) {
     } else {
         exitFn();
     }
-        
+
     if(success) {
         return counter;
     } else {
@@ -29888,8 +29888,8 @@ QueryEngine.QueryEngine.prototype._executeModifyQuery = function(aqt, queryEnv, 
             aqt.dataset = {};
             aqt.projection = [{"token": "variable", "kind": "*"}];
 
-            that.executeSelect(aqt, queryEnv, defaultGraph, namedGraph, function(success, result) {                
-                if(success) {                    
+            that.executeSelect(aqt, queryEnv, defaultGraph, namedGraph, function(success, result) {
+                if(success) {
                     var result = that.denormalizeBindingsList(result, queryEnv);
                     if(result!=null) {
                         bindings = result;
@@ -29926,7 +29926,9 @@ QueryEngine.QueryEngine.prototype._executeModifyQuery = function(aqt, queryEnv, 
                             }
                         }
 
-                        quads.push(quad);
+                        if(quad.subject && quad.predicate && quad.object) {
+                          quads.push(quad);
+                        }
                     }
                 }
 
@@ -30077,7 +30079,7 @@ QueryEngine.QueryEngine.prototype._executeClearGraph = function(destinyGraph, qu
 
 QueryEngine.QueryEngine.prototype.checkGroupSemantics = function(groupVars, projectionVars) {
     if(groupVars === 'singleGroup') {
-        return true;        
+        return true;
     }
 
     var projection = {};
@@ -30097,7 +30099,7 @@ QueryEngine.QueryEngine.prototype.checkGroupSemantics = function(groupVars, proj
             if(projection[projectionVar.value.value] == null) {
                 return false;
             }
-        } else if(projectionVar.kind === 'aliased' && 
+        } else if(projectionVar.kind === 'aliased' &&
                   projectionVar.expression &&
                   projectionVar.expression.primaryexpression === 'var') {
             if(projection[projectionVar.expression.value.value] == null) {
@@ -30113,14 +30115,14 @@ QueryEngine.QueryEngine.prototype.registerDefaultNamespace = function(ns, prefix
     this.defaultPrefixes[ns] = prefix;
 };
 
-// end of ./src/js-query-engine/src/query_engine.js 
+// end of ./src/js-query-engine/src/query_engine.js
 // exports
 var Callbacks = {};
 
 //imports
 
 
-Callbacks.ANYTHING = {'token': 'var', 
+Callbacks.ANYTHING = {'token': 'var',
                       'value': '_'};
 
 Callbacks.added = 'added';
@@ -30257,7 +30259,7 @@ Callbacks.CallbacksBackend.prototype._searchCallbacksInIndex = function(index, o
 
     for(var i=0; i<(order.length+1); i++) {
         var matched = index['_'] || [];
-        
+
         var filteredIds = [];
         for(var j=0; j<matched.length; j++) {
             var callbackId = matched[j];
@@ -30298,7 +30300,7 @@ Callbacks.CallbacksBackend.prototype.subscribe = function(s,p,o,g,callback, done
     this.engine.registerNsInEnvironment(null, queryEnv);
     var that = this;
     var normalized = this.engine.normalizeQuad(quad, queryEnv, true);
-    var pattern =  new QuadIndexCommon.Pattern(normalized);        
+    var pattern =  new QuadIndexCommon.Pattern(normalized);
     var indexKey = that._indexForPattern(pattern);
     var indexOrder = that.componentOrders[indexKey];
     var index = that.indexMap[indexKey];
@@ -30389,7 +30391,7 @@ Callbacks.CallbacksBackend.prototype._indexForPattern = function(pattern) {
             }
         }
     }
-    
+
     return 'SPOG'; // If no other match, we return the most generic index
 };
 
@@ -30493,7 +30495,7 @@ Callbacks.CallbacksBackend.prototype.observeQuery = function(query, callback, en
         }
 
         var normalized = that.engine.normalizeQuad(quad, queryEnv, true);
-        pattern =  new QuadIndexCommon.Pattern(normalized);        
+        pattern =  new QuadIndexCommon.Pattern(normalized);
         indexKey = that._indexForPattern(pattern);
         indexOrder = that.componentOrders[indexKey];
         index = that.queriesIndexMap[indexKey];
@@ -30525,7 +30527,7 @@ Callbacks.CallbacksBackend.prototype.observeQuery = function(query, callback, en
             callback(results);
         } else {
             console.log("ERROR in query callback "+results);
-        }                                             
+        }
     });
 
     if(endCallback != null)
@@ -30547,7 +30549,7 @@ Callbacks.CallbacksBackend.prototype._searchQueriesInIndex = function(index, ord
 
     for(var i=0; i<(order.length+1); i++) {
         var matched = index['_'] || [];
-        
+
         var filteredIds = [];
         for(var j=0; j<matched.length; j++) {
             var queryId = matched[j];
@@ -30605,7 +30607,7 @@ Callbacks.CallbacksBackend.prototype.dispatchQueries = function(callback) {
         });
 };
 
-// end of ./src/js-query-engine/src/callbacks.js 
+// end of ./src/js-query-engine/src/callbacks.js
 //imports
 
 // exports
@@ -30674,7 +30676,7 @@ if(!!Worker) {
                     delete this.callbacks[event.callback];
                     callbackData.cb(event.success, event.result);
                 } else if(callbackData.fn === 'startObservingQuery') {
-                    callbackData.cb(event.result);                
+                    callbackData.cb(event.result);
                 } else if(callbackData.fn === 'startObservingNode') {
                     callbackData.cb(event.result);
                 } else if(callbackData.fn === 'subscribe') {
@@ -30767,7 +30769,7 @@ if(!!Worker) {
                     toWrap.triples[i] = new RDFJSInterface.Triple(that.adaptJSInterface(triple.subject),
                                                                   that.adaptJSInterface(triple.predicate),
                                                                   that.adaptJSInterface(triple.object));
-                }                
+                }
                 callback(success, that.rdf.createGraph(toWrap.triples));
             } else {
                 callback(success,toWrap);
@@ -30806,7 +30808,7 @@ if(!!Worker) {
                     toWrap.triples[i] = new RDFJSInterface.Triple(that.adaptJSInterface(triple.subject),
                                                                   that.adaptJSInterface(triple.predicate),
                                                                   that.adaptJSInterface(triple.object));
-                }                
+                }
                 callback(success, that.rdf.createGraph(toWrap.triples));
             } else {
                 callback(success,toWrap);
@@ -30859,7 +30861,7 @@ if(!!Worker) {
     RDFStoreClient.RDFStoreClient.prototype.clear = function() {
         var graph;
         var callback;
-     
+
         if(arguments.length === 1) {
             callback= arguments[0] || function(){};
             var id = this.registerCallback('clear', callback);
@@ -30891,7 +30893,7 @@ if(!!Worker) {
     RDFStoreClient.RDFStoreClient.prototype.registerDefaultNamespace = function(ns, prefix) {
         this.connection.postMessage({'fn':'registerDefaultNamespace', 'args':[ns,prefix]});
     };
-     
+
     /**
      * Registers the default namespaces declared in the RDF JS Interfaces
      * specification in the default Profile.
@@ -30905,7 +30907,7 @@ if(!!Worker) {
         var data;
         var graph;
         var callback;
-     
+
         if(arguments.length === 3) {
             mediaType = arguments[0];
             data = arguments[1];
@@ -30922,7 +30924,7 @@ if(!!Worker) {
         } else if(arguments.length === 2) {
             throw("The mediaType of the parser, the data a callback and an optional graph must be provided");
         }
-     
+
     };
 
     RDFStoreClient.RDFStoreClient.prototype.startObservingQuery = function() {
@@ -30940,7 +30942,7 @@ if(!!Worker) {
             this.connection.postMessage({'fn':'startObservingQuery', 'args':[query], 'callback':[id1]})
         }
     };
-     
+
     RDFStoreClient.RDFStoreClient.prototype.stopObservingQuery = function(query) {
         var id = this.observingCallbacks[query];
         delete this.observingCallbacks[query];
@@ -30964,7 +30966,7 @@ if(!!Worker) {
                     toWrap.triples[i] = new RDFJSInterface.Triple(that.adaptJSInterface(triple.subject),
                                                                   that.adaptJSInterface(triple.predicate),
                                                                   that.adaptJSInterface(triple.object));
-                }                
+                }
                 callback(that.rdf.createGraph(toWrap.triples));
             };
 
@@ -30986,7 +30988,7 @@ if(!!Worker) {
                     toWrap.triples[i] = new RDFJSInterface.Triple(that.adaptJSInterface(triple.subject),
                                                                   that.adaptJSInterface(triple.predicate),
                                                                   that.adaptJSInterface(triple.object));
-                }                
+                }
                 callback(that.rdf.createGraph(toWrap.triples));
             };
 
@@ -30996,7 +30998,7 @@ if(!!Worker) {
             this.connection.postMessage({'fn':'startObservingNode', 'args':[uri,graphUri], 'callback':id})
         }
     };
-     
+
     RDFStoreClient.RDFStoreClient.prototype.stopObservingNode = function(callback) {
         var id = this.observingCallbacks[callback];
         delete this.observingCallbacks[callback];
@@ -31015,7 +31017,7 @@ if(!!Worker) {
                 triples[i] = new RDFJSInterface.Triple(that.adaptJSInterface(triple.subject),
                                                        that.adaptJSInterface(triple.predicate),
                                                        that.adaptJSInterface(triple.object));
-            }                
+            }
             callback(event,triples);
         };
         var id = this.registerCallback('subscribe', wrapperCallback);
@@ -31023,7 +31025,7 @@ if(!!Worker) {
 
         this.connection.postMessage({'fn':'subscribe', 'args':[s,p,o,g], 'callback':id});
     };
-     
+
     RDFStoreClient.RDFStoreClient.prototype.unsubscribe = function(callback) {
         var id = this.observingCallbacks[callback];
         delete this.observingCallbacks[callback];
@@ -31031,7 +31033,7 @@ if(!!Worker) {
         //console.log("STOP OBSERVING "+id);
         this.connection.postMessage({'fn':'unsubscribe', 'args':[id], 'callback':[]})
     };
-         
+
     RDFStoreClient.RDFStoreClient.prototype.registeredGraphs = function(callback) {
         var that = this;
         var wrapperCallback = function(success, graphs) {
@@ -31041,7 +31043,7 @@ if(!!Worker) {
                 for(var i=0; i<graphs.length; i++) {
                     var graph = graphs[i];
                     graphs[i] = that.adaptJSInterface(graph);
-                }                
+                }
                 callback(success, graphs);
             } else {
                 callback(success,graphs);
@@ -31067,13 +31069,13 @@ if(!!Worker) {
     RDFStoreClient.RDFStoreClient.prototype.isWebWorkerConnection = true;
 }
 
-// end of ./src/js-connection/src/rdfstore_client.js 
+// end of ./src/js-connection/src/rdfstore_client.js
 // exports
 var Store = {};
 
 /**
  * @namespace
- * 
+ *
  * The Store module defines the public interface to the RDF store.
  */
 
@@ -31091,7 +31093,7 @@ Store.VERSION = "0.8.1";
  * in Node.js.
  * <br/>
  * <br/>
- * The first argument to this function is the URL/FS location 
+ * The first argument to this function is the URL/FS location
  * of the store script.
  * <br/>
  * <br/>
@@ -31141,7 +31143,7 @@ Store.connect = function() {
     } catch(e) {
         Store.create(args,function(connection){
             callback(false, connection);
-        });        
+        });
     }
 };
 
@@ -31180,7 +31182,7 @@ Store.create = function(){
  * It accepts two optional arguments, a map of configuration
  * options for the store and a callback function.<br/>
  *
- * @constructor 
+ * @constructor
  * @param {Function} [callback] Callback that will be invoked when the store has been created
  * @param {Object} [params]
  * <ul>
@@ -31244,7 +31246,7 @@ Store.Store = function(arg1, arg2) {
                 }
                 params.backend = backend;
                 params.lexicon =lexicon;
-                that.engine = new QueryEngine.QueryEngine(params);      
+                that.engine = new QueryEngine.QueryEngine(params);
                 if(callback) {
                     callback(that);
                 }
@@ -31283,7 +31285,7 @@ Store.Store.prototype.rdf.api = RDFJSInterface;
  * An error can be returne dusing the 'ebvError' function of the engine.
  * True and false values can be built directly using the 'ebvTrue' and
  * 'ebvFalse' functions.
- * 
+ *
  * A complete reference of the available functions can be found in the
  * documentation or source code of the QueryFilters module.
  *
@@ -31317,8 +31319,8 @@ Store.Store.prototype.registerCustomFunction = function(name, fn) {
  *  <li> ASK queries: JS boolean value </li>
  *  <li> LOAD/INSERT... queries: Number of triples modified/inserted </li>
  * </ul>
- *  
- * @arguments: 
+ *
+ * @arguments:
  * @param {String} query
  * @param {String} [defaultURIs] default namespaces
  * @param {String} [namespacesURIs] named namespaces
@@ -31338,7 +31340,7 @@ Store.Store.prototype.execute = function() {
 
         var queryString;
         var callback;
-     
+
         if(arguments.length === 1) {
             queryString = arguments[0];
             var callback = function(){};
@@ -31351,8 +31353,8 @@ Store.Store.prototype.execute = function() {
 };
 
 /**
- * A variation of the execute function that expects 
- * arguments containing values for the default and named 
+ * A variation of the execute function that expects
+ * arguments containing values for the default and named
  * graphs that will be used in the query.
  *
  *
@@ -31367,7 +31369,7 @@ Store.Store.prototype.executeWithEnvironment = function() {
 
     if(arguments.length === 3) {
         queryString   = arguments[0];
-        // JSDoc fails if this is pushed outside 
+        // JSDoc fails if this is pushed outside
         var callback  = function(){};
         defaultGraphs = arguments[1];
         namedGraphs   = arguments[2];
@@ -31429,13 +31431,13 @@ Store.Store.prototype.graph = function() {
  * the collection of triples whose subject is the provided
  * node URI.<br/>
  * <br/>
- * The function accepts as mandatory parameters the node URI and 
+ * The function accepts as mandatory parameters the node URI and
  * a callback unction that will receive a success notification and the returned node.<br/>
  * <br/>
- * Optionally, the URI of the graph where the node is contained 
+ * Optionally, the URI of the graph where the node is contained
  * can also be passed as the first argument. <br/>
  * <br/>
- * If no graph is specified, the node will be looked into the 
+ * If no graph is specified, the node will be looked into the
  * default graph.<br/>
  *
  * @arguments
@@ -31482,7 +31484,7 @@ Store.Store.prototype.node = function() {
  * third parameter, consisting of a callback function, can be passed and will be invoked
  * once the store had correctly configured the event listener.<br/>
  *<br/>
- * LOAD queries, batch loading data into the store, do not 
+ * LOAD queries, batch loading data into the store, do not
  * trigger events by default. If you wish to be notified
  * by changes triggered by this kind of queries, invoke
  * the *setBatchLoadEvents* function with a true argument.<br/>
@@ -31523,18 +31525,18 @@ Store.Store.prototype.stopObservingNode = function(callback) {
 /**
  * Associates an event listener function to a SPARQL SELECT or
  * CONSTRUCT query.<br/>
- * Every time an update (insert, delete...) query modified the 
+ * Every time an update (insert, delete...) query modified the
  * triples in the store in a way that modifies the output of the
- * query, the event listener will be invoked with an updated 
+ * query, the event listener will be invoked with an updated
  * result.<br/>
  *<br/>
- * LOAD queries, batch loading data into the store, do not 
+ * LOAD queries, batch loading data into the store, do not
  * trigger events by default. If you wish to be notified
  * by changes triggered by this kind of queries, invoke
  * the <code>setBatchLoadEvents</code> function with a true argument.<br/>
  *<br/>
  * The event listener function can be removed invoking the
- * <code>stopObservingQuery</code> function. 
+ * <code>stopObservingQuery</code> function.
  *
  * @arguments
  * @param {String} query SELECT or CONSTRUCT SPARQL query
@@ -31574,7 +31576,7 @@ Store.Store.prototype.stopObservingQuery = function(query) {
  * Results will be notified as an Array of RDF JS Interface
  * <code>Triple</code> objects.<br/>
  *<br/>
- * LOAD queries, batch loading data into the store, do not 
+ * LOAD queries, batch loading data into the store, do not
  * trigger events by default. If you wish to be notified
  * by changes triggered by this kind of queries, invoke
  * the <code>setBatchLoadEvents</code> function with a true argument.
@@ -31613,7 +31615,7 @@ Store.Store.prototype.subscribe = function(s, p, o, g, callback) {
 
 /**
  * Removes an event listener associated to a certain pattern.
- * The function passed as an argument to <code>subscribe</code> must be 
+ * The function passed as an argument to <code>subscribe</code> must be
  * passed as an argument.
  *
  * @arguments
@@ -31653,7 +31655,7 @@ Store.Store.prototype.setDefaultPrefix = function(uri) {
 /**
  * Inserts a RDF JS Interface API <code>Graph</code> object into the store.
  * The function receives a mandatory <code>Graph</code> object whose triples
- * will be inserted. Optionally, a URI string for a graph and a 
+ * will be inserted. Optionally, a URI string for a graph and a
  * callback function can be passed as arguments.<br/>
  * <br/>
  * If no graph URI is specified, triples will be inserted into the
@@ -31666,7 +31668,7 @@ Store.Store.prototype.setDefaultPrefix = function(uri) {
  * @param {RDFJSInterface.Graph} triples a RDF JS Interface <code>Graph</code> object
  * @param {String} [graphURI] URI of the graph where the triples will be inserted. If it is missing, triples will be inserted in the default graph
  * @param {String} [callback] A callback function that will be invoked with a success notification and the number of triples inserted
- */ 
+ */
 Store.Store.prototype.insert = function() {
     var graph;
     var triples;
@@ -31723,7 +31725,7 @@ Store.Store.prototype._nodeToQuery = function(term) {
 /**
  * Removes the triples in a RDF JS Interface API <code>Graph</code> object from the store.
  * The function receives a mandatory <code>Graph</code> object whose triples
- * will be removed. Optionally, a URI string for a graph and a 
+ * will be removed. Optionally, a URI string for a graph and a
  * callback function can be passed as arguments.<br/>
  * <br/>
  * If no graph URI is specified, triples will be removed from the
@@ -31736,7 +31738,7 @@ Store.Store.prototype._nodeToQuery = function(term) {
  * @param {RDFJSInterface.Graph} triples a RDF JS Interface <code>Graph</code> object
  * @param {String} [graphURI] URI of the graph where the triples will be removed from. If it is missing, triples will be removed from the default graph
  * @param {String} [callback] A callback function that will be invoked with a success notification
- */ 
+ */
 Store.Store.prototype['delete'] = function() {
 
     var graph;
@@ -31771,13 +31773,13 @@ Store.Store.prototype['delete'] = function() {
     this.engine.execute(query, callback);
 };
 
-/** 
+/**
  * Removes all the triples stored in a graph.
- * 
+ *
  * The URI of the graph and a callback function can be
  * optinally passed as parameters.<br/>
  * <br/>
- * If no graph URI is specified, all triples in the 
+ * If no graph URI is specified, all triples in the
  * default graph will be removed.
  *
  * @arguments
@@ -31935,7 +31937,7 @@ Store.Store.prototype.load = function(){
  * Parsers must implement a function *parse* accepting the data to be parsed as the
  * first parameter and the destination graph URI as the second one.
  * They must return an array of objects with properties: 'subject', 'predicate', 'object'
- * and 'graph' containing lexical representations for these values: 
+ * and 'graph' containing lexical representations for these values:
  *<br/>
  *<ul>
  * <li><code>{literal: '"literal"'}</code></li>
@@ -31972,8 +31974,8 @@ Store.Store.prototype.registeredGraphs = function(callback) {
                 var uri = new RDFJSInterface.NamedNode(graph);
                 acum.push(uri);
             }
-            
-            return callback(true, acum);    
+
+            return callback(true, acum);
         });
     } else {
         var graphs = this.engine.lexicon.registeredGraphs(true);
@@ -31983,8 +31985,8 @@ Store.Store.prototype.registeredGraphs = function(callback) {
             var uri = new RDFJSInterface.NamedNode(graph);
             acum.push(uri);
         }
-     
-        return callback(true, acum);    
+
+        return callback(true, acum);
     }
 };
 
@@ -32007,7 +32009,7 @@ Store.Store.prototype._nodeToQuery = function(term) {
 /**
  * Returns the current network transport being used by the
  * the store.
- * 
+ *
  * The default transport uses TCP sockets in the Node.js version
  * and relies on jQuery in the browser version. This can be overriden
  * using the <code>setNetworkTransport</code> function.
@@ -32052,12 +32054,12 @@ Store.Store.prototype.close = function(cb) {
 	cb();
 };
 
-// end of ./src/js-store/src/store.js 
+// end of ./src/js-store/src/store.js
 // imports
     RDFStoreWorker = {};
 
     RDFStoreWorker.observingCallbacks = {};
-    
+
     RDFStoreWorker.workerCallbacksCounter = 0;
     RDFStoreWorker.workerCallbacks = {};
     RDFStoreWorker.registerCallback = function(cb) {
@@ -32152,14 +32154,14 @@ Store.Store.prototype.close = function(cb) {
                     toWrap.triples[i] = new RDFJSInterface.Triple(RDFStoreWorker.adaptJSInterface(triple.subject),
                                                                   RDFStoreWorker.adaptJSInterface(triple.predicate),
                                                                   RDFStoreWorker.adaptJSInterface(triple.object));
-                }                
+                }
 
                 if(msg.args[1].interfaceName != null) {
                     msg.args[1] = RDFStoreWorker.adaptJSInterface(msg.args[1]);
                 }
                 msg.args[0] = RDFStoreWorker.store.rdf.createGraph(toWrap.triples);
                 //console.log("ARGS...");
-                
+
                 RDFStoreWorker.store[msg.fn].apply(RDFStoreWorker.store,msg.args);
             } catch(e) {
                 console.log("Error executing method through connection");
@@ -32183,7 +32185,7 @@ Store.Store.prototype.close = function(cb) {
             msg.args.push(function(success, result) {
                 //console.log("CALLBACK END REGISTER OBSERVING QUERY!");
                 if(msg.callback && msg.callback[1] !=null) {
-                    postMessage({'callback':msg.callback[1], 'result':result, 'success':success});                    
+                    postMessage({'callback':msg.callback[1], 'result':result, 'success':success});
                 }
             });
 
@@ -32265,7 +32267,7 @@ Store.Store.prototype.close = function(cb) {
     // set the receiver message
     onmessage = RDFStoreWorker.receive;
 
-// end of ./src/js-connection/src/rdfstore_worker.js 
+// end of ./src/js-connection/src/rdfstore_worker.js
 try {
   window.rdfstore = Store;
 } catch(e) { }
