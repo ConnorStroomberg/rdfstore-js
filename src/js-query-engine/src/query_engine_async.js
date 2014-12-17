@@ -322,7 +322,7 @@ QueryEngine.QueryEngine.prototype.resolveNsInEnvironment = function(prefix, env)
 
 
 QueryEngine.QueryEngine.prototype.normalizeTerm = function(term, env, shouldIndex) {
-    if(term.token === 'uri') {
+    if(term && term.token === 'uri') {
         var uri = Utils.lexicalFormBaseUri(term, env);
         if(uri == null) {
             return(null);
@@ -334,7 +334,7 @@ QueryEngine.QueryEngine.prototype.normalizeTerm = function(term, env, shouldInde
             }
         }
 
-    } else if(term.token === 'literal') {
+    } else if(term && term.token === 'literal') {
         var lexicalFormLiteral = Utils.lexicalFormLiteral(term, env);
         if(shouldIndex) {
            var oid = this.lexicon.registerLiteral(lexicalFormLiteral);
@@ -343,7 +343,7 @@ QueryEngine.QueryEngine.prototype.normalizeTerm = function(term, env, shouldInde
             var oid = this.lexicon.resolveLiteral(lexicalFormLiteral);
             return(oid);
         }
-    } else if(term.token === 'blank') {
+    } else if(term && term.token === 'blank') {
         var label = term.value;
         var oid = env.blanks[label];
         if( oid != null) {
@@ -359,7 +359,7 @@ QueryEngine.QueryEngine.prototype.normalizeTerm = function(term, env, shouldInde
                 return(oid);
             }
         }
-    } else if(term.token === 'var') {
+    } else if(term && term.token === 'var') {
         return(term.value);
     } else {
           return(null);
