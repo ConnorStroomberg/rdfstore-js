@@ -5165,15 +5165,14 @@ var patterns = {
   _tripleQuotedString: /^""("[^"\\]*(?:(?:\\.|"(?!""))[^"\\]*)*")""|^''('[^'\\]*(?:(?:\\.|'(?!''))[^'\\]*)*')''/,
   _langcode: /^@([a-z]+(?:-[a-z0-9]+)*)(?=[^a-z0-9\-])/i,
   _prefix: /^((?:[A-Za-z\xc0-\xd6\xd8-\xf6\xf8-\u02ff\u0370-\u037d\u037f-\u1fff\u200c\u200d\u2070-\u218f\u2c00-\u2fef\u3001-\ud7ff\uf900-\ufdcf\ufdf0-\ufffd]|[\ud800-\udb7f][\udc00-\udfff])(?:[\.\-0-9A-Z_a-z\xb7\xc0-\xd6\xd8-\xf6\xf8-\u037d\u037f-\u1fff\u200c\u200d\u203f\u2040\u2070-\u218f\u2c00-\u2fef\u3001-\ud7ff\uf900-\ufdcf\ufdf0-\ufffd]|[\ud800-\udb7f][\udc00-\udfff])*)?:(?=\s|<)/,
-  _prefixedName:  /^((?:[A-Z_a-z\xc0-\xd6\xd8-\xf6\xf8-\u02ff\u0370-\u037d\u037f-\u1fff\u200c\u200d\u2070-\u218f\u2c00-\u2fef\u3001-\ud7ff\uf900-\ufdcf\ufdf0-\ufffd]|[\ud800-\udb7f][\udc00-\udfff])(?:[\.\-0-9A-Z_a-z\xb7\xc0-\xd6\xd8-\xf6\xf8-\u037d\u037f-\u1fff\u200c\u200d\u203f\u2040\u2070-\u218f\u2c00-\u2fef\u3001-\ud7ff\uf900-\ufdcf\ufdf0-\ufffd]|[\ud800-\udb7f][\udc00-\udfff])*)?:((?:(?:[0-:A-Z_a-z\xc0-\xd6\xd8-\xf6\xf8-\u02ff\u0370-\u037d\u037f-\u1fff\u200c\u200d\u2070-\u218f\u2c00-\u2fef\u3001-\ud7ff\uf900-\ufdcf\ufdf0-\ufffd]|[\ud800-\udb7f][\udc00-\udfff]|%[0-9a-fA-F]{2}|\\[!#-\/;=?\-@_~])(?:(?:[\.\-0-:A-Z_a-z\xb7\xc0-\xd6\xd8-\xf6\xf8-\u037d\u037f-\u1fff\u200c\u200d\u203f\u2040\u2070-\u218f\u2c00-\u2fef\u3001-\ud7ff\uf900-\ufdcf\ufdf0-\ufffd]|[\ud800-\udb7f][\udc00-\udfff]|%[0-9a-fA-F]{2}|\\[!#-\/;=?\-@_~])*(?:[\-0-:A-Z_a-z\xb7\xc0-\xd6\xd8-\xf6\xf8-\u037d\u037f-\u1fff\u200c\u200d\u203f\u2040\u2070-\u218f\u2c00-\u2fef\u3001-\ud7ff\uf900-\ufdcf\ufdf0-\ufffd]|[\ud800-\udb7f][\udc00-\udfff]|%[0-9a-fA-F]{2}|\\[!#-\/;=?\-@_~]))?)?)(?=[\s#;,)\]]|\.[\s#\(\[<"'])/,
-  _number: /^[\-+]?(?:\d+\.?\d*([eE](?:[\-\+])?\d+)|\d+\.\d+|\.\d+|\d+)(?=[\s#.;,)\]])/,
-  _boolean: /^(?:true|false)(?=[\s#.;,)\]])/,
+  _prefixedName: /^((?:[A-Z_a-z\xc0-\xd6\xd8-\xf6\xf8-\u02ff\u0370-\u037d\u037f-\u1fff\u200c\u200d\u2070-\u218f\u2c00-\u2fef\u3001-\ud7ff\uf900-\ufdcf\ufdf0-\ufffd]|[\ud800-\udb7f][\udc00-\udfff])(?:[\.\-0-9A-Z_a-z\xb7\xc0-\xd6\xd8-\xf6\xf8-\u037d\u037f-\u1fff\u200c\u200d\u203f\u2040\u2070-\u218f\u2c00-\u2fef\u3001-\ud7ff\uf900-\ufdcf\ufdf0-\ufffd]|[\ud800-\udb7f][\udc00-\udfff])*)?:((?:(?:[0-:A-Z_a-z\xc0-\xd6\xd8-\xf6\xf8-\u02ff\u0370-\u037d\u037f-\u1fff\u200c\u200d\u2070-\u218f\u2c00-\u2fef\u3001-\ud7ff\uf900-\ufdcf\ufdf0-\ufffd]|[\ud800-\udb7f][\udc00-\udfff]|%[0-9a-fA-F]{2}|\\[!#-\/;=?\-@_~])(?:(?:[\.\-0-:A-Z_a-z\xb7\xc0-\xd6\xd8-\xf6\xf8-\u037d\u037f-\u1fff\u200c\u200d\u203f\u2040\u2070-\u218f\u2c00-\u2fef\u3001-\ud7ff\uf900-\ufdcf\ufdf0-\ufffd]|[\ud800-\udb7f][\udc00-\udfff]|%[0-9a-fA-F]{2}|\\[!#-\/;=?\-@_~])*(?:[\-0-:A-Z_a-z\xb7\xc0-\xd6\xd8-\xf6\xf8-\u037d\u037f-\u1fff\u200c\u200d\u203f\u2040\u2070-\u218f\u2c00-\u2fef\u3001-\ud7ff\uf900-\ufdcf\ufdf0-\ufffd]|[\ud800-\udb7f][\udc00-\udfff]|%[0-9a-fA-F]{2}|\\[!#-\/;=?\-@_~]))?)?)(?=[,;\s#()\[\]]|\.[\s#()\[\]<"'])/,
+  _number: /^[\-+]?(?:\d+\.?\d*([eE](?:[\-\+])?\d+)|\d+\.\d+|\.\d+|\d+)(?=[.,;\s#()\[\]])/,
+  _boolean: /^(?:true|false)(?=[.,;\s#()\[\]])/,
   _dot: /^\.(?!\d)/, // If a digit follows a dot, it is a number, not punctuation.
   _punctuation: /^[;,\[\]\(\)]/,
   _fastString: /^"[^"\\]+"(?=[^"\\])/,
   _keyword: /^@[a-z]+(?=\s)/,
   _sparqlKeyword: /^(?:PREFIX|BASE)(?=\s)/i,
-  _type: /^\^\^(?:<([^>]*)>|([A-Z_a-z\u00c0-\u00d6\u00d8-\u00f6\u00f8-\u02ff\u0370-\u037d\u037f-\u1fff\u200c-\u200d\u2070-\u218f\u2c00-\u2fef\u3001-\ud7ff\uf900-\ufdcf\ufdf0-\ufffd][\-0-9A-Z_a-z\u00b7\u00c0-\u00d6\u00d8-\u00f6\u00f8-\u037d\u037f-\u1fff\u200c-\u200d\u203f-\u2040\u2070-\u218f\u2c00-\u2fef\u3001-\ud7ff\uf900-\ufdcf\ufdf0-\ufffd]*)?:([A-Z_a-z\u00c0-\u00d6\u00d8-\u00f6\u00f8-\u02ff\u0370-\u037d\u037f-\u1fff\u200c-\u200d\u2070-\u218f\u2c00-\u2fef\u3001-\ud7ff\uf900-\ufdcf\ufdf0-\ufffd][\-0-9A-Z_a-z\u00b7\u00c0-\u00d6\u00d8-\u00f6\u00f8-\u037d\u037f-\u1fff\u200c-\u200d\u203f-\u2040\u2070-\u218f\u2c00-\u2fef\u3001-\ud7ff\uf900-\ufdcf\ufdf0-\ufffd]*)(?=[\s\.;,)#]))/,
   _shortPredicates: /^a(?=\s+|<)/,
   _newline: /^[ \t]*(?:#[^\n\r]*)?(?:\r\n|\n|\r)[ \t]*/,
   _whitespace: /^[ \t]+/,
@@ -5243,8 +5242,21 @@ N3Lexer.prototype = {
       // Look for specific token types based on the first character.
       var firstChar = input[0], match = null, unescaped, inconclusive = false;
       switch (firstChar) {
+      case '^':
+        // Try to match a type.
+        if (input.length === 1) break;
+        else if (input[1] !== '^') return reportSyntaxError(this);
+        this._prevTokenType = '^';
+        // Move to type IRI or prefixed name.
+        input = input.substr(2);
+        if (input[0] !== '<') {
+          inconclusive = true;
+          break;
+        }
+        // Fall through in case the type is an IRI.
+
       case '<':
-        // Try to find a full URI.
+        // Try to find a full IRI.
         if (match = this._iri.exec(input)) {
           unescaped = this._unescape(match[1]);
           if (unescaped === null || illegalUrlChars.test(unescaped))
@@ -5292,20 +5304,6 @@ N3Lexer.prototype = {
         // Try to find a keyword.
         else if (match = this._keyword.exec(input)) {
           token.type = match[0];
-        }
-        break;
-
-      case '^':
-        // Try to find a type.
-        if (match = this._type.exec(input)) {
-          token.type = 'type';
-          if (!match[2]) {
-            token.value = match[1];
-          }
-          else {
-            token.prefix = match[2];
-            token.value = match[3];
-          }
         }
         break;
 
@@ -5401,6 +5399,18 @@ N3Lexer.prototype = {
           token.type = 'prefixed';
           token.prefix = match[1] || '';
           token.value = this._unescape(match[2]);
+        }
+      }
+
+      // A type token is special: it can only be emitted after an IRI or prefixed name is read.
+      if (this._prevTokenType === '^') {
+        switch (token.type) {
+        case 'IRI':
+        case 'prefixed':
+          token.type = 'type';
+          break;
+        default:
+          match = null;
         }
       }
 
@@ -27697,7 +27707,7 @@ QueryEngine.QueryEngine.prototype.termCost = function(term, env) {
 };
 
 QueryEngine.QueryEngine.prototype.normalizeTerm = function(term, env, shouldIndex) {
-    if(term.token === 'uri') {
+    if(term && term.token === 'uri') {
         var uri = Utils.lexicalFormBaseUri(term, env);
         if(uri == null) {
             return(null);
@@ -27709,7 +27719,7 @@ QueryEngine.QueryEngine.prototype.normalizeTerm = function(term, env, shouldInde
             }
         }
 
-    } else if(term.token === 'literal') {
+    } else if(term && term.token === 'literal') {
         var lexicalFormLiteral = Utils.lexicalFormLiteral(term, env);
         if(shouldIndex) {
            var oid = this.lexicon.registerLiteral(lexicalFormLiteral);
@@ -27718,7 +27728,7 @@ QueryEngine.QueryEngine.prototype.normalizeTerm = function(term, env, shouldInde
             var oid = this.lexicon.resolveLiteral(lexicalFormLiteral);
             return(oid);
         }
-    } else if(term.token === 'blank') {
+    } else if(term && term.token === 'blank') {
         var label = term.value;
         var oid = env.blanks[label];
         if( oid != null) {
@@ -27734,7 +27744,7 @@ QueryEngine.QueryEngine.prototype.normalizeTerm = function(term, env, shouldInde
                 return(oid);
             }
         }
-    } else if(term.token === 'var') {
+    } else if(term && term.token === 'var') {
         return(term.value);
     } else {
           return(null);

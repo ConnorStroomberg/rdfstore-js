@@ -5172,1350 +5172,50 @@ JSONLDParser.parser.parse = function(data, graph) {
 
 
 // end of ./src/js-communication/src/jsonld_parser.js 
-// This code is taking from the N3 project from Ruben Verborgh licensed under the MIT license. See https://github.com/RubenVerborgh/node-n3/blob/master/LICENSE.md
+var N3Parser = require('n3').Parser;
 
-// **N3Lexer** tokenizes N3 documents.
-// ## Regular expressions
-var patterns = {
-  _explicituri: /^<((?:[^\x00-\x20<>\\"\{\}\|\^\`]|\\[uU])*)>/,
-  _string: /^"[^"\\]*(?:\\.[^"\\]*)*"(?=[^"\\])|^'[^'\\]*(?:\\.[^'\\]*)*'(?=[^'\\])/,
-  _tripleQuotedString: /^""("[^"\\]*(?:(?:\\.|"(?!""))[^"\\]*)*")""|^''('[^'\\]*(?:(?:\\.|'(?!''))[^'\\]*)*')''/,
-  _langcode: /^@([a-z]+(?:-[a-z0-9]+)*)(?=[^a-z0-9\-])/i,
-  _prefix: /^((?:[A-Za-z\xc0-\xd6\xd8-\xf6\xf8-\u02ff\u0370-\u037d\u037f-\u1fff\u200c\u200d\u2070-\u218f\u2c00-\u2fef\u3001-\ud7ff\uf900-\ufdcf\ufdf0-\ufffd]|[\ud800-\udb7f][\udc00-\udfff])(?:[\.\-0-9A-Z_a-z\xb7\xc0-\xd6\xd8-\xf6\xf8-\u037d\u037f-\u1fff\u200c\u200d\u203f\u2040\u2070-\u218f\u2c00-\u2fef\u3001-\ud7ff\uf900-\ufdcf\ufdf0-\ufffd]|[\ud800-\udb7f][\udc00-\udfff])*)?:(?=\s)/,
-  _qname:  /^((?:[A-Z_a-z\xc0-\xd6\xd8-\xf6\xf8-\u02ff\u0370-\u037d\u037f-\u1fff\u200c\u200d\u2070-\u218f\u2c00-\u2fef\u3001-\ud7ff\uf900-\ufdcf\ufdf0-\ufffd]|[\ud800-\udb7f][\udc00-\udfff])(?:[\.\-0-9A-Z_a-z\xb7\xc0-\xd6\xd8-\xf6\xf8-\u037d\u037f-\u1fff\u200c\u200d\u203f\u2040\u2070-\u218f\u2c00-\u2fef\u3001-\ud7ff\uf900-\ufdcf\ufdf0-\ufffd]|[\ud800-\udb7f][\udc00-\udfff])*)?:((?:(?:[0-:A-Z_a-z\xc0-\xd6\xd8-\xf6\xf8-\u02ff\u0370-\u037d\u037f-\u1fff\u200c\u200d\u2070-\u218f\u2c00-\u2fef\u3001-\ud7ff\uf900-\ufdcf\ufdf0-\ufffd]|[\ud800-\udb7f][\udc00-\udfff]|%[0-9a-fA-F]{2}|\\[!#-\/;=?\-@_~])(?:(?:[\.\-0-:A-Z_a-z\xb7\xc0-\xd6\xd8-\xf6\xf8-\u037d\u037f-\u1fff\u200c\u200d\u203f\u2040\u2070-\u218f\u2c00-\u2fef\u3001-\ud7ff\uf900-\ufdcf\ufdf0-\ufffd]|[\ud800-\udb7f][\udc00-\udfff]|%[0-9a-fA-F]{2}|\\[!#-\/;=?\-@_~])*(?:[\-0-:A-Z_a-z\xb7\xc0-\xd6\xd8-\xf6\xf8-\u037d\u037f-\u1fff\u200c\u200d\u203f\u2040\u2070-\u218f\u2c00-\u2fef\u3001-\ud7ff\uf900-\ufdcf\ufdf0-\ufffd]|[\ud800-\udb7f][\udc00-\udfff]|%[0-9a-fA-F]{2}|\\[!#-\/;=?\-@_~]))?)?)(?=[\s\.;,)#])/,
-  _number: /^[\-+]?(?:\d+\.?\d*([eE](?:[\-\+])?\d+)|\d+\.\d+|\.\d+|\d+)(?=\s*[\s\.;,)#])/,
-  _boolean: /^(?:true|false)(?=[\s#,;.])/,
-  _punctuation: /^\.(?!\d)|^;|^,|^\[|^\]|^\(|^\)/, // If a digit follows a dot, it is a number, not punctuation.
-  _fastString: /^"[^"\\]+"(?=[^"\\])/,
-  _keyword: /^(?:@[a-z]+|[Pp][Rr][Ee][Ff][Ii][Xx]|[Bb][Aa][Ss][Ee])(?=\s)/,
-  _type: /^\^\^(?:<([^>]*)>|([A-Z_a-z\u00c0-\u00d6\u00d8-\u00f6\u00f8-\u02ff\u0370-\u037d\u037f-\u1fff\u200c-\u200d\u2070-\u218f\u2c00-\u2fef\u3001-\ud7ff\uf900-\ufdcf\ufdf0-\ufffd][\-0-9A-Z_a-z\u00b7\u00c0-\u00d6\u00d8-\u00f6\u00f8-\u037d\u037f-\u1fff\u200c-\u200d\u203f-\u2040\u2070-\u218f\u2c00-\u2fef\u3001-\ud7ff\uf900-\ufdcf\ufdf0-\ufffd]*)?:([A-Z_a-z\u00c0-\u00d6\u00d8-\u00f6\u00f8-\u02ff\u0370-\u037d\u037f-\u1fff\u200c-\u200d\u2070-\u218f\u2c00-\u2fef\u3001-\ud7ff\uf900-\ufdcf\ufdf0-\ufffd][\-0-9A-Z_a-z\u00b7\u00c0-\u00d6\u00d8-\u00f6\u00f8-\u037d\u037f-\u1fff\u200c-\u200d\u203f-\u2040\u2070-\u218f\u2c00-\u2fef\u3001-\ud7ff\uf900-\ufdcf\ufdf0-\ufffd]*)(?=[\s\.;,)#]))/,
-  _shortPredicates: /^a(?=\s+|<)/,
-  _newline: /^[ \t]*(?:#[^\n\r]*)?(?:\r\n|\n|\r)[ \t]*/,
-  _whitespace: /^[ \t]+/,
-  _nonwhitespace: /^\S*/,
-  _endOfFile: /^(?:#[^\n\r]*)?$/
-};
-
-// Regular expression and replacement string to escape N3 strings.
-// Note how we catch invalid unicode sequences separately (they will trigger an error).
-var escapeSequence = /\\u([a-fA-F0-9]{4})|\\U([a-fA-F0-9]{8})|\\[uU]|\\(.)/g;
-var escapeReplacements = { '\\': '\\', "'": "'", '"': '"',
-                           'n': '\n', 'r': '\r', 't': '\t', 'f': '\f', 'b': '\b',
-                           '_': '_', '~': '~', '.': '.', '-': '-', '!': '!', '$': '$', '&': '&',
-                           '(': '(', ')': ')', '*': '*', '+': '+', ',': ',', ';': ';', '=': '=',
-                           '/': '/', '?': '?', '#': '#', '@': '@', '%': '%' };
-var illegalUrlChars = /[\x00-\x20<>\\"\{\}\|\^\`]/;
-
-// Different punctuation types.
-var punctuationTypes = { '.': 'dot', ';': 'semicolon', ',': 'comma',
-                         '[': 'bracketopen', ']': 'bracketclose',
-                         '(': 'liststart', ')': 'listend' };
-var fullPredicates = { 'a': 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type' };
-
-// ## Constructor
-function N3Lexer() {
-  if (!(this instanceof N3Lexer))
-    return new N3Lexer();
-
-  // Local copies of the patterns perform slightly better.
-  for (var name in patterns)
-    this[name] = patterns[name];
-}
-
-N3Lexer.prototype = {
-  // ## Private methods
-
-  // ### `_next` fires the callback with the next token.
-  // Returns a boolean indicating whether a token has been emitted.
-  _next: function (callback) {
-    // Only emit tokens if there's still input left.
-    if (this._input === undefined)
-      return false;
-
-    // Count and skip newlines.
-    var match;
-    while (match = this._newline.exec(this._input)) {
-      this._line++;
-      this._input = this._input.substr(match[0].length);
-    }
-
-    // Skip whitespace.
-    if (match = this._whitespace.exec(this._input)) {
-      this._input = this._input.substr(match[0].length);
-    }
-
-    // Create token skeleton.
-    // We initialize all possible properties as strings, so the engine uses one runtime type for all tokens.
-    var token = { line: this._line,
-                  type: '',
-                  value: '',
-                  prefix: ''
-                };
-    var unescaped;
-
-    // Emit the EOF token if we're at the end and reading is complete.
-    if (this._endOfFile.test(this._input)) {
-      // If we're streaming, don't emit EOF yet.
-      if (!this._inputComplete)
-        return false;
-      // Free the input.
-      delete this._input;
-      // Emit EOF.
-      token.type = 'eof';
-      callback(null, token);
-      return true;
-    }
-
-    // Try to find an `explicituri`.
-    if (match = this._explicituri.exec(this._input)) {
-      unescaped = this._unescape(match[1]);
-      if (unescaped === null || illegalUrlChars.test(unescaped))
-        return reportSyntaxError(this);
-      token.type = 'explicituri';
-      token.value = unescaped;
-    }
-    // Try to find a dot.
-    else if (match = this._punctuation.exec(this._input)) {
-      token.type = punctuationTypes[match[0]];
-    }
-    // Try to find a language code.
-    else if (this._prevTokenType === 'literal' && (match = this._langcode.exec(this._input))) {
-      token.type = 'langcode';
-      token.value = match[1];
-    }
-    // Try to find a string literal the fast way.
-    // This only includes non-empty simple quoted literals without escapes.
-    // If streaming, make sure the input is long enough so we don't miss language codes or string types.
-    else if (match = this._fastString.exec(this._input)) {
-      token.type = 'literal';
-      token.value = match[0];
-    }
-    // Try to find any other string literal wrapped in a pair of quotes.
-    else if (match = this._string.exec(this._input)) {
-      unescaped = this._unescape(match[0]);
-      if (unescaped === null)
-        return reportSyntaxError(this);
-      token.type = 'literal';
-      token.value = unescaped.replace(/^'|'$/g, '"');
-    }
-    // Try to find a string literal wrapped in a pair of triple quotes.
-    else if (match = this._tripleQuotedString.exec(this._input)) {
-      unescaped = match[1] || match[2];
-      // Count the newlines and advance line counter.
-      this._line += unescaped.split(/\r\n|\r|\n/).length - 1;
-      unescaped = this._unescape(unescaped);
-      if (unescaped === null)
-        return reportSyntaxError(this);
-      token.type = 'literal';
-      token.value = unescaped.replace(/^'|'$/g, '"');
-    }
-    // Try to find a number.
-    else if (match = this._number.exec(this._input)) {
-      token.type = 'literal';
-      token.value = '"' + match[0] + '"^^<http://www.w3.org/2001/XMLSchema#' +
-                    (match[1] ? 'double>' : (/^[+\-]?\d+$/.test(match[0]) ? 'integer>' : 'decimal>'));
-    }
-    // Try to match a boolean.
-    else if (match = this._boolean.exec(this._input)) {
-      token.type = 'literal';
-      token.value = '"' + match[0] + '"^^<http://www.w3.org/2001/XMLSchema#boolean>';
-    }
-    // Try to find a type.
-    else if (this._prevTokenType === 'literal' && (match = this._type.exec(this._input))) {
-      token.type = 'type';
-      if (!match[2]) {
-        token.value = match[1];
-      }
-      else {
-        token.prefix = match[2];
-        token.value = match[3];
-      }
-    }
-    // Try to find a keyword.
-    else if (match = this._keyword.exec(this._input)) {
-      var keyword = match[0];
-      token.type = keyword[0] === '@' ? keyword : keyword.toUpperCase();
-    }
-    // Try to find a prefix.
-    else if ((this._prevTokenType === '@prefix' || this._prevTokenType === 'PREFIX') &&
-             (match = this._prefix.exec(this._input))) {
-      token.type = 'prefix';
-      token.value = match[1] || '';
-    }
-    // Try to find a qname.
-    else if (match = this._qname.exec(this._input)) {
-      unescaped = this._unescape(match[2]);
-      if (unescaped === null)
-        return reportSyntaxError(this);
-      token.type = 'qname';
-      token.prefix = match[1] || '';
-      token.value = unescaped;
-    }
-    // Try to find an abbreviated predicate.
-    else if (match = this._shortPredicates.exec(this._input)) {
-      token.type = 'abbreviation';
-      token.value = fullPredicates[match[0]];
-    }
-    // What if nothing of the above was found?
-    else {
-      // We could be in streaming mode, and then we just wait for more input to arrive.
-      // Otherwise, a syntax error has occurred in the input.
-      // One exception: error on an unaccounted linebreak (= not inside a triple-quoted literal).
-      if (this._inputComplete || (!/^'''|^"""/.test(this._input) && /\n|\r/.test(this._input)))
-        reportSyntaxError(this);
-      return false;
-    }
-
-    // Save the token type for the next iteration.
-    this._prevTokenType = token.type;
-
-    // Advance to next part to tokenize.
-    this._input = this._input.substr(match[0].length);
-
-    // Emit the parsed token.
-    callback(null, token);
-    return true;
-
-    function reportSyntaxError(self) {
-      match = self._nonwhitespace.exec(self._input);
-      delete self._input;
-      callback('Syntax error: unexpected "' + match[0] + '" on line ' + self._line + '.');
-      return false;
-    }
-  },
-
-  // ### `unescape` replaces N3 escape codes by their corresponding characters.
-  _unescape: function (item) {
-    try {
-      return item.replace(escapeSequence, function (sequence, unicode4, unicode8, escapedChar) {
-        var charCode;
-        if (unicode4) {
-          charCode = parseInt(unicode4, 16);
-          if (isNaN(charCode))
-            throw "invalid character code";
-          return String.fromCharCode(charCode);
-        }
-        else if (unicode8) {
-          charCode = parseInt(unicode8, 16);
-          if (isNaN(charCode))
-            throw "invalid character code";
-          if (charCode < 0xFFFF)
-            return String.fromCharCode(charCode);
-          return String.fromCharCode(Math.floor((charCode - 0x10000) / 0x400) + 0xD800) +
-                 String.fromCharCode((charCode - 0x10000) % 0x400 + 0xDC00);
-        }
-        else {
-          var replacement = escapeReplacements[escapedChar];
-          if (!replacement)
-            throw "invalid escape sequence";
-          return replacement;
-        }
-      });
-    }
-    catch (error) {
-      return null;
-    }
-  },
-
-  // ## Public methods
-
-  // ### `tokenize` starts the transformation of an N3 document into an array of tokens.
-  // The input can be a string or a stream.
-  tokenize: function (input, callback) {
-    var self = this;
-    this._line = 1;
-
-    // If the input is a string, continuously emit tokens through callback until the end.
-    if (typeof(input) === 'string') {
-      this._input = input;
-      this._inputComplete = true;
-      process.nextTick(function () {
-        while (self._next(callback)) {} ;
-      });
-    }
-    // Otherwise, the input must be a stream.
-    else {
-      this._input = '';
-      this._inputComplete = false;
-
-      // Read strings, not buffers.
-      if (typeof input.setEncoding === 'function')
-        input.setEncoding('utf8');
-
-      // If new data arrives…
-      input.on('data', function (data) {
-        // …add the new data to the buffer
-        self._input += data;
-        // …and parse as far as we can.
-        while (self._next(callback)) {} ;
-      });
-      // If we're at the end of the stream…
-      input.on('end', function () {
-        // …signal completeness…
-        self._inputComplete = true;
-        // …and parse until the end.
-        while (self._next(callback)) {} ;
-      });
-    }
-  }
-};
-
-// ## Exports
-
-
-// **RVInnerN3Parser** parses N3 documents.
-
-var RDF_PREFIX = 'http://www.w3.org/1999/02/22-rdf-syntax-ns#',
-    RDF_NIL    = {token: 'uri', value: RDF_PREFIX + 'nil', prefix: null, suffix: null},
-    RDF_FIRST  = {token: 'uri', value: RDF_PREFIX + 'first', prefix: null, suffix: null},
-    RDF_REST   = {token: 'uri', value: RDF_PREFIX + 'rest', prefix: null, suffix: null};
-
-var absoluteURI = /^[a-z]+:/,
-    absolutePath = /^\//,
-    hashURI = /^#/,
-    documentPart = /[^\/]*$/,
-    rootURI = /^(?:[a-z]+:\/*)?[^\/]*/;
-
-var _undefined, noop = function () {};
-
-// ## Constructor
-function RVInnerN3Parser(config) {
-  if (!(this instanceof RVInnerN3Parser))
-    return new RVInnerN3Parser(config);
-
-  config = config || {};
-
-  this._lexer = config.lexer || new N3Lexer();
-  this._blankNodes = Object.create(null);
-  this._blankNodeCount = 0;
-  this._tripleStack = [];
-  if(config.baseURI != null)
-    config.documentURI = config.baseURI
-  if (!config.documentURI) {
-    this._baseURI = null;
-    this._baseURIPath = null;
-  }
-  else {
-    if(config.documentURI.indexOf("#") !== -1)
-        config.documentURI = config.documentURI.split("#")[0];
-    this._baseURI = config.documentURI;
-    this._baseURIPath = this._baseURI.replace(documentPart, '');
-    this._baseURIRoot = this._baseURI.match(rootURI)[0];
-  }
-}
-
-RVInnerN3Parser.prototype = {
-  defaultGraph: null,
-  constructor: RVInnerN3Parser,
-
-  // ## Private methods
-
-  // ### `_readInTopContext` reads a token when in the top context.
-  _readInTopContext: function (token) {
-    switch (token.type) {
-    // If an EOF token arrives in the top context, signal that we're done.
-    case 'eof':
-      return this._callback(null, null, this._prefixes);
-    // It could be a prefix declaration.
-    case '@prefix':
-      this._sparqlStyle = false;
-      return this._readPrefix;
-    case 'PREFIX':
-      this._sparqlStyle = true;
-      return this._readPrefix;
-    // It could be a base declaration.
-    case '@base':
-      this._sparqlStyle = false;
-      return this._readBaseURI;
-    case 'BASE':
-      this._sparqlStyle = true;
-      return this._readBaseURI;
-    // Otherwise, the next token must be a subject.
-    default:
-      return this._readSubject(token);
-    }
-  },
-
-  // ### `_readSubject` reads a triple's subject.
-  _readSubject: function (token) {
-    switch (token.type) {
-    case 'explicituri':
-      if (this._baseURI === null || absoluteURI.test(token.value))
-          this._subject = {token: 'uri', value: token.value, prefix: null, suffix: null};
-      else
-
-          this._subject = {token: 'uri', value: this._resolveURI(token.value), prefix: null, suffix: null};
-      break;
-    case 'qname':
-      if (token.prefix === '_') {
-          if(this._blankNodes[token.value] !== undefined) {
-              this._subject = {'blank': this._blankNodes[token.value] };
-          } else {
-              this._subject = {'blank': (this._blankNodes[token.value] = '_:' + this._blankNodeCount++)};
-          }
-      }
-      else {
-        var prefix = this._prefixes[token.prefix];
-        if (prefix === _undefined)
-          return this._error('Undefined prefix "' + token.prefix + ':"', token);
-        this._subject = {token: 'uri', value: prefix + token.value, prefix: null, suffix: null};
-
-      }
-      break;
-    case 'bracketopen':
-      // Start a new triple with a new blank node as subject.
-      this._subject = {'blank': ('_:' + this._blankNodeCount++)};
-      this._tripleStack.push({ subject: this._subject, predicate: null, object: null, type: 'blank' });
-      return this._readBlankNodeHead;
-    case 'liststart':
-      // Start a new list
-      this._tripleStack.push({ subject: RDF_NIL, predicate: null, object: null, type: 'list' });
-      this._subject = null;
-      return this._readListItem;
-    default:
-      return this._error('Unexpected token type "' + token.type, token);
-    }
-    this._subjectHasPredicate = false;
-    // The next token must be a predicate.
-    return this._readPredicate;
-  },
-
-  // ### `_readPredicate` reads a triple's predicate.
-  _readPredicate: function (token) {
-    switch (token.type) {
-    case 'explicituri':
-    case 'abbreviation':
-      if (this._baseURI === null || absoluteURI.test(token.value))
-        this._predicate = {token: 'uri', value: token.value, prefix: null, suffix: null};
-      else {
-        var resolved = 
-        this._predicate = {token: 'uri', value: this._resolveURI(token.value), prefix: null, suffix: null};
-      }
-      break;
-    case 'qname':
-      if (token.prefix === '_') {
-        return this._error('Disallowed blank node as predicate', token);
-      }
-      else {
-        var prefix = this._prefixes[token.prefix];
-        if (prefix === _undefined)
-          return this._error('Undefined prefix "' + token.prefix + ':"', token);
-        this._predicate = {token: 'uri', value: prefix + token.value, prefix: null, suffix: null};
-      }
-      break;
-    case 'bracketclose':
-      // Expected predicate didn't come, must have been trailing semicolon.
-      return this._readBlankNodeTail(token, true);
-    case 'dot':
-      // A dot is not allowed if the subject did not have a predicate yet
-      if (!this._subjectHasPredicate)
-        return this._error('Unexpected dot', token);
-      // Expected predicate didn't come, must have been trailing semicolon.
-      return this._readPunctuation(token, true);
-    case 'semicolon':
-      // Extra semicolons can be safely ignored
-      return this._readPredicate;
-    default:
-      return this._error('Expected predicate to follow "' + this._subject + '"', token);
-    }
-    this._subjectHasPredicate = true;
-    // The next token must be an object.
-    return this._readObject;
-  },
-
-  // ### `_readObject` reads a triple's object.
-  _readObject: function (token) {
-    switch (token.type) {
-    case 'explicituri':
-      if (this._baseURI === null || absoluteURI.test(token.value))
-        this._object = {token: 'uri', value: token.value, prefix: null, suffix: null};
-      else
-        this._object = {token: 'uri', value: this._resolveURI(token.value), prefix: null, suffix: null};
-      break;
-    case 'qname':
-      if (token.prefix === '_') {
-          if(this._blankNodes[token.value] !== undefined) {
-              this._object = {'blank': this._blankNodes[token.value] };
-          } else {
-              this._object = {'blank': (this._blankNodes[token.value] = '_:' + this._blankNodeCount++)};
-          }
-      }
-      else {
-        var prefix = this._prefixes[token.prefix];
-        if (prefix === _undefined)
-          return this._error('Undefined prefix "' + token.prefix + ':"', token);
-        this._object = {token: 'uri', value: prefix + token.value, prefix: null, suffix: null};
-      }
-      break;
-    case 'literal':
-      this._object = {'literal': token.value};
-      return this._readDataTypeOrLang;
-    case 'bracketopen':
-      // Start a new triple with a new blank node as subject.
-      var blank = {'blank': ('_:' + this._blankNodeCount++)};
-      this._tripleStack.push({ subject: this._subject, predicate: this._predicate, object: blank, type: 'blank' });
-      this._subject = blank;
-      return this._readBlankNodeHead;
-    case 'liststart':
-      // Start a new list
-      this._tripleStack.push({ subject: this._subject, predicate: this._predicate, object: RDF_NIL, type: 'list' });
-      this._subject = null;
-      return this._readListItem;
-    default:
-      return this._error('Expected object to follow "' + this._predicate + '"', token);
-    }
-    return this._getTripleEndReader();
-  },
-
-  // ### `_readBlankNodeHead` reads the head of a blank node.
-  _readBlankNodeHead: function (token) {
-    if (token.type === 'bracketclose')
-      return this._readBlankNodeTail(token, true);
-    else
-      return this._readPredicate(token);
-  },
-
-  // ### `_readBlankNodeTail` reads the end of a blank node.
-  _readBlankNodeTail: function (token, empty) {
-    if (token.type !== 'bracketclose')
-      return this._readPunctuation(token);
-
-    // Store blank node triple.
-    if (empty !== true)
-      this._callback(null, { subject: this._subject,
-                             predicate: this._predicate,
-                             object: this._object,
-                             graph: RVInnerN3Parser.prototype.defaultGraph });
-
-    // Restore parent triple that contains the blank node.
-    var triple = this._tripleStack.pop();
-    this._subject = triple.subject;
-    // Was the blank node the object?
-    if (triple.object !== null) {
-      // Restore predicate and object as well, and continue by reading punctuation.
-      this._predicate = triple.predicate;
-      this._object = triple.object;
-      return this._getTripleEndReader();
-    }
-    // The blank node was the subject, so continue reading the predicate.
-    return this._readPredicate;
-  },
-
-  // ### `_readDataTypeOrLang` reads an _optional_ data type or language.
-  _readDataTypeOrLang: function (token) {
-    switch (token.type) {
-    case 'type':
-      var value;
-      if (token.prefix === '') {
-        value = token.value;
-      }
-      else {
-        var prefix = this._prefixes[token.prefix];
-        if (prefix === _undefined)
-          return this._error('Undefined prefix "' + token.prefix + ':"', token);
-        value = prefix + token.value;
-      }
-      if(this._object.literal) {
-        this._object.literal += '^^<' + value + '>';
-      } else {
-        this._object += '^^<' + value + '>';
-        this._object = {literal: this._object};
-      }
-
-      return this._getTripleEndReader();
-    case 'langcode':
-        if(this._object.literal) {
-            this._object.literal += '@' + token.value.toLowerCase();
-        } else {
-            this._object += '@' + token.value.toLowerCase();
-            this._object = {literal: this._object};
-        }
-      return this._getTripleEndReader();
-    default:
-      return this._getTripleEndReader().call(this, token);
-    }
-  },
-
-  // ### `_readListItem` reads items from a list.
-  _readListItem: function (token) {
-    var item = null,                  // The actual list item.
-        itemHead = null,              // The head of the rdf:first predicate.
-        prevItemHead = this._subject, // The head of the previous rdf:first predicate.
-        stack = this._tripleStack,    // The stack of triples part of recursion (lists, blanks, etc.).
-        parentTriple = stack[stack.length - 1], // The triple containing the current list.
-        next = this._readListItem;    // The next function to execute.
-
-    switch (token.type) {
-    case 'explicituri':
-      item = {'token': 'uri', 'value': token.value, 'prefix': null, 'suffix': null};
-      break;
-    case 'qname':
-      if (token.prefix === '_') {
-          if(this._blankNodes[token.value] !== undefined) {
-              item = {'blank': this._blankNodes[token.value] };
-          } else {
-              tiem = {'blank': (this._blankNodes[token.value] = '_:' + this._blankNodeCount++)};
-          }
-      }
-      else {
-        var prefix = this._prefixes[token.prefix];
-        if (prefix === _undefined)
-          return this._error('Undefined prefix "' + token.prefix + ':"', token);
-          item = {'token': 'uri', 'value': prefix + token.value, 'prefix': null, 'suffix': null};
-      }
-      break;
-    case 'literal':
-      item = {'literal': token.value };
-      next = this._readDataTypeOrLang;
-      break;
-    case 'bracketopen':
-      // Stack the current list triple and start a new triple with a blank node as subject.
-      itemHead = {'blank': '_:' + this._blankNodeCount++ };
-      item     = {'blank': '_:' + this._blankNodeCount++ };
-
-      stack.push({ subject: itemHead, predicate: RDF_FIRST, object: item, type: 'blank' });
-      this._subject = item;
-      next = this._readBlankNodeHead;
-      break;
-    case 'liststart':
-      // Stack the current list triple and start a new list
-      itemHead = {'blank': '_:' + this._blankNodeCount++};
-      stack.push({ subject: itemHead, predicate: RDF_FIRST, object: RDF_NIL, type: 'list' });
-      this._subject = null;
-      next = this._readListItem;
-      break;
-    case 'listend':
-      // Restore the parent triple.
-      stack.pop();
-      // If this list is contained within a parent list, return the membership triple here.
-      // This will be `<parent list elemen>t rdf:first <this list>.`.
-      if (stack.length !== 0 && stack[stack.length - 1].type === 'list')
-        this._callback(null, { subject: parentTriple.subject,
-                               predicate: parentTriple.predicate,
-                               object: parentTriple.object,
-                               graph: RVInnerN3Parser.prototype.defaultGraph });
-      // Restore the parent triple's subject.
-      this._subject = (typeof(parentTriple.subject) === 'string' ? {'token': 'uri', 'value': parentTriple.subject, 'prefix': null, 'suffix': null } : parentTriple.subject);
-      // Was this list in the parent triple's subject?
-      if (parentTriple.predicate === null) {
-        // The next token is the predicate.
-        next = this._readPredicate;
-        // Skip writing the list tail if this was an empty list.
-        if (parentTriple.subject === RDF_NIL)
-          return next;
-      }
-      // The list was in the parent triple's object.
-      else {
-        // Restore the parent triple's predicate and object as well.
-        this._predicate = (typeof(parentTriple.predicate) === 'string' ? {'token': 'uri', 'value': parentTriple.predicate, 'prefix': null, 'suffix': null } : parentTriple.predicate); 
-        this._object = (typeof(parentTriple.object) === 'string' ? {'token': 'uri', 'value': parentTriple.object, 'prefix': null, 'suffix': null } : parentTriple.object);
-
-        next = this._getTripleEndReader();
-        // Skip writing the list tail if this was an empty list.
-        if (parentTriple.object === RDF_NIL)
-          return next;
-      }
-      // Close the list by making the item head nil.
-      itemHead = RDF_NIL;
-      break;
-    default:
-      return this._error('Expected list item instead of "' + token.type + '"', token);
-    }
-
-     // Create a new blank node if no item head was assigned yet.
-    if (itemHead === null)
-      this._subject = itemHead = {'blank': '_:' + this._blankNodeCount++};
-
-    // Is this the first element of the list?
-    if (prevItemHead === null) {
-      // This list is either the object or the subject.
-      if (parentTriple.object === RDF_NIL)
-        parentTriple.object = itemHead;
-      else
-        parentTriple.subject = itemHead;
-    }
-    else {
-      // The rest of the list is in the current head.
-      this._callback(null, { subject: prevItemHead,
-                             predicate: RDF_REST,
-                             object: itemHead,
-                             graph: RVInnerN3Parser.prototype.defaultGraph });
-    }
-    // Add the item's value.
-    if (item !== null)
-      this._callback(null, { subject: itemHead,
-                             predicate: RDF_FIRST,
-                             object: item,
-                             graph: RVInnerN3Parser.prototype.defaultGraph });
-    return next;
-  },
-
-  // ### `_readPunctuation` reads punctuation between triples or triple parts.
-  _readPunctuation: function (token, empty) {
-    var next;
-    switch (token.type) {
-    // A dot just ends the statement, without sharing anything with the next.
-    case 'dot':
-      next = this._readInTopContext;
-      break;
-    // Semicolon means the subject is shared; predicate and object are different.
-    case 'semicolon':
-      next = this._readPredicate;
-      break;
-    // Comma means both the subject and predicate are shared; the object is different.
-    case 'comma':
-      next = this._readObject;
-      break;
-    default:
-      return this._error('Expected punctuation to follow "' + this._object + '"', token);
-    }
-    // A triple has been completed now, so return it.
-    if (!empty)
-      this._callback(null, { subject: this._subject,
-                             predicate: this._predicate,
-                             object: this._object,
-                             graph: RVInnerN3Parser.prototype.defaultGraph });
-    return next;
-  },
-
-  // ### `_readPrefix` reads the prefix of a prefix declaration.
-  _readPrefix: function (token) {
-    if (token.type !== 'prefix')
-      return this._error('Expected prefix to follow @prefix', token);
-    this._prefix = token.value;
-    return this._readPrefixURI;
-  },
-
-  // ### `_readPrefixURI` reads the URI of a prefix declaration.
-  _readPrefixURI: function (token) {
-    if (token.type !== 'explicituri')
-      return this._error('Expected explicituri to follow prefix "' + this.prefix + '"', token);
-    var prefixURI;
-    if (this._baseURI === null || absoluteURI.test(token.value))
-      prefixURI = token.value;
-    else
-      prefixURI = this._resolveURI(token.value);
-    this._prefixes[this._prefix] = prefixURI;
-    this._prefixCallback(this._prefix, prefixURI);
-    return this._readDeclarationPunctuation;
-  },
-
-  // ### `_readBaseURI` reads the URI of a base declaration.
-  _readBaseURI: function (token) {
-    if (token.type !== 'explicituri')
-      return this._error('Expected explicituri to follow base declaration', token);
-    if (this._baseURI === null || absoluteURI.test(token.value))
-      this._baseURI = token.value;
-    else
-      this._baseURI = this._resolveURI(token.value);
-    this._baseURIPath = this._baseURI.replace(documentPart, '');
-    this._baseURIRoot = this._baseURI.match(rootURI)[0];
-    return this._readDeclarationPunctuation;
-  },
-
-  // ### `_readDeclarationPunctuation` reads the punctuation of a declaration.
-  _readDeclarationPunctuation: function (token) {
-    // SPARQL-style declarations don't have punctuation.
-    if (this._sparqlStyle)
-      return this._readInTopContext(token);
-
-    if (token.type !== 'dot')
-      return this._error('Expected declaration to end with a dot', token);
-    return this._readInTopContext;
-  },
-
-  // ### `_getTripleEndReader` gets the next reader function at the end of a triple.
-  _getTripleEndReader: function () {
-    var stack = this._tripleStack;
-    if (stack.length === 0)
-      return this._readPunctuation;
-
-    switch (stack[stack.length - 1].type) {
-    case 'blank':
-      return this._readBlankNodeTail;
-    case 'list':
-      return this._readListItem;
-    }
-  },
-
-  // ### `_error` emits an error message through the callback.
-  _error: function (message, token) {
-    this._callback(message + ' at line ' + token.line + '.');
-  },
-
-  // ### `_resolveURI` resolves a URI against a base path
-  _resolveURI: function (uri) {
-    if (hashURI.test(uri))
-      return this._baseURI + uri;
-    if (absolutePath.test(uri))
-      return this._baseURIRoot + uri;
-    return this._baseURIPath + uri;
-  },
-
-  // ## Public methods
-
-  // ### `parse` parses the N3 input and emits each parsed triple through the callback.
-  parse: function (input, tripleCallback, prefixCalback) {
-    var self = this;
-    // Initialize prefix declarations.
-    this._prefixes = {};
-    // Set the triple and prefix callbacks.
-    this._callback = tripleCallback || noop;
-    this._prefixCallback = prefixCalback || noop;
-    // The read callback is the next function to be executed when a token arrives.
-    // We start reading in the top context.
-    this._readCallback = this._readInTopContext;
-    // Execute the read callback when a token arrives.
-    this._lexer.tokenize(input, function (error, token) {
-      if (self._readCallback !== _undefined) {
-        if (error !== null)
-          self._callback(error);
-        else
-          self._readCallback = self._readCallback(token);
-      }
-    });
-  }
-};
-
-/*
-var RDF_PREFIX = 'http://www.w3.org/1999/02/22-rdf-syntax-ns#',
-    RDF_NIL    = {token: 'uri', value: RDF_PREFIX + 'nil', prefix: null, suffix: null},
-    RDF_FIRST  = {token: 'uri', value: RDF_PREFIX + 'first', prefix: null, suffix: null},
-    RDF_REST   = {token: 'uri', value: RDF_PREFIX + 'rest', prefix: null, suffix: null};
-
-var absoluteURI = /^[a-z]+:/;
-var hashURI = /^#/;
-var documentPart = /[^\/]*$/;
-
-var _undefined;
-
-// ## Constructor
-function RVInnerN3Parser(config) {
-  config = config || {};
-
-  // We use a dummy constructor to enable construction without `new`.
-  function Constructor() {}
-  Constructor.prototype = RVInnerN3Parser.prototype;
-
-  // Initialize the new `RVInnerN3Parser`.
-  var n3Parser = new Constructor();
-  n3Parser._lexer = config.lexer || new N3Lexer();
-  n3Parser._blankNodes = Object.create(null);
-  n3Parser._blankNodeCount = 0;
-  n3Parser._tripleStack = [];
-  if (!config.documentURI) {
-    n3Parser._baseURI = n3Parser._documentURI = null;
-    n3Parser._baseURIROOT = n3Parser._documentURIRoot = null;
-  }
-  else {
-    n3Parser._baseURI = n3Parser._documentURI = config.documentURI;
-    n3Parser._baseURIRoot = n3Parser._documentURIRoot = config.documentURI.replace(documentPart, '');
-  }
-
-  // Return the new `RVInnerN3Parser`.
-  return n3Parser;
-}
-
-RVInnerN3Parser.prototype = {
-  defaultGraph: null,
-  constructor: RVInnerN3Parser,
-
-  // ## Private methods
-
-  // ### `_readInTopContext` reads a token when in the top context.
-  _readInTopContext: function (token) {
-    switch (token.type) {
-    // If an EOF token arrives in the top context, signal that we're done.
-    case 'eof':
-      return this._callback(null, null);
-    // It could be a prefix declaration.
-    case '@prefix':
-      this._sparqlStyle = false;
-      return this._readPrefix;
-    case 'PREFIX':
-      this._sparqlStyle = true;
-      return this._readPrefix;
-    // It could be a base declaration.
-    case '@base':
-      this._sparqlStyle = false;
-      return this._readBaseURI;
-    case 'BASE':
-      this._sparqlStyle = true;
-      return this._readBaseURI;
-    // Otherwise, the next token must be a subject.
-    default:
-      return this._readSubject(token);
-    }
-  },
-
-  // ### `_readSubject` reads a triple's subject.
-  _readSubject: function (token) {
-    switch (token.type) {
-    case 'explicituri':
-      if (this._baseURI === null || absoluteURI.test(token.value))
-          this._subject = {token: 'uri', value: token.value, prefix: null, suffix: null};
-      else
-          this._subject = {token: 'uri', value: (hashURI.test(token.value) ? this._baseURI : this._baseURIRoot) + token.value, prefix: null, suffix: null};
-      break;
-    case 'qname':
-      if (token.prefix === '_') {
-          if(this._blankNodes[token.value] !== undefined) {
-              this._subject = {'blank': this._blankNodes[token.value] };
-          } else {
-              this._subject = {'blank': (this._blankNodes[token.value] = '_:' + this._blankNodeCount++)};
-          }
-      }
-      else {
-        var prefix = this._prefixes[token.prefix];
-        if (prefix === _undefined)
-          return this._error('Undefined prefix "' + token.prefix + ':"', token);
-        this._subject = {token: 'uri', value: prefix + token.value, prefix: null, suffix: null};
-      }
-      break;
-    case 'bracketopen':
-      // Start a new triple with a new blank node as subject.
-      this._subject = {'blank': ('_:' + this._blankNodeCount++)};
-      this._tripleStack.push({ subject: this._subject, predicate: null, object: null, type: 'blank' });
-      return this._readBlankNodeHead;
-    case 'liststart':
-      // Start a new list
-      this._tripleStack.push({ subject: RDF_NIL, predicate: null, object: null, type: 'list' });
-      this._subject = null;
-      return this._readListItem;
-    default:
-      return this._error('Unexpected token type "' + token.type, token);
-    }
-    this._subjectHasPredicate = false;
-    // The next token must be a predicate.
-    return this._readPredicate;
-  },
-
-  // ### `_readPredicate` reads a triple's predicate.
-  _readPredicate: function (token) {
-    switch (token.type) {
-    case 'explicituri':
-    case 'abbreviation':
-      if (this._baseURI === null || absoluteURI.test(token.value))
-        this._predicate = {token: 'uri', value: token.value, prefix: null, suffix: null};
-      else
-        this._predicate = {token: 'uri', value: (hashURI.test(token.value) ? this._baseURI : this._baseURIRoot) + token.value, prefix: null, suffix: null};
-      break;
-    case 'qname':
-      if (token.prefix === '_') {
-        return this._error('Disallowed blank node as predicate', token);
-      }
-      else {
-        var prefix = this._prefixes[token.prefix];
-        if (prefix === _undefined)
-          return this._error('Undefined prefix "' + token.prefix + ':"', token);
-        this._predicate = {token: 'uri', value: prefix + token.value, prefix: null, suffix: null};
-      }
-      break;
-    case 'bracketclose':
-      // Expected predicate didn't come, must have been trailing semicolon.
-      return this._readBlankNodeTail(token, true);
-    case 'dot':
-      // A dot is not allowed if the subject did not have a predicate yet
-      if (!this._subjectHasPredicate)
-        return this._error('Unexpected dot', token);
-      // Expected predicate didn't come, must have been trailing semicolon.
-      return this._readPunctuation(token, true);
-    case 'semicolon':
-      // Extra semicolons can be safely ignored
-      return this._readPredicate;
-    default:
-      return this._error('Expected predicate to follow "' + this._subject + '"', token);
-    }
-    this._subjectHasPredicate = true;
-    // The next token must be an object.
-    return this._readObject;
-  },
-
-  // ### `_readObject` reads a triple's object.
-  _readObject: function (token) {
-    switch (token.type) {
-    case 'explicituri':
-      if (this._baseURI === null || absoluteURI.test(token.value))
-        this._object = {token: 'uri', value: token.value, prefix: null, suffix: null};
-      else
-        this._object = {token: 'uri', value: (hashURI.test(token.value) ? this._baseURI : this._baseURIRoot) + token.value, prefix: null, suffix: null};
-      break;
-    case 'qname':
-      if (token.prefix === '_') {
-          if(this._blankNodes[token.value] !== undefined) {
-              this._object = {'blank': this._blankNodes[token.value] };
-          } else {
-              this._object = {'blank': (this._blankNodes[token.value] = '_:' + this._blankNodeCount++)};
-          }
-      }
-      else {
-        var prefix = this._prefixes[token.prefix];
-        if (prefix === _undefined)
-          return this._error('Undefined prefix "' + token.prefix + ':"', token);
-        this._object = {token: 'uri', value: prefix + token.value, prefix: null, suffix: null};
-      }
-      break;
-    case 'literal':
-        this._object = {'literal': token.value};
-      return this._readDataTypeOrLang;
-    case 'bracketopen':
-      // Start a new triple with a new blank node as subject.
-      var blank = {'blank': '_:' + this._blankNodeCount++};
-      this._tripleStack.push({ subject: this._subject, predicate: this._predicate, object: blank, type: 'blank' });
-      this._subject = blank;
-      return this._readBlankNodeHead;
-    case 'liststart':
-      // Start a new list
-      this._tripleStack.push({ subject: this._subject, predicate: this._predicate, object: RDF_NIL, type: 'list' });
-      this._subject = null;
-      return this._readListItem;
-    default:
-      return this._error('Expected object to follow "' + this._predicate + '"', token);
-    }
-    return this._getNextReader();
-  },
-
-  // ### `_readBlankNodeHead` reads the head of a blank node.
-  _readBlankNodeHead: function (token) {
-    if (token.type === 'bracketclose')
-      return this._readBlankNodeTail(token, true);
-    else
-      return this._readPredicate(token);
-  },
-
-  // ### `_readBlankNodeTail` reads the end of a blank node.
-  _readBlankNodeTail: function (token, empty) {
-    if (token.type !== 'bracketclose')
-      return this._readPunctuation(token);
-
-    // Store blank node triple.
-    if (empty !== true)
-      this._callback(null, { subject: this._subject,
-                             predicate: this._predicate,
-                             object: this._object,
-                             graph: RVInnerN3Parser.prototype.defaultGraph });
-
-    // Restore parent triple that contains the blank node.
-    var triple = this._tripleStack.pop();
-    this._subject = triple.subject;
-    // Was the blank node the object?
-    if (triple.object !== null) {
-      // Restore predicate and object as well, and continue by reading punctuation.
-      this._predicate = triple.predicate;
-      this._object = triple.object;
-      return this._getNextReader();
-    }
-    // The blank node was the subject, so continue reading the predicate.
-    return this._readPredicate;
-  },
-
-  // ### `_readDataTypeOrLang` reads an _optional_ data type or language.
-  _readDataTypeOrLang: function (token) {
-    switch (token.type) {
-    case 'type':
-      var value;
-      if (token.prefix === '') {
-        value = token.value;
-      }
-      else {
-        var prefix = this._prefixes[token.prefix];
-        if (prefix === _undefined)
-          return this._error('Undefined prefix "' + token.prefix + ':"', token);
-        value = prefix + token.value;
-      }
-      if(this._object.literal) {
-        this._object.literal += '^^<' + value + '>';
-      } else {
-        this._object += '^^<' + value + '>';
-        this._object = {literal: this._object};
-      }
-      return this._readPunctuation;
-    case 'langcode':
-        if(this._object.literal) {
-            this._object.literal += '@' + token.value.toLowerCase();
-        } else {
-            this._object += '@' + token.value.toLowerCase();
-            this._object = {literal: this._object};
-        }
-      return this._getNextReader();
-    default:
-      return this._getNextReader().call(this, token);
-    }
-  },
-
-  // ### `_readListItem` reads items from a list.
-  _readListItem: function (token) {
-    var item = null,                  // The actual list item.
-        itemHead = null,              // The head of the rdf:first predicate.
-        prevItemHead = this._subject, // The head of the previous rdf:first predicate.
-        stack = this._tripleStack,    // The stack of triples part of recursion (lists, blanks, etc.).
-        parentTriple = stack[stack.length - 1], // The triple containing the current list.
-        next = this._readListItem;    // The next function to execute.
-
-    switch (token.type) {
-    case 'explicituri':
-      item = {'token': 'uri', 'value': token.value, 'prefix': null, 'suffix': null};
-      break;
-    case 'qname':
-      if (token.prefix === '_') {
-        item = this._blankNodes[token.value] ||
-              (this._blankNodes[token.value] = {'blank': '_:' + this._blankNodeCount++});
-      }
-      else {
-        var prefix = this._prefixes[token.prefix];
-        if (prefix === _undefined)
-          return this._error('Undefined prefix "' + token.prefix + ':"', token);
-          item = {'token': 'uri', 'value': prefix + token.value, 'prefix': null, 'suffix': null};
-      }
-      break;
-    case 'literal':
-      item = {'literal': token.value };
-      next = this._readDataTypeOrLang;
-      break;
-    case 'bracketopen':
-      // Stack the current list triple and start a new triple with a blank node as subject.
-      itemHead = {'blank': '_:' + this._blankNodeCount++ };
-      item     = {'blank': '_:' + this._blankNodeCount++ };
-      stack.push({ subject: itemHead, predicate: RDF_FIRST, object: item, type: 'blank' });
-      this._subject = item;
-      next = this._readBlankNodeHead;
-      break;
-    case 'liststart':
-      // Stack the current list triple and start a new list
-      itemHead = {'blank': '_:' + this._blankNodeCount++};
-      stack.push({ subject: itemHead, predicate: RDF_FIRST, object: RDF_NIL, type: 'list' });
-      this._subject = null;
-      next = this._readListItem;
-      break;
-    case 'listend':
-      // Restore the parent triple.
-      stack.pop();
-      // If this list is contained within a parent list, return the membership triple here.
-      // This will be `<parent list elemen>t rdf:first <this list>.`.
-      if (stack.length !== 0 && stack[stack.length - 1].type === 'list')
-        this._callback(null, { subject: parentTriple.subject,
-                               predicate: parentTriple.predicate,
-                               object: parentTriple.object,
-                               graph: RVInnerN3Parser.prototype.defaultGraph });
-      // Restore the parent triple's subject.
-      this._subject = (typeof(parentTriple.subject) === 'string' ? {'token': 'uri', 'value': parentTriple.subject, 'prefix': null, 'suffix': null } : parentTriple.subject);
-      // Was this list in the parent triple's subject?
-      if (parentTriple.predicate === null) {
-        // The next token is the predicate.
-        next = this._readPredicate;
-        // Skip writing the list tail if this was an empty list.
-        if (parentTriple.subject === RDF_NIL)
-          return next;
-      }
-      // The list was in the parent triple's object.
-      else {
-        // Restore the parent triple's predicate and object as well.
-        this._predicate = (typeof(parentTriple.predicate) === 'string' ? {'token': 'uri', 'value': parentTriple.predicate, 'prefix': null, 'suffix': null } : parentTriple.predicate); 
-        this._object = (typeof(parentTriple.object) === 'string' ? {'token': 'uri', 'value': parentTriple.object, 'prefix': null, 'suffix': null } : parentTriple.object);
-        next = this._getNextReader();
-        // Skip writing the list tail if this was an empty list.
-        if (parentTriple.object === RDF_NIL)
-          return next;
-      }
-      // Close the list by making the item head nil.
-      itemHead = RDF_NIL;
-      break;
-    default:
-      return this._error('Expected list item instead of "' + token.type + '"', token);
-    }
-
-     // Create a new blank node if no item head was assigned yet.
-    if (itemHead === null)
-      this._subject = itemHead = {'blank': '_:' + this._blankNodeCount++};
-
-    // Is this the first element of the list?
-    if (prevItemHead === null) {
-      // This list is either the object or the subject.
-      if (parentTriple.object === RDF_NIL)
-        parentTriple.object = itemHead;
-      else
-        parentTriple.subject = itemHead;
-    }
-    else {
-      // The rest of the list is in the current head.
-      this._callback(null, { subject: prevItemHead,
-                             predicate: RDF_REST,
-                             object: itemHead,
-                             graph: RVInnerN3Parser.prototype.defaultGraph });
-    }
-    // Add the item's value.
-    if (item !== null)
-      this._callback(null, { subject: itemHead,
-                             predicate: RDF_FIRST,
-                             object: item,
-                             graph: RVInnerN3Parser.prototype.defaultGraph });
-    return next;
-  },
-
-  // ### `_readPunctuation` reads punctuation between triples or triple parts.
-  _readPunctuation: function (token, empty) {
-    var next;
-    switch (token.type) {
-    // A dot just ends the statement, without sharing anything with the next.
-    case 'dot':
-      next = this._readInTopContext;
-      break;
-    // Semicolon means the subject is shared; predicate and object are different.
-    case 'semicolon':
-      next = this._readPredicate;
-      break;
-    // Comma means both the subject and predicate are shared; the object is different.
-    case 'comma':
-      next = this._readObject;
-      break;
-    default:
-      return this._error('Expected punctuation to follow "' + this._object + '"', token);
-    }
-    // A triple has been completed now, so return it.
-    if (!empty)
-      this._callback(null, { subject: this._subject,
-                             predicate: this._predicate,
-                             object: this._object,
-                             graph: RVInnerN3Parser.prototype.defaultGraph });
-    return next;
-  },
-
-  // ### `_readPrefix` reads the prefix of a prefix declaration.
-  _readPrefix: function (token) {
-    if (token.type !== 'prefix')
-      return this._error('Expected prefix to follow @prefix', token);
-    this._prefix = token.value;
-    return this._readPrefixURI;
-  },
-
-  // ### `_readPrefixURI` reads the URI of a prefix declaration.
-  _readPrefixURI: function (token) {
-    if (token.type !== 'explicituri')
-      return this._error('Expected explicituri to follow prefix "' + this.prefix + '"', token);
-    var prefixURI;
-    if (this._baseURI === null || absoluteURI.test(token.value))
-      prefixURI = token.value;
-    else
-      prefixURI = (hashURI.test(token.value) ? this._baseURI : this._baseURIRoot) + token.value;
-    this._prefixes[this._prefix] = prefixURI;
-    return this._readDeclarationPunctuation;
-  },
-
-  // ### `_readBaseURI` reads the URI of a base declaration.
-  _readBaseURI: function (token) {
-    if (token.type !== 'explicituri')
-      return this._error('Expected explicituri to follow base declaration', token);
-    if (this._baseURI === null || absoluteURI.test(token.value))
-      this._baseURI = token.value;
-    else
-      this._baseURI = (hashURI.test(token.value) ? this._baseURI : this._baseURIRoot) + token.value;
-    this._baseURIRoot = this._baseURI.replace(documentPart, '');
-    return this._readDeclarationPunctuation;
-  },
-
-  // ### `_readDeclarationPunctuation` reads the punctuation of a declaration.
-  _readDeclarationPunctuation: function (token) {
-    // SPARQL-style declarations don't have punctuation.
-    if (this._sparqlStyle)
-      return this._readInTopContext(token);
-
-    if (token.type !== 'dot')
-      return this._error('Expected declaration to end with a dot', token);
-    return this._readInTopContext;
-  },
-
-  // ### `_getNextReader` gets the next reader function at the end of a triple.
-  _getNextReader: function () {
-    var stack = this._tripleStack;
-    if (stack.length === 0)
-      return this._readPunctuation;
-
-    switch (stack[stack.length - 1].type) {
-    case 'blank':
-      return this._readBlankNodeTail;
-    case 'list':
-      return this._readListItem;
-    }
-  },
-
-  // ### `_error` emits an error message through the callback.
-  _error: function (message, token) {
-    this._callback(message + ' at line ' + token.line + '.');
-  },
-
-  // ## Public methods
-
-  // ### `parse` parses the N3 input and emits each parsed triple through the callback.
-  parse: function (input, callback) {
-    var self = this;
-    // Initialize prefix declarations.
-    this._prefixes = Object.create(null);
-    // Set the triple callback.
-    this._callback = callback;
-    // The read callback is the next function to be executed when a token arrives.
-    // We start reading in the top context.
-    this._readCallback = this._readInTopContext;
-    // Execute the read callback when a token arrives.
-    this._lexer.tokenize(input, function (error, token) {
-      if(error !== null && self._readCallback === _undefined) {
-        self._callback(error);
-      } else if (self._readCallback !== _undefined) {
-        if (error !== null)
-          self._callback(error);
-        else
-          self._readCallback = self._readCallback(token);
-      }
-    });
-  }
-};
-*/
-
-// ## Exports
-
-// Export the `RVInnerN3Parser` class as a whole.
-
-
+// Add a wrapper around the N3.js parser
 var RVN3Parser = {};
+RVN3Parser.parser = {
+  async: true,
 
-RVN3Parser.parser = {};
-// The parser is asynchronous
-RVN3Parser.parser.async = true;
+  parse: function (data, graph, options, callback) {
+    // Shift arguments if necessary
+    if (!callback)
+        callback = options, options = graph, graph = null;
+    // Make sure graph is an object
+    if (graph && typeof(graph) === 'string')
+      graph = { token: 'uri', value: graph, prefix: null, suffix: null };
+    // Convert options
+    if (options && options.baseURI)
+      options.documentURI = options.baseURI;
 
-RVN3Parser.parser.parse = function() {
-
-
-    var data = arguments[0];
-    var graph = arguments[1];
-    var options = arguments[2];
-    var cb = arguments[3];
-
-    if(arguments.length === 3) {
-        graph = null;
-        options = arguments[1];
-        cb = arguments[2];
-    } else if(arguments.length !== 4) {
-        cb(false, "Wrong number of arguments, 3, 4 args required");
-    }
-    if(graph && typeof(graph) === 'string')
-        graph = {token: 'uri', value: graph, prefix: null, suffix: null};
-
-    var parser = new RVInnerN3Parser(options);
-    RVInnerN3Parser.prototype.defaultGraph = graph;
-
+    // Parse triples into array
     var triples = [];
-
-     parser.parse(data, function(err,triple) {
-        if(err) {
-            cb(false, err);
-        } else {
-            if(triple) {
-               triples.push(triple);
-            } else {
-               cb(true, triples);
-            }
-        }
-     });
+    new N3Parser(options).parse(data, function (error, triple) {
+      if (error)
+        callback(false, error);
+      else if (!triple)
+        callback(true, triples);
+      else
+        triples.push({
+          subject:   convertEntity(triple.subject),
+          predicate: convertEntity(triple.predicate),
+          object:    convertEntity(triple.object),
+          graph:     graph,
+        });
+    });
+  }
 };
+
+// Converts an entity in N3.js representation to this library's representation
+function convertEntity(entity) {
+  switch (entity[0]) {
+    case '"': return { literal: entity };
+    case '_': return { blank: entity.replace('b', '') };
+    default:  return { token: 'uri', value: entity, prefix: null, suffix: null };
+  };
+}
 
 // end of ./src/js-communication/src/rvn3_parser.js 
 // exports
@@ -6525,7 +5225,7 @@ var RDFLoader = {};
 var N3Parser = RVN3Parser;
 RDFLoader.RDFLoader = function (params) {
     this.precedences = ["text/turtle", "text/n3", "application/ld+json", "application/json"/*, "application/rdf+xml"*/];
-    this.parsers = {"text/turtle":N3Parser.parser, "text/n3":N3Parser.parser, "application/ld+json":JSONLDParser.parser, "application/json":JSONLDParser.parser/*, "application/rdf+xml":RDFXMLParser.parser*/};
+    this.parsers = {"text/turtle":RVN3Parser.parser, "text/n3":RVN3Parser.parser, "application/ld+json":JSONLDParser.parser, "application/json":JSONLDParser.parser/*, "application/rdf+xml":RDFXMLParser.parser*/};
     if (params != null) {
         for (var mime in params["parsers"]) {
             this.parsers[mime] = params["parsers"][mime];
@@ -28682,7 +27382,7 @@ QueryEngine.QueryEngine.prototype.applyModifier = function(modifier, projectedBi
         for(var i=0; i<projectedBindings.length; i++) {
             var bindings = projectedBindings[i];
             var key = "";
-         
+
             // if no projection variables hash is passed, all the bound
             // variable in the current bindings will be used.
             for(var p in (bindings)) {
@@ -28706,14 +27406,14 @@ QueryEngine.QueryEngine.prototype.applyModifier = function(modifier, projectedBi
                     key = key + p + obj;
                 }
             }
-         
+
             if(map[key] == null) {
                 // this will preserve the order in projectedBindings
                 result.push(bindings);
                 map[key] = true;
             }
         }
-        return result; 
+        return result;
     } else {
         return projectedBindings;
     }
@@ -28791,17 +27491,17 @@ QueryEngine.QueryEngine.prototype.compareFilteredBindings = function(a, b, order
             filterResult = {value: false};
         } else if(b.value[i] == null) {
             filterResult = {value: true};
-        } else 
+        } else
 
         // blanks
         if(a.value[i].token === 'blank' && b.value[i].token === 'blank') {
             i++;
             continue;
-        } else if(a.value[i].token === 'blank') { 
-            filterResult = {value: false};            
+        } else if(a.value[i].token === 'blank') {
+            filterResult = {value: false};
         } else if(b.value[i].token === 'blank') {
-            filterResult = {value: true};        
-        } else 
+            filterResult = {value: true};
+        } else
 
         // uris
         if(a.value[i].token === 'uri' && b.value[i].token === 'uri') {
@@ -28811,11 +27511,11 @@ QueryEngine.QueryEngine.prototype.compareFilteredBindings = function(a, b, order
             } else {
                 filterResult = QueryFilters.runTotalGtFunction(a.value[i], b.value[i], []);
             }
-        } else if(a.value[i].token === 'uri') { 
-            filterResult = {value: false};            
+        } else if(a.value[i].token === 'uri') {
+            filterResult = {value: false};
         } else if(b.value[i].token === 'uri') {
-            filterResult = {value: true};        
-        } else 
+            filterResult = {value: true};
+        } else
 
         // simple literals
         if(a.value[i].token === 'literal' && b.value[i].token === 'literal' && a.value[i].type == null && b.value[i].type == null) {
@@ -28825,11 +27525,11 @@ QueryEngine.QueryEngine.prototype.compareFilteredBindings = function(a, b, order
             } else {
                 filterResult = QueryFilters.runTotalGtFunction(a.value[i], b.value[i], []);
             }
-        } else if(a.value[i].token === 'literal' && a.value[i].type == null) { 
-            filterResult = {value: false};            
+        } else if(a.value[i].token === 'literal' && a.value[i].type == null) {
+            filterResult = {value: false};
         } else if(b.value[i].token === 'literal' && b.value[i].type == null) {
-            filterResult = {value: true};        
-        } else 
+            filterResult = {value: true};
+        } else
 
         // literals
         if(QueryFilters.runEqualityFunction(a.value[i], b.value[i], [], this, env).value == true) {
@@ -28837,7 +27537,7 @@ QueryEngine.QueryEngine.prototype.compareFilteredBindings = function(a, b, order
             continue;
         } else {
             filterResult = QueryFilters.runTotalGtFunction(a.value[i], b.value[i], []);
-        }     
+        }
 
 
         // choose value for comparison based on the direction
@@ -28853,7 +27553,7 @@ QueryEngine.QueryEngine.prototype.compareFilteredBindings = function(a, b, order
             } else {
                 return 1;
             }
-        }       
+        }
     }
 };
 
@@ -28898,9 +27598,9 @@ QueryEngine.QueryEngine.prototype.aggregateBindings = function(projection, bindi
     for(var i=0; i<projection.length; i++) {
         var aggregatedValue = QueryFilters.runAggregator(projection[i], denormBindings, this, dataset, env);
         if(projection[i].alias) {
-            aggregatedBindings[projection[i].alias.value] = aggregatedValue; 
+            aggregatedBindings[projection[i].alias.value] = aggregatedValue;
         } else {
-            aggregatedBindings[projection[i].value.value] = aggregatedValue; 
+            aggregatedBindings[projection[i].value.value] = aggregatedValue;
         }
     }
     return(aggregatedBindings);
@@ -28935,7 +27635,7 @@ QueryEngine.QueryEngine.prototype.projectBindings = function(projection, results
             if(shouldAdd === true) {
                 projectedResults.push(currentProjected);
             }
-            
+
         }
 
         return projectedResults;
@@ -28967,11 +27667,11 @@ QueryEngine.QueryEngine.prototype.termCost = function(term, env) {
     } else {
           return(null);
     }
-    
+
 };
 
 QueryEngine.QueryEngine.prototype.normalizeTerm = function(term, env, shouldIndex) {
-    if(term.token === 'uri') {
+    if(term && term.token === 'uri') {
         var uri = Utils.lexicalFormBaseUri(term, env);
         if(uri == null) {
             return(null);
@@ -28983,7 +27683,7 @@ QueryEngine.QueryEngine.prototype.normalizeTerm = function(term, env, shouldInde
             }
         }
 
-    } else if(term.token === 'literal') {
+    } else if(term && term.token === 'literal') {
         var lexicalFormLiteral = Utils.lexicalFormLiteral(term, env);
         if(shouldIndex) {
            var oid = this.lexicon.registerLiteral(lexicalFormLiteral);
@@ -28992,7 +27692,7 @@ QueryEngine.QueryEngine.prototype.normalizeTerm = function(term, env, shouldInde
             var oid = this.lexicon.resolveLiteral(lexicalFormLiteral);
             return(oid);
         }
-    } else if(term.token === 'blank') {
+    } else if(term && term.token === 'blank') {
         var label = term.value;
         var oid = env.blanks[label];
         if( oid != null) {
@@ -29008,7 +27708,7 @@ QueryEngine.QueryEngine.prototype.normalizeTerm = function(term, env, shouldInde
                 return(oid);
             }
         }
-    } else if(term.token === 'var') {
+    } else if(term && term.token === 'var') {
         return(term.value);
     } else {
           return(null);
@@ -29022,13 +27722,13 @@ QueryEngine.QueryEngine.prototype.normalizeDatasets = function(datasets, outerEn
         if(dataset.value === that.lexicon.defaultGraphUri) {
             dataset.oid = that.lexicon.defaultGraphOid;
         } else {
-            var oid = that.normalizeTerm(dataset, outerEnv, false);      
+            var oid = that.normalizeTerm(dataset, outerEnv, false);
             if(oid != null) {
                 dataset.oid = oid;
             } else {
                 return(null);
             }
-        }  
+        }
     }
 
     return true
@@ -29075,9 +27775,9 @@ QueryEngine.QueryEngine.prototype.normalizeQuad = function(quad, queryEnv, shoul
         return null
     }
 
-    return({subject:subject, 
-            predicate:predicate, 
-            object:object, 
+    return({subject:subject,
+            predicate:predicate,
+            object:object,
             graph:graph});
 };
 
@@ -29135,7 +27835,7 @@ QueryEngine.QueryEngine.prototype.copyDenormalizedBindings = function(bindingsLi
                 var inOut = out[oid];
                 if(inOut!= null) {
                     denorm[variables[j]] = inOut;
-                } else {                    
+                } else {
                     var val = this.lexicon.retrieve(oid);
                     out[oid] = val;
                     denorm[variables[j]] = val;
@@ -29231,7 +27931,7 @@ QueryEngine.QueryEngine.prototype.executeQuery = function(syntaxTree, callback, 
                   callback(true, result['bindings']);
               } else {
                   var result = that.denormalizeBindingsList(result, queryEnv);
-                  if(result != null) {                        
+                  if(result != null) {
                       callback(true, result);
                   } else {
                       callback(false, result);
@@ -29245,7 +27945,7 @@ QueryEngine.QueryEngine.prototype.executeQuery = function(syntaxTree, callback, 
         aqt.projection = [{"token": "variable", "kind": "*"}];
         this.executeSelect(aqt, queryEnv, defaultDataset, namedDataset, function(success, result){
             if(success) {
-                if(success) {              
+                if(success) {
                     if(result.length>0) {
                         callback(true, true);
                     } else {
@@ -29263,11 +27963,11 @@ QueryEngine.QueryEngine.prototype.executeQuery = function(syntaxTree, callback, 
         that = this;
         this.executeSelect(aqt, queryEnv, defaultDataset, namedDataset, function(success, result){
             if(success) {
-                if(success) {              
+                if(success) {
                     var result = that.denormalizeBindingsList(result, queryEnv);
-                    if(result != null) { 
+                    if(result != null) {
                         var graph = new RDFJSInterface.Graph();
-                            
+
                         // CONSTRUCT WHERE {} case
                         if(aqt.template == null) {
                             aqt.template = {triplesContext: aqt.pattern};
@@ -29282,7 +27982,7 @@ QueryEngine.QueryEngine.prototype.executeQuery = function(syntaxTree, callback, 
                             for(var j=0; j<aqt.template.triplesContext.length; j++) {
                                 // fresh IDs for blank nodes in the construct template
                                 var components = ['subject', 'predicate', 'object'];
-                                var tripleTemplate = aqt.template.triplesContext[j];                                    
+                                var tripleTemplate = aqt.template.triplesContext[j];
                                 for(var p=0; p<components.length; p++) {
                                     var component = components[p];
                                     if(tripleTemplate[component].token === 'blank') {
@@ -29336,7 +28036,7 @@ QueryEngine.QueryEngine.prototype.executeSelect = function(unit, env, defaultDat
         if(defaultDataset != null || namedDataset != null) {
             dataset.implicit = defaultDataset || [];
             dataset.named   = namedDataset || [];
-        } 
+        }
 
         if(dataset.implicit != null && dataset.implicit.length === 0 && dataset.named !=null && dataset.named.length === 0) {
             // We add the default graph to the default merged graph
@@ -29362,10 +28062,10 @@ QueryEngine.QueryEngine.prototype.executeSelect = function(unit, env, defaultDat
                 if(unit.group && unit.group != "") {
                     if(that.checkGroupSemantics(unit.group,projection)) {
                         var groupedBindings = that.groupSolution(result, unit.group, dataset, env);
-                             
+
                         var aggregatedBindings = [];
                         var foundError = false;
-                            
+
                         for(var i=0; i<groupedBindings.length; i++) {
                             var resultingBindings = that.aggregateBindings(projection, groupedBindings[i], dataset, env);
                             aggregatedBindings.push(resultingBindings);
@@ -29380,10 +28080,10 @@ QueryEngine.QueryEngine.prototype.executeSelect = function(unit, env, defaultDat
                     var modifiedBindings = that.applyModifier(modifier, projectedBindings);
                     var limitedBindings  = that.applyLimitOffset(offset, limit, modifiedBindings);
                     var filteredBindings = that.removeDefaultGraphBindings(limitedBindings, dataset);
-                    
+
                     callback(true, filteredBindings);
                 }
-                
+
             } else { // fail selectUnit
                 callback(false, result);
             }
@@ -29412,7 +28112,7 @@ QueryEngine.QueryEngine.prototype.groupSolution = function(bindings, group, data
             /**
              * In this loop, we iterate through all the group clauses and tranform the current bindings
              * according to the group by clauses.
-             * If it is the first iteration we also save in a different array the order for the 
+             * If it is the first iteration we also save in a different array the order for the
              * grouped variables that will be used later to build the final groups
              */
             for(var j=0; j<group.length; j++) {
@@ -29457,17 +28157,17 @@ QueryEngine.QueryEngine.prototype.groupSolution = function(bindings, group, data
                         if(initialized == false) {
                             order.push(orderVariable);
                         }
-                        
+
                     } else {
                         mustAddBindings = false;
                     }
-                         
+
                 }
-                
+
             }
             if(initialized == false) {
                 initialized = true;
-            } 
+            }
             if(mustAddBindings === true) {
                 filteredBindings.push(currentBindings);
             }
@@ -29492,19 +28192,19 @@ QueryEngine.QueryEngine.prototype.groupSolution = function(bindings, group, data
             }
 
             if(dups[key] == null) {
-                //currentTransformedBinding["__group__"] = groupCounter; 
+                //currentTransformedBinding["__group__"] = groupCounter;
                 groupMap[key] = groupCounter;
                 dups[key] = [currentTransformedBinding];
                 //groupCounter++
             } else {
-                //currentTransformedBinding["__group__"] = dups[key][0]["__group__"]; 
+                //currentTransformedBinding["__group__"] = dups[key][0]["__group__"];
                 dups[key].push(currentTransformedBinding);
             }
         }
 
         // The final result is an array of arrays with all the groups
         var groups = [];
-            
+
         for(var k in dups) {
             groups.push(dups[k]);
         }
@@ -29521,11 +28221,11 @@ QueryEngine.QueryEngine.prototype.executeSelectUnit = function(projection, datas
     if(pattern.kind === "BGP") {
         return this.executeAndBGP(projection, dataset, pattern, env);
     } else if(pattern.kind === "UNION") {
-        return this.executeUNION(projection, dataset, pattern.value, env);            
+        return this.executeUNION(projection, dataset, pattern.value, env);
     } else if(pattern.kind === "JOIN") {
-        return this.executeJOIN(projection, dataset, pattern, env);            
+        return this.executeJOIN(projection, dataset, pattern, env);
     } else if(pattern.kind === "LEFT_JOIN") {
-        return this.executeLEFT_JOIN(projection, dataset, pattern, env);            
+        return this.executeLEFT_JOIN(projection, dataset, pattern, env);
     } else if(pattern.kind === "FILTER") {
         // Some components may have the filter inside the unit
         var results = this.executeSelectUnit(projection, dataset, pattern.value, env);
@@ -29725,7 +28425,7 @@ QueryEngine.QueryEngine.prototype.executeLEFT_JOIN = function(projection, datase
     if(set1==null) {
         return null;
     }
-     
+
     //console.log("SET QUERY 2");
     //console.log(setQuery2);
     set2 = that.executeSelectUnit(projection, dataset, setQuery2, env);
@@ -29745,7 +28445,7 @@ QueryEngine.QueryEngine.prototype.executeLEFT_JOIN = function(projection, datase
     //console.log("---")
     //console.log(bindings)
     //console.log("\r\n")
-    
+
     if(set1.length>1 && set2.length>1) {
             var vars = [];
             var vars1 = {};
@@ -29763,7 +28463,7 @@ QueryEngine.QueryEngine.prototype.executeLEFT_JOIN = function(projection, datase
                 if(bindings[i]["__nullify__"] === true) {
                     for(var j=0; j<vars.length; j++) {
                         bindings[i]["bindings"][vars[j]] = null;
-                    }                            
+                    }
                     var idx = [];
                     var idxColl = [];
                     for(var p in bindings[i]["bindings"]) {
@@ -29820,8 +28520,8 @@ QueryEngine.QueryEngine.prototype.executeJOIN = function(projection, dataset, pa
     if(set2 == null) {
         return null;
     }
-    
-    
+
+
     var result = null;
     if(set1.length ===0 || set2.length===0) {
 	result = [];
@@ -29837,10 +28537,10 @@ QueryEngine.QueryEngine.prototype.executeJOIN = function(projection, dataset, pa
 	}
 
 	if(commonVars.length == 0) {
-	    result = QueryPlan.joinBindings(set1,set2);	    
-	} else if(this.abstractQueryTree.treeWithUnion(setQuery1) || 
+	    result = QueryPlan.joinBindings(set1,set2);
+	} else if(this.abstractQueryTree.treeWithUnion(setQuery1) ||
 		  this.abstractQueryTree.treeWithUnion(setQuery2)) {
-	    result = QueryPlan.joinBindings(set1,set2);	    	    
+	    result = QueryPlan.joinBindings(set1,set2);
 	} else {
 	    result = QueryPlan.joinBindings2(commonVars, set1, set2);
 	}
@@ -29948,7 +28648,7 @@ QueryEngine.QueryEngine.prototype.batchLoad = function(quads, callback) {
 
     for(var i=0; i<quads.length; i++) {
         quad = quads[i];
-	
+
         // subject
         if(quad.subject['uri'] || quad.subject.token === 'uri') {
             oid = this.lexicon.registerUri(quad.subject.uri || quad.subject.value);
@@ -29963,7 +28663,7 @@ QueryEngine.QueryEngine.prototype.batchLoad = function(quads, callback) {
 		quad.subject = this.lexicon.parseLiteral(quad.subject.literal);
 		delete quad.subject['literal'];
 	    }
-            subject = oid;                    
+            subject = oid;
         } else {
             maybeBlankOid = blanks[quad.subject.blank || quad.subject.value];
             if(maybeBlankOid == null) {
@@ -29992,7 +28692,7 @@ QueryEngine.QueryEngine.prototype.batchLoad = function(quads, callback) {
 		quad.predicate = this.lexicon.parseLiteral(quad.predicate.literal);
 		delete quad.predicate['literal'];
 	    }
-            predicate = oid;                    
+            predicate = oid;
         } else {
             maybeBlankOid = blanks[quad.predicate.blank || quad.predicate.value];
             if(maybeBlankOid == null) {
@@ -30020,7 +28720,7 @@ QueryEngine.QueryEngine.prototype.batchLoad = function(quads, callback) {
 		if(quad.object.type != null) {
 		    quad.object.value = '"'+quad.object.value+'"^^<'+quad.object.type+'>';
 		} else if(quad.object.lang != null) {
-		    quad.object.value = '"'+quad.object.value+'"@'+quad.object.lang;		    
+		    quad.object.value = '"'+quad.object.value+'"@'+quad.object.lang;
 		} else {
 		    quad.object.value = '"'+quad.object.value+'"';
 		}
@@ -30030,7 +28730,7 @@ QueryEngine.QueryEngine.prototype.batchLoad = function(quads, callback) {
 		quad.object = this.lexicon.parseLiteral(quad.object.literal);
 		delete quad.object['literal'];
 	    }
-            object = oid;                    
+            object = oid;
         } else {
             maybeBlankOid = blanks[quad.object.blank || quad.object.value];
             if(maybeBlankOid == null) {
@@ -30062,7 +28762,7 @@ QueryEngine.QueryEngine.prototype.batchLoad = function(quads, callback) {
 		quad.predicate = this.lexicon.parseLiteral(quad.predicate.literal);
 		delete quad.predicate['literal'];
 	    }
-            graph = oid;                    
+            graph = oid;
         } else {
             maybeBlankOid = blanks[quad.graph.blank || quad.graph.value];
             if(maybeBlankOid == null) {
@@ -30118,7 +28818,7 @@ QueryEngine.QueryEngine.prototype.batchLoad = function(quads, callback) {
     } else {
         exitFn();
     }
-        
+
     if(success) {
         return counter;
     } else {
@@ -30173,8 +28873,8 @@ QueryEngine.QueryEngine.prototype._executeModifyQuery = function(aqt, queryEnv, 
             aqt.dataset = {};
             aqt.projection = [{"token": "variable", "kind": "*"}];
 
-            that.executeSelect(aqt, queryEnv, defaultGraph, namedGraph, function(success, result) {                
-                if(success) {                    
+            that.executeSelect(aqt, queryEnv, defaultGraph, namedGraph, function(success, result) {
+                if(success) {
                     var result = that.denormalizeBindingsList(result, queryEnv);
                     if(result!=null) {
                         bindings = result;
@@ -30211,7 +28911,9 @@ QueryEngine.QueryEngine.prototype._executeModifyQuery = function(aqt, queryEnv, 
                             }
                         }
 
-                        quads.push(quad);
+                        if(quad.subject && quad.predicate && quad.object) {
+                          quads.push(quad);
+                        }
                     }
                 }
 
@@ -30362,7 +29064,7 @@ QueryEngine.QueryEngine.prototype._executeClearGraph = function(destinyGraph, qu
 
 QueryEngine.QueryEngine.prototype.checkGroupSemantics = function(groupVars, projectionVars) {
     if(groupVars === 'singleGroup') {
-        return true;        
+        return true;
     }
 
     var projection = {};
@@ -30382,7 +29084,7 @@ QueryEngine.QueryEngine.prototype.checkGroupSemantics = function(groupVars, proj
             if(projection[projectionVar.value.value] == null) {
                 return false;
             }
-        } else if(projectionVar.kind === 'aliased' && 
+        } else if(projectionVar.kind === 'aliased' &&
                   projectionVar.expression &&
                   projectionVar.expression.primaryexpression === 'var') {
             if(projection[projectionVar.expression.value.value] == null) {
